@@ -17,7 +17,6 @@
             flex-direction: column;
         }
 
-        /* ===== HEADER ESTANDARIZADO ===== */
         .app-header {
             background: #FFFFFF;
             border-bottom: 1px solid #E2E8F0;
@@ -84,7 +83,6 @@
         }
         .user-menu i { color: #64748B; font-size: 20px; }
 
-        /* ===== RESTO DEL CSS ===== */
         .main-content {
             flex: 1;
             padding: 24px 32px;
@@ -166,7 +164,6 @@
         }
         .total-badge span { font-size: 18px; }
 
-        /* ===== DASHBOARD ===== */
         .dashboard-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -254,7 +251,6 @@
         .badge-red { background: #FEE2E2; color: #EF4444; }
         .badge-gray { background: #F1F5F9; color: #64748B; }
 
-        /* ===== FILTROS DESPLEGABLES ===== */
         .filtros-container {
             background: #FFFFFF;
             border-radius: 16px;
@@ -334,19 +330,6 @@
         .filtros-grid .form-group input[type="date"] {
             padding: 8px 12px;
         }
-        .filtros-grid .form-group .fecha-rango {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .filtros-grid .form-group .fecha-rango input {
-            flex: 1;
-        }
-        .filtros-grid .form-group .fecha-rango span {
-            color: #94A3B8;
-            font-size: 12px;
-            font-weight: 600;
-        }
         .filtros-actions {
             display: flex;
             gap: 10px;
@@ -357,7 +340,6 @@
             padding-top: 16px;
         }
 
-        /* ===== CONTADORES DE FILTROS ===== */
         .contadores {
             display: flex;
             gap: 16px;
@@ -376,18 +358,7 @@
             color: #1E293B;
             font-size: 18px;
         }
-        .contador-item .badge-estado {
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .badge-estado.activo { background: #ECFDF5; color: #10B981; }
-        .badge-estado.cesado { background: #FEE2E2; color: #EF4444; }
-        .badge-estado.todos { background: #EFF6FF; color: #3B82F6; }
 
-        /* ===== ACTION BAR ===== */
         .action-bar {
             display: flex;
             gap: 12px;
@@ -423,7 +394,6 @@
             font-size: 14px;
         }
 
-        /* ===== TABLA ===== */
         .table-container {
             background: #FFFFFF;
             border-radius: 16px;
@@ -468,7 +438,6 @@
         .btn-delete:hover { color: #EF4444; }
         .btn-copy:hover { color: #8B5CF6; }
 
-        /* ===== FORMULARIO ===== */
         .form-container {
             background: #FFFFFF;
             border-radius: 20px;
@@ -535,7 +504,6 @@
             word-break: break-word;
         }
 
-        /* ===== MODAL ===== */
         .modal {
             display: none;
             position: fixed;
@@ -587,7 +555,6 @@
             flex-wrap: wrap;
         }
 
-        /* ===== TOAST ===== */
         .toast {
             position: fixed;
             bottom: 24px;
@@ -608,7 +575,6 @@
         .toast.error { background: #EF4444; }
         .toast.info { background: #3B82F6; }
 
-        /* ===== LOADING ===== */
         .loading {
             display: none;
             text-align: center;
@@ -630,7 +596,6 @@
         .text-center { text-align: center; }
         .text-muted { color: #94A3B8; }
 
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 992px) {
             .app-header { padding: 0 20px; }
             .main-content { padding: 20px 24px; }
@@ -685,13 +650,6 @@
             table { min-width: 360px; font-size: 12px; }
             th, td { padding: 6px 8px; font-size: 12px; }
             .action-btn { width: 24px; height: 24px; font-size: 12px; }
-            .filtros-grid .form-group .fecha-rango {
-                flex-direction: column;
-                gap: 4px;
-            }
-            .filtros-grid .form-group .fecha-rango input {
-                width: 100%;
-            }
         }
         @media (max-width: 480px) {
             .main-content { padding: 10px 12px; }
@@ -703,7 +661,6 @@
 </head>
 <body>
 
-<!-- ===== HEADER ===== -->
 <header class="app-header">
     <div class="logo">
         <img src="logo.png" alt="">
@@ -721,15 +678,10 @@
     <div class="user-menu"><i class="fas fa-user-circle"></i></div>
 </header>
 
-<!-- ===== CONTENIDO PRINCIPAL ===== -->
-<main class="main-content" id="mainContent">
-    <!-- Se inyecta dinámicamente -->
-</main>
+<main class="main-content" id="mainContent"></main>
 
-<!-- ===== TOAST ===== -->
 <div id="toast" class="toast"></div>
 
-<!-- ===== MODAL DETALLE ===== -->
 <div id="modalDetalle" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -746,12 +698,12 @@
 
 <script>
 // ============================================================
-//  CONFIGURACIÓN (con caché)
+//  CONFIGURACIÓN
 // ============================================================
 const API_URL = 'https://script.google.com/macros/s/AKfycbw2U4jjLX4BoGeRQ9iiush5OSut8goZ3jCwNiiB4bRtW7zqtavEXnXcwOYTkpCoHXRd/exec';
 const STORAGE_KEY = 'staffHubData';
 const STORAGE_TIMESTAMP_KEY = 'staffHubTimestamp';
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+const CACHE_DURATION = 5 * 60 * 1000;
 
 // ============================================================
 //  ESTADO GLOBAL
@@ -842,6 +794,12 @@ function normalizarFecha(fechaStr) {
            String(fecha.getDate()).padStart(2, '0');
 }
 
+function obtenerAnio(fechaStr) {
+    const fecha = parsearFecha(fechaStr);
+    if (!fecha) return null;
+    return fecha.getFullYear();
+}
+
 function estaActivo(item) {
     const fechaCese = item.CESE_PERIODO || '';
     if (!fechaCese) return true;
@@ -873,7 +831,7 @@ function navegar(vista) {
 }
 
 // ============================================================
-//  CARGA DE DATOS (con caché)
+//  CARGA DE DATOS
 // ============================================================
 async function cargarDatos(forceRefresh = false) {
     const loading = document.getElementById('loadingListado') || document.getElementById('loadingDash');
@@ -975,7 +933,35 @@ function inicializarFiltros() {
         `;
     }
 
-    // El filtro CARGO es de tipo texto (búsqueda parcial), no se llena con opciones
+    // Años de vinculación (desde el sheet)
+    const anioVinculacionSelect = document.getElementById('filtroAnioVinculacion');
+    if (anioVinculacionSelect) {
+        const anios = new Set();
+        datosActuales.forEach(item => {
+            const anio = obtenerAnio(item.FECHA_VINCULACION);
+            if (anio) anios.add(anio);
+        });
+        const sorted = Array.from(anios).sort((a, b) => b - a); // Descendente
+        anioVinculacionSelect.innerHTML = `<option value="">Todos los años</option>`;
+        sorted.forEach(anio => {
+            anioVinculacionSelect.innerHTML += `<option value="${anio}">${anio}</option>`;
+        });
+    }
+
+    // Años de cese (desde el sheet)
+    const anioCeseSelect = document.getElementById('filtroAnioCese');
+    if (anioCeseSelect) {
+        const anios = new Set();
+        datosActuales.forEach(item => {
+            const anio = obtenerAnio(item.CESE_PERIODO);
+            if (anio) anios.add(anio);
+        });
+        const sorted = Array.from(anios).sort((a, b) => b - a); // Descendente
+        anioCeseSelect.innerHTML = `<option value="">Todos los años</option>`;
+        sorted.forEach(anio => {
+            anioCeseSelect.innerHTML += `<option value="${anio}">${anio}</option>`;
+        });
+    }
 }
 
 // ============================================================
@@ -988,19 +974,16 @@ function aplicarFiltros() {
     const laboratorio = document.getElementById('filtroLaboratorio').value.trim();
     const busqueda = document.getElementById('filtroBusqueda').value.toLowerCase().trim();
     const estadoContrato = document.getElementById('filtroEstadoContrato').value;
-    const fechaVinculacionDesde = document.getElementById('filtroVinculacionDesde').value;
-    const fechaVinculacionHasta = document.getElementById('filtroVinculacionHasta').value;
-    const fechaCeseDesde = document.getElementById('filtroCeseDesde').value;
-    const fechaCeseHasta = document.getElementById('filtroCeseHasta').value;
+    const anioVinculacion = document.getElementById('filtroAnioVinculacion').value;
+    const anioCese = document.getElementById('filtroAnioCese').value;
 
     const filtrosActivos = programa || cargo || contrato || laboratorio || busqueda || 
-                           estadoContrato || fechaVinculacionDesde || fechaVinculacionHasta ||
-                           fechaCeseDesde || fechaCeseHasta;
+                           estadoContrato || anioVinculacion || anioCese;
 
     if (!filtrosActivos) {
         datosFiltrados = null;
         actualizarTablaYContadores(datosActuales);
-        actualizarContadoresFiltros(programa, cargo, contrato, laboratorio, estadoContrato);
+        actualizarContadoresFiltros(programa, cargo, contrato, laboratorio, estadoContrato, anioVinculacion, anioCese);
         return;
     }
 
@@ -1028,32 +1011,24 @@ function aplicarFiltros() {
             if (estadoContrato === 'cesado' && activo) return false;
         }
 
-        if (fechaVinculacionDesde) {
-            const fechaVin = normalizarFecha(item.FECHA_VINCULACION);
-            if (!fechaVin || fechaVin < fechaVinculacionDesde) return false;
-        }
-        if (fechaVinculacionHasta) {
-            const fechaVin = normalizarFecha(item.FECHA_VINCULACION);
-            if (!fechaVin || fechaVin > fechaVinculacionHasta) return false;
+        if (anioVinculacion) {
+            const anio = obtenerAnio(item.FECHA_VINCULACION);
+            if (anio !== parseInt(anioVinculacion)) return false;
         }
 
-        if (fechaCeseDesde) {
-            const fechaCese = normalizarFecha(item.CESE_PERIODO);
-            if (!fechaCese || fechaCese < fechaCeseDesde) return false;
-        }
-        if (fechaCeseHasta) {
-            const fechaCese = normalizarFecha(item.CESE_PERIODO);
-            if (!fechaCese || fechaCese > fechaCeseHasta) return false;
+        if (anioCese) {
+            const anio = obtenerAnio(item.CESE_PERIODO);
+            if (anio !== parseInt(anioCese)) return false;
         }
 
         return true;
     });
 
     actualizarTablaYContadores(datosFiltrados);
-    actualizarContadoresFiltros(programa, cargo, contrato, laboratorio, estadoContrato);
+    actualizarContadoresFiltros(programa, cargo, contrato, laboratorio, estadoContrato, anioVinculacion, anioCese);
 }
 
-function actualizarContadoresFiltros(programa, cargo, contrato, laboratorio, estado) {
+function actualizarContadoresFiltros(programa, cargo, contrato, laboratorio, estado, anioVin, anioCes) {
     document.getElementById('contadorPrograma').innerHTML = `Programa: <strong>${programa || 'Todos'}</strong>`;
     document.getElementById('contadorCargo').innerHTML = `Cargo: <strong>${cargo || 'Todos'}</strong>`;
     document.getElementById('contadorContrato').innerHTML = `Contrato: <strong>${contrato || 'Todos'}</strong>`;
@@ -1061,16 +1036,18 @@ function actualizarContadoresFiltros(programa, cargo, contrato, laboratorio, est
     
     const estadoLabels = { '': 'Todos', 'activo': '✅ Activos', 'cesado': '⛔ Cesados' };
     document.getElementById('contadorEstado').innerHTML = `Estado: <strong>${estadoLabels[estado] || 'Todos'}</strong>`;
+    document.getElementById('contadorAnioVinculacion').innerHTML = `Año Vinculación: <strong>${anioVin || 'Todos'}</strong>`;
+    document.getElementById('contadorAnioCese').innerHTML = `Año Cese: <strong>${anioCes || 'Todos'}</strong>`;
 }
 
 function limpiarFiltros() {
-    const selects = ['filtroPrograma', 'filtroContrato', 'filtroLaboratorio', 'filtroEstadoContrato'];
+    const selects = ['filtroPrograma', 'filtroContrato', 'filtroLaboratorio', 'filtroEstadoContrato', 
+                     'filtroAnioVinculacion', 'filtroAnioCese'];
     selects.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
-    const inputs = ['filtroCargo', 'filtroBusqueda', 'filtroVinculacionDesde', 'filtroVinculacionHasta', 
-                    'filtroCeseDesde', 'filtroCeseHasta'];
+    const inputs = ['filtroCargo', 'filtroBusqueda'];
     inputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
@@ -1124,7 +1101,6 @@ function renderDashboard() {
             </div>
         </div>
 
-        <!-- FILTROS -->
         <div class="filtros-container">
             <button class="filtros-toggle active" id="filtrosToggle" onclick="toggleFiltros()">
                 <span><i class="fas fa-filter"></i> 🔍 Filtros</span>
@@ -1167,20 +1143,16 @@ function renderDashboard() {
                         </select>
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-calendar-plus"></i> Fecha Vinculación</label>
-                        <div class="fecha-rango">
-                            <input type="date" id="filtroVinculacionDesde" onchange="aplicarFiltros()" placeholder="Desde">
-                            <span>→</span>
-                            <input type="date" id="filtroVinculacionHasta" onchange="aplicarFiltros()" placeholder="Hasta">
-                        </div>
+                        <label><i class="fas fa-calendar-plus"></i> Año Vinculación</label>
+                        <select id="filtroAnioVinculacion" onchange="aplicarFiltros()">
+                            <option value="">Todos los años</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-calendar-times"></i> Fecha Cese</label>
-                        <div class="fecha-rango">
-                            <input type="date" id="filtroCeseDesde" onchange="aplicarFiltros()" placeholder="Desde">
-                            <span>→</span>
-                            <input type="date" id="filtroCeseHasta" onchange="aplicarFiltros()" placeholder="Hasta">
-                        </div>
+                        <label><i class="fas fa-calendar-times"></i> Año Cese</label>
+                        <select id="filtroAnioCese" onchange="aplicarFiltros()">
+                            <option value="">Todos los años</option>
+                        </select>
                     </div>
                 </div>
                 <div class="filtros-actions">
@@ -1197,7 +1169,6 @@ function renderDashboard() {
             </div>
         </div>
 
-        <!-- CONTADORES DE FILTROS -->
         <div class="contadores">
             <span class="contador-item">📊 Total: <strong id="totalFiltrado">0</strong></span>
             <span class="contador-item" id="contadorPrograma">Programa: <strong>Todos</strong></span>
@@ -1205,11 +1176,12 @@ function renderDashboard() {
             <span class="contador-item" id="contadorContrato">Contrato: <strong>Todos</strong></span>
             <span class="contador-item" id="contadorLaboratorio">Laboratorio: <strong>Todos</strong></span>
             <span class="contador-item" id="contadorEstado">Estado: <strong>Todos</strong></span>
+            <span class="contador-item" id="contadorAnioVinculacion">Año Vinculación: <strong>Todos</strong></span>
+            <span class="contador-item" id="contadorAnioCese">Año Cese: <strong>Todos</strong></span>
         </div>
 
         <div id="loadingDash" class="loading"><div class="spinner"></div><p>Cargando datos desde Google Sheets...</p></div>
         <div class="dashboard-grid" id="dashboardGrid">
-            <!-- Tarjeta Cumpleaños -->
             <div class="dash-card">
                 <div class="card-header">
                     <i class="fas fa-birthday-cake"></i>
@@ -1218,7 +1190,6 @@ function renderDashboard() {
                 <div class="number" id="cumpleanosMes">0</div>
                 <div class="list-items" id="listaCumpleanos"></div>
             </div>
-            <!-- Tarjeta Género -->
             <div class="dash-card">
                 <div class="card-header">
                     <i class="fas fa-venus-mars"></i>
@@ -1233,7 +1204,6 @@ function renderDashboard() {
                     </div>
                 </div>
             </div>
-            <!-- Tarjeta Educación -->
             <div class="dash-card">
                 <div class="card-header">
                     <i class="fas fa-graduation-cap"></i>
@@ -1245,7 +1215,6 @@ function renderDashboard() {
                     <div class="item"><span class="label">❓ Sin Especificar</span><span class="value" id="educacionSinEspecificar">0</span></div>
                 </div>
             </div>
-            <!-- Tarjeta Cargos -->
             <div class="dash-card">
                 <div class="card-header">
                     <i class="fas fa-user-tie"></i>
@@ -1257,7 +1226,6 @@ function renderDashboard() {
                     <div class="item"><span class="label">📋 Otros Cargos</span><span class="value" id="otrosCargos">0</span></div>
                 </div>
             </div>
-            <!-- Tarjeta Contratos -->
             <div class="dash-card">
                 <div class="card-header">
                     <i class="fas fa-file-contract"></i>
@@ -1269,7 +1237,6 @@ function renderDashboard() {
                     <div class="item"><span class="label">❓ Sin Especificar</span><span class="value" id="contratoSinEspecificar">0</span></div>
                 </div>
             </div>
-            <!-- Tarjeta Resumen -->
             <div class="dash-card" style="background: linear-gradient(135deg, #EFF6FF, #FFFFFF);">
                 <div class="card-header">
                     <i class="fas fa-users"></i>
@@ -1479,7 +1446,6 @@ function renderListado() {
             </div>
         </div>
 
-        <!-- FILTROS -->
         <div class="filtros-container">
             <button class="filtros-toggle active" id="filtrosToggle" onclick="toggleFiltros()">
                 <span><i class="fas fa-filter"></i> 🔍 Filtros</span>
@@ -1522,20 +1488,16 @@ function renderListado() {
                         </select>
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-calendar-plus"></i> Fecha Vinculación</label>
-                        <div class="fecha-rango">
-                            <input type="date" id="filtroVinculacionDesde" onchange="aplicarFiltros()" placeholder="Desde">
-                            <span>→</span>
-                            <input type="date" id="filtroVinculacionHasta" onchange="aplicarFiltros()" placeholder="Hasta">
-                        </div>
+                        <label><i class="fas fa-calendar-plus"></i> Año Vinculación</label>
+                        <select id="filtroAnioVinculacion" onchange="aplicarFiltros()">
+                            <option value="">Todos los años</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-calendar-times"></i> Fecha Cese</label>
-                        <div class="fecha-rango">
-                            <input type="date" id="filtroCeseDesde" onchange="aplicarFiltros()" placeholder="Desde">
-                            <span>→</span>
-                            <input type="date" id="filtroCeseHasta" onchange="aplicarFiltros()" placeholder="Hasta">
-                        </div>
+                        <label><i class="fas fa-calendar-times"></i> Año Cese</label>
+                        <select id="filtroAnioCese" onchange="aplicarFiltros()">
+                            <option value="">Todos los años</option>
+                        </select>
                     </div>
                 </div>
                 <div class="filtros-actions">
@@ -1552,7 +1514,6 @@ function renderListado() {
             </div>
         </div>
 
-        <!-- CONTADORES DE FILTROS -->
         <div class="contadores">
             <span class="contador-item">📊 Total: <strong id="totalFiltrado">0</strong></span>
             <span class="contador-item" id="contadorPrograma">Programa: <strong>Todos</strong></span>
@@ -1560,6 +1521,8 @@ function renderListado() {
             <span class="contador-item" id="contadorContrato">Contrato: <strong>Todos</strong></span>
             <span class="contador-item" id="contadorLaboratorio">Laboratorio: <strong>Todos</strong></span>
             <span class="contador-item" id="contadorEstado">Estado: <strong>Todos</strong></span>
+            <span class="contador-item" id="contadorAnioVinculacion">Año Vinculación: <strong>Todos</strong></span>
+            <span class="contador-item" id="contadorAnioCese">Año Cese: <strong>Todos</strong></span>
         </div>
 
         <div class="action-bar">
@@ -1766,7 +1729,7 @@ function exportarCSV() {
 }
 
 // ============================================================
-//  CRUD - ELIMINAR
+//  CRUD
 // ============================================================
 async function eliminarRegistro(code) {
     if (!confirm('⚠️ ¿Eliminar este registro permanentemente?')) return;
@@ -1790,9 +1753,6 @@ async function eliminarRegistro(code) {
     }
 }
 
-// ============================================================
-//  CRUD - VER DETALLE
-// ============================================================
 function verDetalle(data) {
     currentDetalleData = data;
     const container = document.getElementById('detalleContent');
@@ -1832,9 +1792,6 @@ function editarDesdeDetalle() {
     }
 }
 
-// ============================================================
-//  CRUD - EDITAR
-// ============================================================
 function editarRegistro(data) {
     sessionStorage.setItem('editData', JSON.stringify(data));
     sessionStorage.setItem('editMode', 'true');
