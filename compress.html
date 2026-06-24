@@ -942,14 +942,14 @@ async function cargarDatos(forceRefresh = false) {
 //  INICIALIZAR FILTROS
 // ============================================================
 function inicializarFiltros() {
-    const campos = {
+    // Filtros tipo SELECT (valores exactos)
+    const camposSelect = {
         filtroPrograma: 'PROGRAMA',
         filtroContrato: 'TIPO_CONTRATO',
-        filtroLaboratorio: 'TIPO_LABORATORIO',
-        filtroCargo: 'CARGO'
+        filtroLaboratorio: 'TIPO_LABORATORIO'
     };
 
-    for (let [selectId, campo] of Object.entries(campos)) {
+    for (let [selectId, campo] of Object.entries(camposSelect)) {
         const select = document.getElementById(selectId);
         if (!select) continue;
         const valores = new Set();
@@ -965,6 +965,7 @@ function inicializarFiltros() {
         });
     }
 
+    // Estado de contrato
     const estadoSelect = document.getElementById('filtroEstadoContrato');
     if (estadoSelect) {
         estadoSelect.innerHTML = `
@@ -973,17 +974,19 @@ function inicializarFiltros() {
             <option value="cesado">⛔ Cesados</option>
         `;
     }
+
+    // El filtro CARGO es de tipo texto (búsqueda parcial), no se llena con opciones
 }
 
 // ============================================================
-//  APLICAR FILTROS (búsqueda EXACTA para cargo y general)
+//  APLICAR FILTROS
 // ============================================================
 function aplicarFiltros() {
     const programa = document.getElementById('filtroPrograma').value.trim();
-    const cargo = document.getElementById('filtroCargo').value.trim();
+    const cargo = document.getElementById('filtroCargo').value.toLowerCase().trim();
     const contrato = document.getElementById('filtroContrato').value.trim();
     const laboratorio = document.getElementById('filtroLaboratorio').value.trim();
-    const busqueda = document.getElementById('filtroBusqueda').value.trim();
+    const busqueda = document.getElementById('filtroBusqueda').value.toLowerCase().trim();
     const estadoContrato = document.getElementById('filtroEstadoContrato').value;
     const fechaVinculacionDesde = document.getElementById('filtroVinculacionDesde').value;
     const fechaVinculacionHasta = document.getElementById('filtroVinculacionHasta').value;
@@ -1002,50 +1005,29 @@ function aplicarFiltros() {
     }
 
     datosFiltrados = datosActuales.filter(item => {
-        // Filtros exactos (select)
         if (programa && (item.PROGRAMA || '').trim() !== programa) return false;
+        if (cargo) {
+            const cargoItem = String(item.CARGO || '').toLowerCase();
+            if (!cargoItem.includes(cargo)) return false;
+        }
         if (contrato && (item.TIPO_CONTRATO || '').trim() !== contrato) return false;
         if (laboratorio && (item.TIPO_LABORATORIO || '').trim() !== laboratorio) return false;
-        
-        // Filtro CARGO - BÚSQUEDA EXACTA (coincidencia exacta del texto completo)
-        if (cargo) {
-            const cargoItem = String(item.CARGO || '').trim();
-            // Comparación exacta (case insensitive)
-            if (cargoItem.toLowerCase() !== cargo.toLowerCase()) return false;
-        }
-        
-        // Búsqueda general - BÚSQUEDA EXACTA por campo específico
         if (busqueda) {
-            const busq = busqueda.toLowerCase();
-            const idPersonal = String(item.ID_PERSONAL || '').toLowerCase();
+            const dni = String(item.DNI || '').toLowerCase();
+            const nombres = String(item.NOMBRES || '').toLowerCase();
             const apPaterno = String(item.APE_PATERNO || '').toLowerCase();
             const apMaterno = String(item.APE_MATERNO || '').toLowerCase();
-            const nombres = String(item.NOMBRES || '').toLowerCase();
-            const dni = String(item.DNI || '').toLowerCase();
-            
-            // Búsqueda exacta: el texto ingresado debe coincidir EXACTAMENTE con alguno de los campos
-            const matchExact = 
-                idPersonal === busq ||
-                apPaterno === busq ||
-                apMaterno === busq ||
-                nombres === busq ||
-                dni === busq ||
-                // También permitir búsqueda por nombre completo (nombres + apellidos)
-                `${nombres} ${apPaterno} ${apMaterno}`.trim() === busq ||
-                `${nombres} ${apPaterno}`.trim() === busq ||
-                `${apPaterno} ${nombres}`.trim() === busq;
-            
-            if (!matchExact) return false;
+            const idPersonal = String(item.ID_PERSONAL || '').toLowerCase();
+            const textoCompleto = `${nombres} ${apPaterno} ${apMaterno} ${idPersonal} ${dni}`;
+            if (!textoCompleto.includes(busqueda)) return false;
         }
         
-        // Filtro por estado de contrato
         if (estadoContrato) {
             const activo = estaActivo(item);
             if (estadoContrato === 'activo' && !activo) return false;
             if (estadoContrato === 'cesado' && activo) return false;
         }
 
-        // Filtro por fecha de vinculación
         if (fechaVinculacionDesde) {
             const fechaVin = normalizarFecha(item.FECHA_VINCULACION);
             if (!fechaVin || fechaVin < fechaVinculacionDesde) return false;
@@ -1055,7 +1037,6 @@ function aplicarFiltros() {
             if (!fechaVin || fechaVin > fechaVinculacionHasta) return false;
         }
 
-        // Filtro por fecha de cese
         if (fechaCeseDesde) {
             const fechaCese = normalizarFecha(item.CESE_PERIODO);
             if (!fechaCese || fechaCese < fechaCeseDesde) return false;
@@ -1083,12 +1064,12 @@ function actualizarContadoresFiltros(programa, cargo, contrato, laboratorio, est
 }
 
 function limpiarFiltros() {
-    const selects = ['filtroPrograma', 'filtroContrato', 'filtroLaboratorio', 'filtroCargo', 'filtroEstadoContrato'];
+    const selects = ['filtroPrograma', 'filtroContrato', 'filtroLaboratorio', 'filtroEstadoContrato'];
     selects.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
-    const inputs = ['filtroBusqueda', 'filtroVinculacionDesde', 'filtroVinculacionHasta', 
+    const inputs = ['filtroCargo', 'filtroBusqueda', 'filtroVinculacionDesde', 'filtroVinculacionHasta', 
                     'filtroCeseDesde', 'filtroCeseHasta'];
     inputs.forEach(id => {
         const el = document.getElementById(id);
@@ -1117,8 +1098,10 @@ function actualizarTablaYContadores(data) {
 
 function actualizarContadores(data) {
     const total = data || datosActuales;
-    document.getElementById('totalPersonalListado').textContent = total.length;
-    document.getElementById('totalFiltrado').textContent = total.length;
+    const totalEl = document.getElementById('totalPersonalListado');
+    const totalFiltradoEl = document.getElementById('totalFiltrado');
+    if (totalEl) totalEl.textContent = total.length;
+    if (totalFiltradoEl) totalFiltradoEl.textContent = total.length;
 }
 
 // ============================================================
@@ -1157,9 +1140,7 @@ function renderDashboard() {
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-user-tie"></i> Cargo</label>
-                        <select id="filtroCargo" onchange="aplicarFiltros()">
-                            <option value="">Todos los cargos</option>
-                        </select>
+                        <input type="text" id="filtroCargo" placeholder="Buscar cargo (ej: Técnico)" oninput="aplicarFiltros()">
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-file-contract"></i> Tipo Contrato</label>
@@ -1174,8 +1155,8 @@ function renderDashboard() {
                         </select>
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-search"></i> Buscar (DNI, ID o Nombre exacto)</label>
-                        <input type="text" id="filtroBusqueda" placeholder="Buscar exacto..." oninput="aplicarFiltros()">
+                        <label><i class="fas fa-search"></i> Buscar (DNI o Nombres)</label>
+                        <input type="text" id="filtroBusqueda" placeholder="Escribe para buscar..." oninput="aplicarFiltros()">
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-circle"></i> Estado Contrato</label>
@@ -1513,10 +1494,8 @@ function renderListado() {
                         </select>
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-user-tie"></i> Cargo (EXACTO)</label>
-                        <select id="filtroCargo" onchange="aplicarFiltros()">
-                            <option value="">Todos los cargos</option>
-                        </select>
+                        <label><i class="fas fa-user-tie"></i> Cargo</label>
+                        <input type="text" id="filtroCargo" placeholder="Buscar cargo (ej: Técnico)" oninput="aplicarFiltros()">
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-file-contract"></i> Tipo Contrato</label>
@@ -1531,9 +1510,8 @@ function renderListado() {
                         </select>
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-search"></i> Buscar (EXACTO)</label>
-                        <input type="text" id="filtroBusqueda" placeholder="ID, DNI, Nombre o Apellido exacto..." oninput="aplicarFiltros()">
-                        <small style="color:#94A3B8; font-size:11px;">Ej: "Juan", "Perez", "12345678"</small>
+                        <label><i class="fas fa-search"></i> Buscar (DNI o Nombres)</label>
+                        <input type="text" id="filtroBusqueda" placeholder="Escribe para buscar..." oninput="aplicarFiltros()">
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-circle"></i> Estado Contrato</label>
@@ -1587,7 +1565,7 @@ function renderListado() {
         <div class="action-bar">
             <div class="search-box">
                 <i class="fas fa-search"></i>
-                <input type="text" id="buscarDash" placeholder="Buscar local en tabla..." oninput="filtrarTablaLocal()">
+                <input type="text" id="buscarDash" placeholder="Buscar por ID, Apellidos o nombres" oninput="filtrarTablaLocal()">
             </div>
             <button class="btn btn-primary" onclick="navegar('registro')">
                 <i class="fas fa-plus"></i> Nuevo registro
@@ -1667,7 +1645,6 @@ function actualizarVistaListado(data) {
     });
 }
 
-// Búsqueda local - también EXACTA
 function filtrarTablaLocal() {
     const busqueda = document.getElementById('buscarDash').value.toLowerCase().trim();
     if (busqueda === '') {
@@ -1686,9 +1663,7 @@ function filtrarTablaLocal() {
         const ap = String(item.APE_PATERNO || '').toLowerCase();
         const am = String(item.APE_MATERNO || '').toLowerCase();
         const nom = String(item.NOMBRES || '').toLowerCase();
-        const dni = String(item.DNI || '').toLowerCase();
-        // Búsqueda exacta
-        return id === busqueda || ap === busqueda || am === busqueda || nom === busqueda || dni === busqueda;
+        return id.includes(busqueda) || ap.includes(busqueda) || am.includes(busqueda) || nom.includes(busqueda);
     });
     actualizarVistaListado(filtrados);
     actualizarContadores(filtrados);
@@ -2087,7 +2062,6 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Iniciar en listado
 navegar('listado');
 </script>
 </body>
