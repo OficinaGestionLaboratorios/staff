@@ -780,18 +780,20 @@ function parsearFecha(fechaStr) {
                 return new Date(a, m, d);
             }
         }
+        // Intentar formato YYYY-MM-DD
+        const partes2 = fechaStr.split('-');
+        if (partes2.length === 3) {
+            const a = parseInt(partes2[0]);
+            const m = parseInt(partes2[1]) - 1;
+            const d = parseInt(partes2[2]);
+            if (!isNaN(a) && !isNaN(m) && !isNaN(d)) {
+                return new Date(a, m, d);
+            }
+        }
         return null;
     } catch(e) {
         return null;
     }
-}
-
-function normalizarFecha(fechaStr) {
-    const fecha = parsearFecha(fechaStr);
-    if (!fecha) return null;
-    return fecha.getFullYear() + '-' + 
-           String(fecha.getMonth() + 1).padStart(2, '0') + '-' + 
-           String(fecha.getDate()).padStart(2, '0');
 }
 
 function obtenerAnio(fechaStr) {
@@ -933,35 +935,28 @@ function inicializarFiltros() {
         `;
     }
 
-    // Años de vinculación (desde el sheet)
-    const anioVinculacionSelect = document.getElementById('filtroAnioVinculacion');
-    if (anioVinculacionSelect) {
+    // ===== NUEVO: Filtro de años para FECHA_VINCULACION =====
+    const anioSelect = document.getElementById('filtroVinculacionAnio');
+    if (anioSelect) {
         const anios = new Set();
         datosActuales.forEach(item => {
-            const anio = obtenerAnio(item.FECHA_VINCULACION);
-            if (anio) anios.add(anio);
+            const fechaVin = item.FECHA_VINCULACION || '';
+            const anio = obtenerAnio(fechaVin);
+            if (anio !== null && anio > 0) {
+                anios.add(anio);
+            }
         });
-        const sorted = Array.from(anios).sort((a, b) => b - a); // Descendente
-        anioVinculacionSelect.innerHTML = `<option value="">Todos los años</option>`;
-        sorted.forEach(anio => {
-            anioVinculacionSelect.innerHTML += `<option value="${anio}">${anio}</option>`;
+        const aniosOrdenados = Array.from(anios).sort((a, b) => b - a); // descendente
+        anioSelect.innerHTML = `<option value="">Todos</option>`;
+        aniosOrdenados.forEach(anio => {
+            anioSelect.innerHTML += `<option value="${anio}">${anio}</option>`;
         });
+        if (aniosOrdenados.length === 0) {
+            anioSelect.innerHTML = `<option value="">Todos</option>`;
+        }
     }
 
-    // Años de cese (desde el sheet)
-    const anioCeseSelect = document.getElementById('filtroAnioCese');
-    if (anioCeseSelect) {
-        const anios = new Set();
-        datosActuales.forEach(item => {
-            const anio = obtenerAnio(item.CESE_PERIODO);
-            if (anio) anios.add(anio);
-        });
-        const sorted = Array.from(anios).sort((a, b) => b - a); // Descendente
-        anioCeseSelect.innerHTML = `<option value="">Todos los años</option>`;
-        sorted.forEach(anio => {
-            anioCeseSelect.innerHTML += `<option value="${anio}">${anio}</option>`;
-        });
-    }
+    // El filtro CARGO es de tipo texto (búsqueda parcial)
 }
 
 // ============================================================
@@ -974,16 +969,17 @@ function aplicarFiltros() {
     const laboratorio = document.getElementById('filtroLaboratorio').value.trim();
     const busqueda = document.getElementById('filtroBusqueda').value.toLowerCase().trim();
     const estadoContrato = document.getElementById('filtroEstadoContrato').value;
-    const anioVinculacion = document.getElementById('filtroAnioVinculacion').value;
-    const anioCese = document.getElementById('filtroAnioCese').value;
+    const anioVinculacion = document.getElementById('filtroVinculacionAnio').value;
+    const fechaCeseDesde = document.getElementById('filtroCeseDesde').value;
+    const fechaCeseHasta = document.getElementById('filtroCeseHasta').value;
 
     const filtrosActivos = programa || cargo || contrato || laboratorio || busqueda || 
-                           estadoContrato || anioVinculacion || anioCese;
+                           estadoContrato || anioVinculacion || fechaCeseDesde || fechaCeseHasta;
 
     if (!filtrosActivos) {
         datosFiltrados = null;
         actualizarTablaYContadores(datosActuales);
-        actualizarContadoresFiltros(programa, cargo, contrato, laboratorio, estadoContrato, anioVinculacion, anioCese);
+        actualizarContadoresFiltros(programa, cargo, contrato, laboratorio, estadoContrato, anioVinculacion);
         return;
     }
 
@@ -1011,24 +1007,40 @@ function aplicarFiltros() {
             if (estadoContrato === 'cesado' && activo) return false;
         }
 
+        // NUEVO: Filtro por año de vinculación
         if (anioVinculacion) {
-            const anio = obtenerAnio(item.FECHA_VINCULACION);
-            if (anio !== parseInt(anioVinculacion)) return false;
+            const fechaVin = item.FECHA_VINCULACION || '';
+            const anio = obtenerAnio(fechaVin);
+            if (anio === null || String(anio) !== anioVinculacion) return false;
         }
 
-        if (anioCese) {
-            const anio = obtenerAnio(item.CESE_PERIODO);
-            if (anio !== parseInt(anioCese)) return false;
+        if (fechaCeseDesde) {
+            const fechaCese = item.CESE_PERIODO || '';
+            const fechaCeseNormalizada = normalizarFecha(fechaCese);
+            if (!fechaCeseNormalizada || fechaCeseNormalizada < fechaCeseDesde) return false;
+        }
+        if (fechaCeseHasta) {
+            const fechaCese = item.CESE_PERIODO || '';
+            const fechaCeseNormalizada = normalizarFecha(fechaCese);
+            if (!fechaCeseNormalizada || fechaCeseNormalizada > fechaCeseHasta) return false;
         }
 
         return true;
     });
 
     actualizarTablaYContadores(datosFiltrados);
-    actualizarContadoresFiltros(programa, cargo, contrato, laboratorio, estadoContrato, anioVinculacion, anioCese);
+    actualizarContadoresFiltros(programa, cargo, contrato, laboratorio, estadoContrato, anioVinculacion);
 }
 
-function actualizarContadoresFiltros(programa, cargo, contrato, laboratorio, estado, anioVin, anioCes) {
+function normalizarFecha(fechaStr) {
+    const fecha = parsearFecha(fechaStr);
+    if (!fecha) return null;
+    return fecha.getFullYear() + '-' + 
+           String(fecha.getMonth() + 1).padStart(2, '0') + '-' + 
+           String(fecha.getDate()).padStart(2, '0');
+}
+
+function actualizarContadoresFiltros(programa, cargo, contrato, laboratorio, estado, anio) {
     document.getElementById('contadorPrograma').innerHTML = `Programa: <strong>${programa || 'Todos'}</strong>`;
     document.getElementById('contadorCargo').innerHTML = `Cargo: <strong>${cargo || 'Todos'}</strong>`;
     document.getElementById('contadorContrato').innerHTML = `Contrato: <strong>${contrato || 'Todos'}</strong>`;
@@ -1036,18 +1048,16 @@ function actualizarContadoresFiltros(programa, cargo, contrato, laboratorio, est
     
     const estadoLabels = { '': 'Todos', 'activo': '✅ Activos', 'cesado': '⛔ Cesados' };
     document.getElementById('contadorEstado').innerHTML = `Estado: <strong>${estadoLabels[estado] || 'Todos'}</strong>`;
-    document.getElementById('contadorAnioVinculacion').innerHTML = `Año Vinculación: <strong>${anioVin || 'Todos'}</strong>`;
-    document.getElementById('contadorAnioCese').innerHTML = `Año Cese: <strong>${anioCes || 'Todos'}</strong>`;
+    document.getElementById('contadorVinculacion').innerHTML = `Año Vinculación: <strong>${anio || 'Todos'}</strong>`;
 }
 
 function limpiarFiltros() {
-    const selects = ['filtroPrograma', 'filtroContrato', 'filtroLaboratorio', 'filtroEstadoContrato', 
-                     'filtroAnioVinculacion', 'filtroAnioCese'];
+    const selects = ['filtroPrograma', 'filtroContrato', 'filtroLaboratorio', 'filtroEstadoContrato', 'filtroVinculacionAnio'];
     selects.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
-    const inputs = ['filtroCargo', 'filtroBusqueda'];
+    const inputs = ['filtroCargo', 'filtroBusqueda', 'filtroCeseDesde', 'filtroCeseHasta'];
     inputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
@@ -1143,16 +1153,18 @@ function renderDashboard() {
                         </select>
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-calendar-plus"></i> Año Vinculación</label>
-                        <select id="filtroAnioVinculacion" onchange="aplicarFiltros()">
-                            <option value="">Todos los años</option>
+                        <label><i class="fas fa-calendar"></i> Año Vinculación</label>
+                        <select id="filtroVinculacionAnio" onchange="aplicarFiltros()">
+                            <option value="">Todos</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-calendar-times"></i> Año Cese</label>
-                        <select id="filtroAnioCese" onchange="aplicarFiltros()">
-                            <option value="">Todos los años</option>
-                        </select>
+                        <label><i class="fas fa-calendar-times"></i> Fecha Cese</label>
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <input type="date" id="filtroCeseDesde" onchange="aplicarFiltros()" placeholder="Desde" style="flex:1;">
+                            <span style="color:#94A3B8; font-size:12px;">→</span>
+                            <input type="date" id="filtroCeseHasta" onchange="aplicarFiltros()" placeholder="Hasta" style="flex:1;">
+                        </div>
                     </div>
                 </div>
                 <div class="filtros-actions">
@@ -1176,8 +1188,7 @@ function renderDashboard() {
             <span class="contador-item" id="contadorContrato">Contrato: <strong>Todos</strong></span>
             <span class="contador-item" id="contadorLaboratorio">Laboratorio: <strong>Todos</strong></span>
             <span class="contador-item" id="contadorEstado">Estado: <strong>Todos</strong></span>
-            <span class="contador-item" id="contadorAnioVinculacion">Año Vinculación: <strong>Todos</strong></span>
-            <span class="contador-item" id="contadorAnioCese">Año Cese: <strong>Todos</strong></span>
+            <span class="contador-item" id="contadorVinculacion">Año Vinculación: <strong>Todos</strong></span>
         </div>
 
         <div id="loadingDash" class="loading"><div class="spinner"></div><p>Cargando datos desde Google Sheets...</p></div>
@@ -1198,7 +1209,7 @@ function renderDashboard() {
                 <div class="list-items">
                     <div class="item"><span class="label">👨 Hombres</span><span class="value" id="totalHombres">0</span></div>
                     <div class="item"><span class="label">👩 Mujeres</span><span class="value" id="totalMujeres">0</span></div>
-                    <div class="item" style="border-top: 1px solid #E2E8F0; padding-top: 8px; margin-top: 4px;">
+                    <div class="item" style="border-top:1px solid #E2E8F0; padding-top:8px; margin-top:4px;">
                         <span class="label">Total</span>
                         <span class="value" id="totalGenero">0</span>
                     </div>
@@ -1244,7 +1255,7 @@ function renderDashboard() {
                 </div>
                 <div class="number" id="totalPersonalDash">0</div>
                 <div class="sub-info">Total de personal registrado</div>
-                <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
                     <span class="badge badge-blue" id="badgeHombres">Hombres: 0</span>
                     <span class="badge badge-pink" id="badgeMujeres">Mujeres: 0</span>
                     <span class="badge badge-green" id="badgeUniversitarios">Universitarios: 0</span>
@@ -1488,16 +1499,18 @@ function renderListado() {
                         </select>
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-calendar-plus"></i> Año Vinculación</label>
-                        <select id="filtroAnioVinculacion" onchange="aplicarFiltros()">
-                            <option value="">Todos los años</option>
+                        <label><i class="fas fa-calendar"></i> Año Vinculación</label>
+                        <select id="filtroVinculacionAnio" onchange="aplicarFiltros()">
+                            <option value="">Todos</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-calendar-times"></i> Año Cese</label>
-                        <select id="filtroAnioCese" onchange="aplicarFiltros()">
-                            <option value="">Todos los años</option>
-                        </select>
+                        <label><i class="fas fa-calendar-times"></i> Fecha Cese</label>
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <input type="date" id="filtroCeseDesde" onchange="aplicarFiltros()" placeholder="Desde" style="flex:1;">
+                            <span style="color:#94A3B8; font-size:12px;">→</span>
+                            <input type="date" id="filtroCeseHasta" onchange="aplicarFiltros()" placeholder="Hasta" style="flex:1;">
+                        </div>
                     </div>
                 </div>
                 <div class="filtros-actions">
@@ -1521,8 +1534,7 @@ function renderListado() {
             <span class="contador-item" id="contadorContrato">Contrato: <strong>Todos</strong></span>
             <span class="contador-item" id="contadorLaboratorio">Laboratorio: <strong>Todos</strong></span>
             <span class="contador-item" id="contadorEstado">Estado: <strong>Todos</strong></span>
-            <span class="contador-item" id="contadorAnioVinculacion">Año Vinculación: <strong>Todos</strong></span>
-            <span class="contador-item" id="contadorAnioCese">Año Cese: <strong>Todos</strong></span>
+            <span class="contador-item" id="contadorVinculacion">Año Vinculación: <strong>Todos</strong></span>
         </div>
 
         <div class="action-bar">
@@ -2009,9 +2021,6 @@ function cargarDatosEdicion() {
     }
 }
 
-// ============================================================
-//  INICIALIZAR
-// ============================================================
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && !e.target.matches('textarea, select')) {
         const btn = document.getElementById('btnGuardarReg');
