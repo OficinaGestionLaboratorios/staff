@@ -1,0 +1,1862 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Gestión de Personal - UPAO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #F8FAFC;
+            color: #1E293B;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== HEADER ESTANDARIZADO (Archivo B) ===== */
+        .app-header {
+            background: #FFFFFF;
+            border-bottom: 1px solid #E2E8F0;
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-shrink: 0;
+        }
+        .logo {
+            font-weight: 700;
+            font-size: 15px;
+            color: #1E293B;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo img { height: 32px; }
+        .logo i { color: #3B82F6; font-size: 20px; }
+        .logo span { display: inline-block; }
+        .main-nav {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+        }
+        .nav-link {
+            text-decoration: none;
+            color: #64748B;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: inherit;
+            padding: 4px 0;
+            position: relative;
+        }
+        .nav-link:hover { color: #3B82F6; }
+        .nav-link.active { color: #3B82F6; }
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #3B82F6;
+            border-radius: 2px;
+        }
+        .user-menu {
+            width: 36px;
+            height: 36px;
+            background: #F1F5F9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .user-menu i { color: #64748B; font-size: 20px; }
+
+        /* ===== RESTO DEL CSS ===== */
+        .main-content {
+            flex: 1;
+            padding: 24px 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+        .breadcrumbs a {
+            text-decoration: none;
+            color: #64748B;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .breadcrumbs a:hover { color: #3B82F6; }
+        .breadcrumbs span { color: #94A3B8; }
+        .breadcrumbs .current { color: #1E293B; font-weight: 500; }
+        
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .topbar h1 { font-size: 24px; font-weight: 700; }
+        .topbar-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: #3B82F6; color: white; }
+        .btn-primary:hover { background: #2563EB; transform: translateY(-1px); }
+        .btn-outline { background: transparent; color: #3B82F6; border: 1px solid #3B82F6; }
+        .btn-outline:hover { background: #EFF6FF; transform: translateY(-1px); }
+        .btn-success { background: #10B981; color: white; }
+        .btn-success:hover { background: #059669; transform: translateY(-1px); }
+        .btn-purple { background: #8B5CF6; color: white; }
+        .btn-purple:hover { background: #7C3AED; transform: translateY(-1px); }
+        .btn-secondary { background: #F1F5F9; color: #1E293B; }
+        .btn-secondary:hover { background: #E2E8F0; }
+        .btn-warning { background: #F59E0B; color: white; }
+        .btn-warning:hover { background: #D97706; }
+        .btn-danger { background: #EF4444; color: white; }
+        .btn-danger:hover { background: #DC2626; }
+
+        .total-badge {
+            background: #EFF6FF;
+            color: #3B82F6;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .total-badge span { font-size: 18px; }
+
+        /* ===== DASHBOARD ===== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .dash-card {
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid #E2E8F0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .dash-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .dash-card .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .dash-card .card-header i {
+            font-size: 20px;
+            color: #3B82F6;
+            width: 36px;
+            height: 36px;
+            background: #EFF6FF;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dash-card .card-header h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748B;
+        }
+        .dash-card .number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1E293B;
+        }
+        .dash-card .sub-info {
+            font-size: 13px;
+            color: #64748B;
+            margin-top: 6px;
+        }
+        .dash-card .list-items {
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .dash-card .list-items .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #F1F5F9;
+            font-size: 14px;
+        }
+        .dash-card .list-items .item:last-child {
+            border-bottom: none;
+        }
+        .dash-card .list-items .item .label {
+            color: #1E293B;
+            font-weight: 500;
+        }
+        .dash-card .list-items .item .value {
+            color: #64748B;
+            font-size: 13px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-blue { background: #EFF6FF; color: #3B82F6; }
+        .badge-green { background: #ECFDF5; color: #10B981; }
+        .badge-purple { background: #F5F3FF; color: #8B5CF6; }
+        .badge-orange { background: #FFF7ED; color: #F97316; }
+        .badge-pink { background: #FDF2F8; color: #EC4899; }
+
+        /* ===== FILTROS DESPLEGABLES (Archivo B) ===== */
+        .filtros-container {
+            background: #FFFFFF;
+            border-radius: 16px;
+            border: 1px solid #E2E8F0;
+            padding: 0;
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .filtros-toggle {
+            width: 100%;
+            padding: 14px 20px;
+            background: #F8FAFC;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1E293B;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s;
+            font-family: inherit;
+        }
+        .filtros-toggle:hover {
+            background: #F1F5F9;
+        }
+        .filtros-toggle i {
+            transition: transform 0.3s ease;
+        }
+        .filtros-toggle.active i {
+            transform: rotate(180deg);
+        }
+        .filtros-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.3s ease;
+            padding: 0 20px;
+        }
+        .filtros-body.open {
+            max-height: 800px;
+            padding: 20px 20px 24px;
+        }
+        .filtros-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .filtros-grid .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .filtros-grid .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .filtros-grid .form-group select,
+        .filtros-grid .form-group input {
+            padding: 8px 12px;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            font-size: 14px;
+            background: #FFFFFF;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        .filtros-grid .form-group select:focus,
+        .filtros-grid .form-group input:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .filtros-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            border-top: 1px solid #E2E8F0;
+            padding-top: 16px;
+        }
+
+        /* ===== CONTADORES DE FILTROS (Archivo B) ===== */
+        .contadores {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: #FFFFFF;
+            border-radius: 12px;
+            border: 1px solid #E2E8F0;
+        }
+        .contador-item {
+            font-size: 14px;
+            color: #64748B;
+        }
+        .contador-item strong {
+            color: #1E293B;
+            font-size: 18px;
+        }
+
+        /* ===== ACTION BAR ===== */
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 200px;
+            max-width: 400px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 8px 12px 8px 34px;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            font-size: 14px;
+            background: #FFFFFF;
+            transition: all 0.2s;
+        }
+        .search-box input:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .search-box i {
+            position: absolute;
+            left: 10px;
+            top: 9px;
+            color: #94A3B8;
+            font-size: 14px;
+        }
+
+        /* ===== TABLA ===== */
+        .table-container {
+            background: #FFFFFF;
+            border-radius: 16px;
+            border: 1px solid #E2E8F0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            background: #F8FAFC;
+            font-weight: 600;
+            font-size: 13px;
+            color: #64748B;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #F1F5F9;
+            font-size: 14px;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #FAFBFC; }
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s;
+        }
+        .action-btn:hover { background: #F1F5F9; }
+        .btn-view:hover { color: #10B981; }
+        .btn-edit:hover { color: #3B82F6; }
+        .btn-delete:hover { color: #EF4444; }
+        .btn-copy:hover { color: #8B5CF6; }
+
+        /* ===== FORMULARIO ===== */
+        .form-container {
+            background: #FFFFFF;
+            border-radius: 20px;
+            border: 1px solid #E2E8F0;
+            padding: 28px;
+        }
+        .form-container h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+        .subtitle { color: #64748B; font-size: 14px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #E2E8F0; }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748B;
+        }
+        .form-group label .required { color: #EF4444; }
+        .form-group input, .form-group select {
+            padding: 9px 12px;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.2s;
+            background: #FFFFFF;
+            width: 100%;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .section-title {
+            grid-column: 1 / -1;
+            font-size: 15px;
+            font-weight: 700;
+            color: #1E293B;
+            margin-top: 6px;
+            margin-bottom: 2px;
+            padding-left: 10px;
+            border-left: 3px solid #3B82F6;
+        }
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            padding-top: 18px;
+            border-top: 1px solid #E2E8F0;
+        }
+        .detail-field {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        /* ===== MODAL ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: #FFFFFF;
+            width: min(1000px, 95%);
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 20px;
+            padding: 28px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #E2E8F0;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .modal-title { font-size: 20px; font-weight: 700; }
+        .close-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 10px;
+            background: #F1F5F9;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        .close-btn:hover { background: #E2E8F0; }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding-top: 18px;
+            border-top: 1px solid #E2E8F0;
+            margin-top: 4px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== TOAST (Archivo B) ===== */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1E293B;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            z-index: 1100;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+            max-width: 380px;
+            font-size: 14px;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.success { background: #10B981; }
+        .toast.error { background: #EF4444; }
+        .toast.info { background: #3B82F6; }
+
+        /* ===== LOADING ===== */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        .loading.active { display: block; }
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #E2E8F0;
+            border-top-color: #3B82F6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .text-muted { color: #94A3B8; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            .app-header { padding: 0 20px; }
+            .main-content { padding: 20px 24px; }
+        }
+        @media (max-width: 768px) {
+            .app-header {
+                padding: 0 12px;
+                height: auto;
+                flex-wrap: wrap;
+                padding: 10px 12px;
+                gap: 6px;
+            }
+            .logo { font-size: 13px; }
+            .logo img { height: 28px; }
+            .logo span { display: none; }
+            .main-nav {
+                gap: 12px;
+                flex-wrap: wrap;
+                order: 3;
+                width: 100%;
+                justify-content: center;
+                padding-top: 4px;
+                border-top: 1px solid #F1F5F9;
+            }
+            .nav-link { font-size: 12px; padding: 4px 6px; }
+            .user-menu { width: 32px; height: 32px; }
+            .user-menu i { font-size: 18px; }
+            .main-content { padding: 14px 16px; }
+            .topbar { flex-direction: column; align-items: stretch; gap: 10px; }
+            .topbar h1 { font-size: 20px; }
+            .topbar-actions { justify-content: center; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .action-bar { flex-direction: column; align-items: stretch; gap: 10px; }
+            .search-box { max-width: none; }
+            .filtros-grid { grid-template-columns: 1fr; }
+            .filtros-body.open { padding: 16px; }
+            .filtros-actions { justify-content: center; }
+            .contadores { flex-direction: column; gap: 6px; }
+            .btn { justify-content: center; padding: 8px 16px; font-size: 13px; }
+            .form-container { padding: 16px; border-radius: 16px; }
+            .form-container h1 { font-size: 18px; }
+            .form-grid { grid-template-columns: 1fr; gap: 14px; }
+            .form-group input, .form-group select { padding: 8px 10px; font-size: 13px; }
+            .section-title { font-size: 14px; padding-left: 8px; }
+            .button-group { justify-content: center; }
+            .breadcrumbs { font-size: 12px; margin-bottom: 14px; gap: 4px; }
+            .breadcrumbs i { font-size: 10px; }
+            .modal-content { padding: 16px; border-radius: 16px; }
+            .modal-title { font-size: 17px; }
+            .modal-actions .btn { flex: 1; justify-content: center; }
+            .toast { left: 16px; right: 16px; bottom: 16px; max-width: none; text-align: center; font-size: 13px; padding: 10px 16px; }
+            table { min-width: 360px; font-size: 12px; }
+            th, td { padding: 6px 8px; font-size: 12px; }
+            .action-btn { width: 24px; height: 24px; font-size: 12px; }
+        }
+        @media (max-width: 480px) {
+            .main-content { padding: 10px 12px; }
+            .topbar h1 { font-size: 18px; }
+            .dash-card .number { font-size: 26px; }
+            table { min-width: 360px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== HEADER (Archivo B) ===== -->
+<header class="app-header">
+    <div class="logo">
+        <img src="logo.png" alt="">
+        <span>OFICINA DE GESTIÓN DE LABORATORIOS</span>
+    </div>
+    <nav class="main-nav">
+        <a href="index.html" class="nav-link">Inicio</a>
+        <button class="nav-link active" id="navGestionPersonal" onclick="navegar('listado')">
+            Gestión Personal
+        </button>
+        <a href="#" class="nav-link">Documentos</a>
+        <a href="#" class="nav-link">Noticias</a>
+        <a href="#" class="nav-link">Contacto</a>
+    </nav>
+    <div class="user-menu"><i class="fas fa-user-circle"></i></div>
+</header>
+
+<!-- ===== CONTENIDO PRINCIPAL ===== -->
+<main class="main-content" id="mainContent">
+    <!-- Se inyecta dinámicamente -->
+</main>
+
+<!-- ===== TOAST (Archivo B) ===== -->
+<div id="toast" class="toast"></div>
+
+<!-- ===== MODAL DETALLE (Archivo A) ===== -->
+<div id="modalDetalle" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title"><i class="fas fa-id-card"></i> Detalle Completo</h2>
+            <button class="close-btn" onclick="cerrarDetalle()">✕</button>
+        </div>
+        <div id="detalleContent" class="form-grid"></div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="cerrarDetalle()">Cerrar</button>
+            <button class="btn btn-primary" onclick="editarDesdeDetalle()">✏️ Editar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+//  CONFIGURACIÓN (Archivo B - con caché)
+// ============================================================
+const API_URL = 'https://script.google.com/macros/s/AKfycbw2U4jjLX4BoGeRQ9iiush5OSut8goZ3jCwNiiB4bRtW7zqtavEXnXcwOYTkpCoHXRd/exec';
+const STORAGE_KEY = 'staffHubData';
+const STORAGE_TIMESTAMP_KEY = 'staffHubTimestamp';
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+
+// ============================================================
+//  ESTADO GLOBAL
+// ============================================================
+let datosActuales = [];
+let datosFiltrados = null; // null = sin filtros aplicados
+let currentDetalleData = null;
+let modoEdicion = false;
+let editCode = null;
+let vistaActual = 'listado';
+
+// ============================================================
+//  UTILIDADES
+// ============================================================
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+}
+
+function mostrarToast(mensaje, tipo = 'success') {
+    const toast = document.getElementById('toast');
+    toast.textContent = mensaje;
+    toast.className = `toast ${tipo} show`;
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function cerrarDetalle() {
+    document.getElementById('modalDetalle').classList.remove('active');
+    currentDetalleData = null;
+}
+
+function copiarFallback(texto) {
+    const textarea = document.createElement('textarea');
+    textarea.value = texto;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+        document.execCommand('copy');
+        mostrarToast('📋 Copiado: ' + texto, 'success');
+    } catch(e) {
+        mostrarToast('❌ No se pudo copiar', 'error');
+    }
+    document.body.removeChild(textarea);
+}
+
+function formatearFecha(fechaIso) {
+    if (!fechaIso) return '';
+    try {
+        const fecha = new Date(fechaIso);
+        if (isNaN(fecha.getTime())) return fechaIso;
+        const dia = String(fecha.getDate()).padStart(2, '0');
+        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+        const anio = fecha.getFullYear();
+        return `${dia}/${mes}/${anio}`;
+    } catch(e) {
+        return fechaIso;
+    }
+}
+
+// ============================================================
+//  NAVEGACIÓN
+// ============================================================
+function navegar(vista) {
+    vistaActual = vista;
+    const navGestion = document.getElementById('navGestionPersonal');
+    if (vista === 'listado' || vista === 'dashboard' || vista === 'registro') {
+        navGestion.classList.add('active');
+    } else {
+        navGestion.classList.remove('active');
+    }
+    if (vista === 'listado') {
+        renderListado();
+    } else if (vista === 'dashboard') {
+        renderDashboard();
+    } else if (vista === 'registro') {
+        renderRegistro();
+    }
+}
+
+// ============================================================
+//  CARGA DE DATOS (Archivo B - con caché)
+// ============================================================
+async function cargarDatos(forceRefresh = false) {
+    const loading = document.getElementById('loadingListado') || document.getElementById('loadingDash');
+    if (loading) loading.classList.add('active');
+
+    // Verificar caché si no es forceRefresh
+    if (!forceRefresh) {
+        const cached = localStorage.getItem(STORAGE_KEY);
+        const timestamp = localStorage.getItem(STORAGE_TIMESTAMP_KEY);
+        const ahora = Date.now();
+
+        if (cached && timestamp && (ahora - parseInt(timestamp) < CACHE_DURATION)) {
+            try {
+                datosActuales = JSON.parse(cached);
+                mostrarToast('📦 Datos cargados desde caché', 'info');
+                inicializarFiltros();
+                if (loading) loading.classList.remove('active');
+                return datosActuales;
+            } catch(e) {
+                console.warn('Error al leer caché, recargando...');
+            }
+        }
+    }
+
+    try {
+        const resp = await fetch(API_URL + '?action=list');
+        const texto = await resp.text();
+        let resultado;
+        try { resultado = JSON.parse(texto); } catch(e) { throw new Error('Respuesta no JSON'); }
+
+        if (resultado.success && resultado.data) {
+            datosActuales = resultado.data;
+            // Guardar en caché
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(datosActuales));
+            localStorage.setItem(STORAGE_TIMESTAMP_KEY, String(Date.now()));
+            mostrarToast('✅ Datos cargados desde Google Sheets', 'success');
+            inicializarFiltros();
+            if (loading) loading.classList.remove('active');
+            return datosActuales;
+        } else {
+            mostrarToast('❌ ' + (resultado.message || 'Error al cargar'), 'error');
+            datosActuales = [];
+            inicializarFiltros();
+            if (loading) loading.classList.remove('active');
+            return [];
+        }
+    } catch(e) {
+        console.error(e);
+        mostrarToast('❌ Error de conexión: ' + e.message, 'error');
+        // Intentar usar caché aunque esté expirada
+        const cachedFallback = localStorage.getItem(STORAGE_KEY);
+        if (cachedFallback) {
+            try {
+                datosActuales = JSON.parse(cachedFallback);
+                mostrarToast('📦 Usando caché (sin conexión)', 'info');
+                inicializarFiltros();
+                if (loading) loading.classList.remove('active');
+                return datosActuales;
+            } catch(e2) {}
+        }
+        datosActuales = [];
+        inicializarFiltros();
+        if (loading) loading.classList.remove('active');
+        return [];
+    }
+}
+
+// ============================================================
+//  INICIALIZAR FILTROS (Archivo B)
+// ============================================================
+function inicializarFiltros() {
+    const campos = {
+        filtroPrograma: 'PROGRAMA',
+        filtroContrato: 'TIPO_CONTRATO',
+        filtroLaboratorio: 'TIPO_LABORATORIO'
+    };
+
+    for (let [selectId, campo] of Object.entries(campos)) {
+        const select = document.getElementById(selectId);
+        if (!select) continue;
+        const valores = new Set();
+        datosActuales.forEach(item => {
+            const val = item[campo] || '';
+            if (val.trim()) valores.add(val.trim());
+        });
+        const sorted = Array.from(valores).sort();
+        const label = campo.toLowerCase().replace('_', ' ');
+        select.innerHTML = `<option value="">Todos los ${label}</option>`;
+        sorted.forEach(val => {
+            select.innerHTML += `<option value="${escapeHtml(val)}">${escapeHtml(val)}</option>`;
+        });
+    }
+}
+
+// ============================================================
+//  APLICAR FILTROS (Archivo B - mejorado)
+// ============================================================
+function aplicarFiltros() {
+    const programa = document.getElementById('filtroPrograma').value.trim();
+    const cargo = document.getElementById('filtroCargo').value.toLowerCase().trim();
+    const contrato = document.getElementById('filtroContrato').value.trim();
+    const laboratorio = document.getElementById('filtroLaboratorio').value.trim();
+    const busqueda = document.getElementById('filtroBusqueda').value.toLowerCase().trim();
+
+    const filtrosActivos = programa || cargo || contrato || laboratorio || busqueda;
+
+    if (!filtrosActivos) {
+        datosFiltrados = null;
+        actualizarTablaYContadores(datosActuales);
+        actualizarContadoresFiltros(programa, cargo, contrato, laboratorio);
+        return;
+    }
+
+    datosFiltrados = datosActuales.filter(item => {
+        if (programa && (item.PROGRAMA || '').trim() !== programa) return false;
+        if (cargo) {
+            const cargoItem = String(item.CARGO || '').toLowerCase();
+            if (!cargoItem.includes(cargo)) return false;
+        }
+        if (contrato && (item.TIPO_CONTRATO || '').trim() !== contrato) return false;
+        if (laboratorio && (item.TIPO_LABORATORIO || '').trim() !== laboratorio) return false;
+        if (busqueda) {
+            const dni = String(item.DNI || '').toLowerCase();
+            const nombres = String(item.NOMBRES || '').toLowerCase();
+            const apPaterno = String(item.APE_PATERNO || '').toLowerCase();
+            const apMaterno = String(item.APE_MATERNO || '').toLowerCase();
+            const idPersonal = String(item.ID_PERSONAL || '').toLowerCase();
+            const textoCompleto = `${nombres} ${apPaterno} ${apMaterno} ${idPersonal} ${dni}`;
+            if (!textoCompleto.includes(busqueda)) return false;
+        }
+        return true;
+    });
+
+    actualizarTablaYContadores(datosFiltrados);
+    actualizarContadoresFiltros(programa, cargo, contrato, laboratorio);
+}
+
+function actualizarContadoresFiltros(programa, cargo, contrato, laboratorio) {
+    document.getElementById('contadorPrograma').innerHTML = `Programa: <strong>${programa || 'Todos'}</strong>`;
+    document.getElementById('contadorCargo').innerHTML = `Cargo: <strong>${cargo || 'Todos'}</strong>`;
+    document.getElementById('contadorContrato').innerHTML = `Contrato: <strong>${contrato || 'Todos'}</strong>`;
+    document.getElementById('contadorLaboratorio').innerHTML = `Laboratorio: <strong>${laboratorio || 'Todos'}</strong>`;
+}
+
+function limpiarFiltros() {
+    const selects = ['filtroPrograma', 'filtroContrato', 'filtroLaboratorio'];
+    selects.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    const cargo = document.getElementById('filtroCargo');
+    if (cargo) cargo.value = '';
+    const busqueda = document.getElementById('filtroBusqueda');
+    if (busqueda) busqueda.value = '';
+    datosFiltrados = null;
+    aplicarFiltros();
+    mostrarToast('🧹 Filtros limpiados', 'info');
+}
+
+function toggleFiltros() {
+    const body = document.getElementById('filtrosBody');
+    const toggle = document.getElementById('filtrosToggle');
+    body.classList.toggle('open');
+    toggle.classList.toggle('active');
+}
+
+// ============================================================
+//  ACTUALIZAR TABLA Y CONTADORES
+// ============================================================
+function actualizarTablaYContadores(data) {
+    const mostrar = data || datosActuales;
+    actualizarVistaListado(mostrar);
+    actualizarContadores(mostrar);
+}
+
+function actualizarContadores(data) {
+    const total = data || datosActuales;
+    document.getElementById('totalPersonalListado').textContent = total.length;
+    document.getElementById('totalFiltrado').textContent = total.length;
+}
+
+// ============================================================
+//  RENDER: DASHBOARD (Archivo A)
+// ============================================================
+function renderDashboard() {
+    const container = document.getElementById('mainContent');
+    container.innerHTML = `
+        <div class="breadcrumbs">
+            <a href="index.html">Inicio</a> <i class="fas fa-chevron-right"></i>
+            <a onclick="navegar('listado')">Gestión Personal</a> <i class="fas fa-chevron-right"></i>
+            <span class="current">Dashboard</span>
+        </div>
+        <div class="topbar">
+            <h1>Dashboard de Personal</h1>
+            <div class="topbar-actions">
+                <button class="btn btn-secondary" onclick="navegar('listado')">
+                    <i class="fas fa-arrow-left"></i> Volver al Listado
+                </button>
+            </div>
+        </div>
+
+        <!-- FILTROS (Archivo B) -->
+        <div class="filtros-container">
+            <button class="filtros-toggle active" id="filtrosToggle" onclick="toggleFiltros()">
+                <span><i class="fas fa-filter"></i> 🔍 Filtros</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="filtros-body open" id="filtrosBody">
+                <div class="filtros-grid">
+                    <div class="form-group">
+                        <label><i class="fas fa-graduation-cap"></i> Programa</label>
+                        <select id="filtroPrograma" onchange="aplicarFiltros()">
+                            <option value="">Todos los programas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-user-tie"></i> Cargo</label>
+                        <input type="text" id="filtroCargo" placeholder="Buscar cargo (ej: Técnico)" oninput="aplicarFiltros()">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-file-contract"></i> Tipo Contrato</label>
+                        <select id="filtroContrato" onchange="aplicarFiltros()">
+                            <option value="">Todos los contratos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-flask"></i> Tipo Laboratorio</label>
+                        <select id="filtroLaboratorio" onchange="aplicarFiltros()">
+                            <option value="">Todos los laboratorios</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-search"></i> Buscar (DNI o Nombres)</label>
+                        <input type="text" id="filtroBusqueda" placeholder="Escribe para buscar..." oninput="aplicarFiltros()">
+                    </div>
+                </div>
+                <div class="filtros-actions">
+                    <button class="btn btn-secondary" onclick="limpiarFiltros()">
+                        <i class="fas fa-eraser"></i> Limpiar filtros
+                    </button>
+                    <button class="btn btn-success" onclick="copiarFiltrados()">
+                        <i class="fas fa-copy"></i> Copiar resultados
+                    </button>
+                    <button class="btn btn-purple" onclick="exportarCSV()">
+                        <i class="fas fa-file-csv"></i> Exportar CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTADORES DE FILTROS (Archivo B) -->
+        <div class="contadores">
+            <span class="contador-item">📊 Total: <strong id="totalFiltrado">0</strong></span>
+            <span class="contador-item" id="contadorPrograma">Programa: <strong>Todos</strong></span>
+            <span class="contador-item" id="contadorCargo">Cargo: <strong>Todos</strong></span>
+            <span class="contador-item" id="contadorContrato">Contrato: <strong>Todos</strong></span>
+            <span class="contador-item" id="contadorLaboratorio">Laboratorio: <strong>Todos</strong></span>
+        </div>
+
+        <div id="loadingDash" class="loading"><div class="spinner"></div><p>Cargando datos desde Google Sheets...</p></div>
+        <div class="dashboard-grid" id="dashboardGrid">
+            <!-- Tarjeta Cumpleaños -->
+            <div class="dash-card">
+                <div class="card-header">
+                    <i class="fas fa-birthday-cake"></i>
+                    <h3>🎂 Cumpleaños del Mes</h3>
+                </div>
+                <div class="number" id="cumpleanosMes">0</div>
+                <div class="list-items" id="listaCumpleanos"></div>
+            </div>
+            <!-- Tarjeta Género -->
+            <div class="dash-card">
+                <div class="card-header">
+                    <i class="fas fa-venus-mars"></i>
+                    <h3>Distribución por Género</h3>
+                </div>
+                <div class="list-items">
+                    <div class="item"><span class="label">👨 Hombres</span><span class="value" id="totalHombres">0</span></div>
+                    <div class="item"><span class="label">👩 Mujeres</span><span class="value" id="totalMujeres">0</span></div>
+                    <div class="item" style="border-top: 1px solid #E2E8F0; padding-top: 8px; margin-top: 4px;">
+                        <span class="label">Total</span>
+                        <span class="value" id="totalGenero">0</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Tarjeta Educación -->
+            <div class="dash-card">
+                <div class="card-header">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h3>Nivel Educativo</h3>
+                </div>
+                <div class="list-items">
+                    <div class="item"><span class="label">🎓 Universitaria</span><span class="value" id="educacionUniversitaria">0</span></div>
+                    <div class="item"><span class="label">📘 No Universitaria</span><span class="value" id="educacionNoUniversitaria">0</span></div>
+                    <div class="item"><span class="label">❓ Sin Especificar</span><span class="value" id="educacionSinEspecificar">0</span></div>
+                </div>
+            </div>
+            <!-- Tarjeta Cargos -->
+            <div class="dash-card">
+                <div class="card-header">
+                    <i class="fas fa-user-tie"></i>
+                    <h3>Cargos Técnicos</h3>
+                </div>
+                <div class="list-items">
+                    <div class="item"><span class="label">🔬 Técnico Laboratorio 1</span><span class="value" id="tecnico1">0</span></div>
+                    <div class="item"><span class="label">🧪 Técnico Laboratorio 2</span><span class="value" id="tecnico2">0</span></div>
+                    <div class="item"><span class="label">📋 Otros Cargos</span><span class="value" id="otrosCargos">0</span></div>
+                </div>
+            </div>
+            <!-- Tarjeta Contratos -->
+            <div class="dash-card">
+                <div class="card-header">
+                    <i class="fas fa-file-contract"></i>
+                    <h3>Tipo de Contrato</h3>
+                </div>
+                <div class="list-items">
+                    <div class="item"><span class="label">📌 Permanente</span><span class="value" id="contratoPermanente">0</span></div>
+                    <div class="item"><span class="label">⏳ Temporal</span><span class="value" id="contratoTemporal">0</span></div>
+                    <div class="item"><span class="label">❓ Sin Especificar</span><span class="value" id="contratoSinEspecificar">0</span></div>
+                </div>
+            </div>
+            <!-- Tarjeta Resumen -->
+            <div class="dash-card" style="background: linear-gradient(135deg, #EFF6FF, #FFFFFF);">
+                <div class="card-header">
+                    <i class="fas fa-users"></i>
+                    <h3>Resumen General</h3>
+                </div>
+                <div class="number" id="totalPersonalDash">0</div>
+                <div class="sub-info">Total de personal registrado</div>
+                <div style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span class="badge badge-blue" id="badgeHombres">Hombres: 0</span>
+                    <span class="badge badge-pink" id="badgeMujeres">Mujeres: 0</span>
+                    <span class="badge badge-green" id="badgeUniversitarios">Universitarios: 0</span>
+                </div>
+            </div>
+        </div>
+    `;
+    // Inicializar filtros y cargar datos
+    inicializarFiltros();
+    cargarDatos().then(() => {
+        actualizarDashboard(datosActuales);
+    });
+}
+
+function actualizarDashboard(data) {
+    const datos = data || datosActuales;
+    if (!datos || datos.length === 0) {
+        document.getElementById('totalPersonalDash').textContent = '0';
+        document.getElementById('totalGenero').textContent = '0';
+        return;
+    }
+    const cumpleaneros = obtenerCumpleanosMes(datos);
+    renderCumpleanos(cumpleaneros);
+    const genero = calcularGenero(datos);
+    document.getElementById('totalHombres').textContent = genero.hombres;
+    document.getElementById('totalMujeres').textContent = genero.mujeres;
+    document.getElementById('totalGenero').textContent = genero.total;
+    document.getElementById('badgeHombres').textContent = `Hombres: ${genero.hombres}`;
+    document.getElementById('badgeMujeres').textContent = `Mujeres: ${genero.mujeres}`;
+    const educacion = calcularEducacion(datos);
+    document.getElementById('educacionUniversitaria').textContent = educacion.universitaria;
+    document.getElementById('educacionNoUniversitaria').textContent = educacion.noUniversitaria;
+    document.getElementById('educacionSinEspecificar').textContent = educacion.sinEspecificar;
+    document.getElementById('badgeUniversitarios').textContent = `Universitarios: ${educacion.universitaria}`;
+    const cargos = calcularCargos(datos);
+    document.getElementById('tecnico1').textContent = cargos.tecnico1;
+    document.getElementById('tecnico2').textContent = cargos.tecnico2;
+    document.getElementById('otrosCargos').textContent = cargos.otros;
+    const contratos = calcularContratos(datos);
+    document.getElementById('contratoPermanente').textContent = contratos.permanente;
+    document.getElementById('contratoTemporal').textContent = contratos.temporal;
+    document.getElementById('contratoSinEspecificar').textContent = contratos.sinEspecificar;
+    document.getElementById('totalPersonalDash').textContent = datos.length;
+}
+
+function obtenerCumpleanosMes(data) {
+    const mesActual = new Date().getMonth() + 1;
+    return data.filter(item => {
+        if (!item.FEC_NACIMIENTO) return false;
+        const fechaStr = String(item.FEC_NACIMIENTO).trim();
+        if (fechaStr.includes('T') && fechaStr.includes('Z')) {
+            try {
+                const fecha = new Date(fechaStr);
+                if (!isNaN(fecha.getTime())) {
+                    return fecha.getMonth() + 1 === mesActual;
+                }
+            } catch(e) {}
+        }
+        const mesStr = String(mesActual).padStart(2, '0');
+        const regex1 = new RegExp('/' + mesStr + '/');
+        if (regex1.test(fechaStr)) return true;
+        const regex2 = new RegExp('/' + mesActual + '/');
+        if (regex2.test(fechaStr)) return true;
+        const partes = fechaStr.split('/');
+        if (partes.length === 3) {
+            const mes = parseInt(partes[1]);
+            if (!isNaN(mes) && mes === mesActual) return true;
+        }
+        return false;
+    });
+}
+
+function renderCumpleanos(cumpleaneros) {
+    const container = document.getElementById('listaCumpleanos');
+    const total = cumpleaneros.length;
+    document.getElementById('cumpleanosMes').textContent = total;
+    if (total === 0) {
+        container.innerHTML = '<div class="item"><span class="label" style="color:#94A3B8;">No hay cumpleaños este mes</span></div>';
+        return;
+    }
+    let html = '';
+    cumpleaneros.forEach(item => {
+        const nombres = item.NOMBRES || '';
+        const apellidos = (item.APE_PATERNO || '') + ' ' + (item.APE_MATERNO || '');
+        const nombreCompleto = `${nombres} ${apellidos}`.trim();
+        const fechaFormateada = formatearFecha(item.FEC_NACIMIENTO);
+        html += `
+            <div class="item">
+                <span class="label">${escapeHtml(nombreCompleto)}</span>
+                <span class="value">${escapeHtml(fechaFormateada)}</span>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+function calcularGenero(data) {
+    let hombres = 0, mujeres = 0;
+    data.forEach(item => {
+        const sexo = String(item.SEXO || '').toUpperCase().trim();
+        if (sexo === 'M' || sexo === 'MASCULINO' || sexo === 'MASC') {
+            hombres++;
+        } else if (sexo === 'F' || sexo === 'FEMENINO' || sexo === 'FEM') {
+            mujeres++;
+        }
+    });
+    return { hombres, mujeres, total: hombres + mujeres };
+}
+
+function calcularEducacion(data) {
+    let universitaria = 0, noUniversitaria = 0, sinEspecificar = 0;
+    data.forEach(item => {
+        const educacion = String(item.EDUCACION_SUPERIOR || '').toUpperCase().trim();
+        if (educacion === 'UNIVERSITARIA' || educacion === 'UNIVERSITARIO' || educacion === 'MAESTRÍA' || educacion === 'DOCTORADO') {
+            universitaria++;
+        } else if (educacion === 'NO UNIVERSITARIA' || educacion === 'NO UNIVERSITARIO' || 
+                   educacion === 'TECNICA' || educacion === 'TÉCNICA' || educacion === 'TÉCNICO' || educacion === 'TECNICO') {
+            noUniversitaria++;
+        } else if (educacion === '' || educacion === 'SIN ESPECIFICAR') {
+            sinEspecificar++;
+        } else {
+            if (educacion.includes('UNIVERSITARIA') || educacion.includes('UNIVERSITARIO') || 
+                educacion.includes('MAESTRÍA') || educacion.includes('DOCTORADO')) {
+                universitaria++;
+            } else if (educacion.includes('TECNICA') || educacion.includes('TÉCNICA') || 
+                       educacion.includes('TECNICO') || educacion.includes('TÉCNICO')) {
+                noUniversitaria++;
+            } else {
+                sinEspecificar++;
+            }
+        }
+    });
+    return { universitaria, noUniversitaria, sinEspecificar };
+}
+
+function calcularCargos(data) {
+    let tecnico1 = 0, tecnico2 = 0, otros = 0;
+    data.forEach(item => {
+        const cargo = String(item.CARGO || '').toUpperCase().trim();
+        if (cargo.includes('TÉCNICO DE LABORATORIO 1') || cargo.includes('TECNICO DE LABORATORIO 1')) {
+            tecnico1++;
+        } else if (cargo.includes('TÉCNICO DE LABORATORIO 2') || cargo.includes('TECNICO DE LABORATORIO 2')) {
+            tecnico2++;
+        } else if (cargo !== '') {
+            otros++;
+        }
+    });
+    return { tecnico1, tecnico2, otros };
+}
+
+function calcularContratos(data) {
+    let permanente = 0, temporal = 0, sinEspecificar = 0;
+    data.forEach(item => {
+        const contrato = String(item.TIPO_CONTRATO || '').toUpperCase().trim();
+        if (contrato === 'PERMANENTE' || contrato === 'FIJO' || contrato === 'PLANILLA') {
+            permanente++;
+        } else if (contrato === 'TEMPORAL' || contrato === 'EVENTUAL' || contrato === 'CAS' || 
+                   contrato === 'LOCACIÓN' || contrato === 'PRÁCTICAS') {
+            temporal++;
+        } else if (contrato === '' || contrato === 'SIN ESPECIFICAR') {
+            sinEspecificar++;
+        } else {
+            if (contrato.includes('PERMANENTE') || contrato.includes('FIJO') || contrato.includes('PLANILLA')) {
+                permanente++;
+            } else if (contrato.includes('TEMPORAL') || contrato.includes('EVENTUAL') || contrato.includes('CAS')) {
+                temporal++;
+            } else {
+                sinEspecificar++;
+            }
+        }
+    });
+    return { permanente, temporal, sinEspecificar };
+}
+
+// ============================================================
+//  RENDER: LISTADO (Archivo A + B fusionado)
+// ============================================================
+function renderListado() {
+    const container = document.getElementById('mainContent');
+    container.innerHTML = `
+        <div class="breadcrumbs">
+            <a href="index.html">Inicio</a> <i class="fas fa-chevron-right"></i>
+            <a onclick="navegar('listado')">Gestión Personal</a> <i class="fas fa-chevron-right"></i>
+            <span class="current">Listado de Personal</span>
+        </div>
+        <div class="topbar">
+            <h1>Lista de Personal</h1>
+            <div class="total-badge">
+                <i class="fas fa-users"></i> Total Personal <span id="totalPersonalListado">0</span>
+            </div>
+        </div>
+
+        <!-- FILTROS (Archivo B) -->
+        <div class="filtros-container">
+            <button class="filtros-toggle active" id="filtrosToggle" onclick="toggleFiltros()">
+                <span><i class="fas fa-filter"></i> 🔍 Filtros</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="filtros-body open" id="filtrosBody">
+                <div class="filtros-grid">
+                    <div class="form-group">
+                        <label><i class="fas fa-graduation-cap"></i> Programa</label>
+                        <select id="filtroPrograma" onchange="aplicarFiltros()">
+                            <option value="">Todos los programas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-user-tie"></i> Cargo</label>
+                        <input type="text" id="filtroCargo" placeholder="Buscar cargo (ej: Técnico)" oninput="aplicarFiltros()">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-file-contract"></i> Tipo Contrato</label>
+                        <select id="filtroContrato" onchange="aplicarFiltros()">
+                            <option value="">Todos los contratos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-flask"></i> Tipo Laboratorio</label>
+                        <select id="filtroLaboratorio" onchange="aplicarFiltros()">
+                            <option value="">Todos los laboratorios</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-search"></i> Buscar (DNI o Nombres)</label>
+                        <input type="text" id="filtroBusqueda" placeholder="Escribe para buscar..." oninput="aplicarFiltros()">
+                    </div>
+                </div>
+                <div class="filtros-actions">
+                    <button class="btn btn-secondary" onclick="limpiarFiltros()">
+                        <i class="fas fa-eraser"></i> Limpiar filtros
+                    </button>
+                    <button class="btn btn-success" onclick="copiarFiltrados()">
+                        <i class="fas fa-copy"></i> Copiar resultados
+                    </button>
+                    <button class="btn btn-purple" onclick="exportarCSV()">
+                        <i class="fas fa-file-csv"></i> Exportar CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTADORES DE FILTROS (Archivo B) -->
+        <div class="contadores">
+            <span class="contador-item">📊 Total: <strong id="totalFiltrado">0</strong></span>
+            <span class="contador-item" id="contadorPrograma">Programa: <strong>Todos</strong></span>
+            <span class="contador-item" id="contadorCargo">Cargo: <strong>Todos</strong></span>
+            <span class="contador-item" id="contadorContrato">Contrato: <strong>Todos</strong></span>
+            <span class="contador-item" id="contadorLaboratorio">Laboratorio: <strong>Todos</strong></span>
+        </div>
+
+        <div class="action-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="buscarDash" placeholder="Buscar por ID, Apellidos o nombres" oninput="filtrarTablaLocal()">
+            </div>
+            <button class="btn btn-primary" onclick="navegar('registro')">
+                <i class="fas fa-plus"></i> Nuevo registro
+            </button>
+            <button class="btn btn-outline" onclick="navegar('dashboard')">
+                <i class="fas fa-chart-pie"></i> Dashboard
+            </button>
+            <button class="btn btn-success" onclick="exportarCSV()">
+                <i class="fas fa-file-csv"></i> Exportar CSV
+            </button>
+        </div>
+
+        <div id="loadingListado" class="loading"><div class="spinner"></div><p>Cargando datos...</p></div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Personal</th>
+                        <th>Apellido Paterno</th>
+                        <th>Apellido Materno</th>
+                        <th>Nombres</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyListado"></tbody>
+            </table>
+        </div>
+        <div style="margin-top:16px; text-align:right; font-size:13px; color:#94A3B8;">
+            <i class="fas fa-sync-alt"></i> Datos sincronizados con Google Sheets
+        </div>
+    `;
+    inicializarFiltros();
+    cargarDatos().then(() => {
+        // Si hay filtros previos, aplicarlos
+        if (datosFiltrados !== null) {
+            aplicarFiltros();
+        } else {
+            actualizarVistaListado(datosActuales);
+            actualizarContadores(datosActuales);
+        }
+    });
+}
+
+function actualizarVistaListado(data) {
+    const tbody = document.getElementById('tbodyListado');
+    const total = document.getElementById('totalPersonalListado');
+    const totalFiltrado = document.getElementById('totalFiltrado');
+    if (total) total.textContent = data.length;
+    if (totalFiltrado) totalFiltrado.textContent = data.length;
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted" style="padding:24px;">No hay registros que coincidan con los filtros</td></tr>';
+        return;
+    }
+    data.forEach(item => {
+        const itemJson = JSON.stringify(item).replace(/'/g, "&#39;");
+        tbody.innerHTML += `
+            <tr>
+                <td>${escapeHtml(item.ID_PERSONAL || '')}</td>
+                <td>${escapeHtml(item.APE_PATERNO || '')}</td>
+                <td>${escapeHtml(item.APE_MATERNO || '')}</td>
+                <td>${escapeHtml(item.NOMBRES || '')}</td>
+                <td>
+                    <button class="action-btn btn-view" onclick='verDetalle(${itemJson})' title="Ver detalles">👁️</button>
+                    <button class="action-btn btn-edit" onclick='editarRegistro(${itemJson})' title="Editar">✏️</button>
+                    <button class="action-btn btn-delete" onclick='eliminarRegistro("${escapeHtml(item.CODE)}")' title="Eliminar">🗑️</button>
+                    <button class="action-btn btn-copy" onclick='copiarDatos(${itemJson})' title="Copiar datos">📋</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+// Búsqueda local en la tabla (Archivo A)
+function filtrarTablaLocal() {
+    const busqueda = document.getElementById('buscarDash').value.toLowerCase().trim();
+    if (busqueda === '') {
+        // Si no hay búsqueda local, mostrar datos con filtros aplicados
+        if (datosFiltrados !== null) {
+            actualizarVistaListado(datosFiltrados);
+            actualizarContadores(datosFiltrados);
+        } else {
+            actualizarVistaListado(datosActuales);
+            actualizarContadores(datosActuales);
+        }
+        return;
+    }
+    const fuente = datosFiltrados !== null ? datosFiltrados : datosActuales;
+    const filtrados = fuente.filter(item => {
+        const id = String(item.ID_PERSONAL || '').toLowerCase();
+        const ap = String(item.APE_PATERNO || '').toLowerCase();
+        const am = String(item.APE_MATERNO || '').toLowerCase();
+        const nom = String(item.NOMBRES || '').toLowerCase();
+        return id.includes(busqueda) || ap.includes(busqueda) || am.includes(busqueda) || nom.includes(busqueda);
+    });
+    actualizarVistaListado(filtrados);
+    actualizarContadores(filtrados);
+}
+
+// ============================================================
+//  COPIAR FUNCIONES (Archivo A + B)
+// ============================================================
+function copiarDatos(data) {
+    const nombres = data.NOMBRES || '';
+    const apellidoPaterno = data.APE_PATERNO || '';
+    const apellidoMaterno = data.APE_MATERNO || '';
+    const idPersonal = data.ID_PERSONAL || '';
+    const texto = `${nombres} ${apellidoPaterno} ${apellidoMaterno} (Id: ${idPersonal})`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(() => {
+            mostrarToast('📋 Copiado: ' + texto, 'success');
+        }).catch(() => {
+            copiarFallback(texto);
+        });
+    } else {
+        copiarFallback(texto);
+    }
+}
+
+function copiarFiltrados() {
+    const datos = datosFiltrados !== null ? datosFiltrados : datosActuales;
+    if (!datos || datos.length === 0) {
+        mostrarToast('❌ No hay datos para copiar', 'error');
+        return;
+    }
+    let texto = '';
+    datos.forEach(item => {
+        const nombres = item.NOMBRES || '';
+        const apellidoPaterno = item.APE_PATERNO || '';
+        const apellidoMaterno = item.APE_MATERNO || '';
+        const idPersonal = item.ID_PERSONAL || '';
+        texto += `${nombres} ${apellidoPaterno} ${apellidoMaterno} (Id: ${idPersonal})\n`;
+    });
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(() => {
+            mostrarToast(`📋 Copiados ${datos.length} registros`, 'success');
+        }).catch(() => {
+            copiarFallback(texto);
+        });
+    } else {
+        copiarFallback(texto);
+    }
+}
+
+// ============================================================
+//  EXPORTAR CSV (Archivo B - con filtros)
+// ============================================================
+function exportarCSV() {
+    const datos = datosFiltrados !== null ? datosFiltrados : datosActuales;
+    if (!datos || datos.length === 0) {
+        mostrarToast('⚠️ No hay datos para exportar', 'error');
+        return;
+    }
+    try {
+        const headers = Object.keys(datos[0]);
+        let csvContent = '\uFEFF';
+        csvContent += headers.join(',') + '\n';
+        datos.forEach(item => {
+            const row = headers.map(header => {
+                let value = item[header] || '';
+                if (typeof value === 'string') {
+                    value = value.replace(/"/g, '""');
+                    if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+                        value = `"${value}"`;
+                    }
+                }
+                return value;
+            });
+            csvContent += row.join(',') + '\n';
+        });
+        const now = new Date();
+        const fecha = now.getFullYear() +
+            '-' + String(now.getMonth() + 1).padStart(2, '0') +
+            '-' + String(now.getDate()).padStart(2, '0');
+        const filename = `personal_${fecha}.csv`;
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        const mensaje = datosFiltrados !== null ? 
+            `📊 Exportados ${datos.length} registros filtrados` : 
+            `📊 Exportados ${datos.length} registros totales`;
+        mostrarToast(mensaje, 'success');
+    } catch (error) {
+        console.error('Error al exportar CSV:', error);
+        mostrarToast('❌ Error al exportar CSV: ' + error.message, 'error');
+    }
+}
+
+// ============================================================
+//  CRUD - ELIMINAR (Archivo A)
+// ============================================================
+async function eliminarRegistro(code) {
+    if (!confirm('⚠️ ¿Eliminar este registro permanentemente?')) return;
+    mostrarToast('Eliminando...', 'info');
+    try {
+        const url = API_URL + '?action=delete&code=' + encodeURIComponent(code);
+        const resp = await fetch(url);
+        const texto = await resp.text();
+        let resultado;
+        try { resultado = JSON.parse(texto); } catch(e) { resultado = { success: texto.includes('success') }; }
+        if (resultado.success) {
+            mostrarToast('✅ Registro eliminado', 'success');
+            datosActuales = [];
+            datosFiltrados = null;
+            navegar('listado');
+        } else {
+            mostrarToast('❌ ' + (resultado.message || 'Error'), 'error');
+        }
+    } catch(e) {
+        mostrarToast('❌ Error: ' + e.message, 'error');
+    }
+}
+
+// ============================================================
+//  CRUD - VER DETALLE (Archivo A)
+// ============================================================
+function verDetalle(data) {
+    currentDetalleData = data;
+    const container = document.getElementById('detalleContent');
+    const campos = [
+        'CODE','ID_PERSONAL','APE_PATERNO','APE_MATERNO','NOMBRES','FEC_NACIMIENTO',
+        'SEXO','DNI','TELEFONO','DIRECCION','EMAIL_PERSONAL','EMAIL_INSTITUCIONAL',
+        'EDUCACION_SUPERIOR','ESTADO_EDUCACION','PROFESION','PROGRAMA','CARGO',
+        'LUGAR_TRABAJO','TIPO_CONTRATO','TIPO_LABORATORIO','SCRUBS_PANTALON',
+        'SCRUBS_CHAQUETA','POLO_CAMISERO','Camisa','PANTALON'
+    ];
+    let html = '';
+    campos.forEach(key => {
+        const val = data[key] || '';
+        html += `
+            <div class="form-group">
+                <label>${key}</label>
+                <div class="detail-field">${escapeHtml(val)}</div>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+    document.getElementById('modalDetalle').classList.add('active');
+}
+
+function editarDesdeDetalle() {
+    if (currentDetalleData) {
+        editarRegistro(currentDetalleData);
+        cerrarDetalle();
+    }
+}
+
+// ============================================================
+//  CRUD - EDITAR (Archivo A)
+// ============================================================
+function editarRegistro(data) {
+    sessionStorage.setItem('editData', JSON.stringify(data));
+    sessionStorage.setItem('editMode', 'true');
+    navegar('registro');
+}
+
+// ============================================================
+//  RENDER: REGISTRO (Archivo A)
+// ============================================================
+function renderRegistro() {
+    const container = document.getElementById('mainContent');
+    container.innerHTML = `
+        <div class="breadcrumbs">
+            <a href="index.html">Inicio</a> <i class="fas fa-chevron-right"></i>
+            <a onclick="navegar('listado')">Gestión Personal</a> <i class="fas fa-chevron-right"></i>
+            <span class="current" id="breadcrumbReg">Nuevo Registro</span>
+        </div>
+        <div class="form-container">
+            <h1 id="formTitle"><i class="fas fa-user-plus"></i> Registro de Personal</h1>
+            <div class="subtitle" id="formSubtitle">Ingreso de datos para Google Sheets</div>
+            <form id="employeeForm" onsubmit="return false;">
+                <div class="form-grid">
+                    <div class="section-title">📋 Identificación</div>
+                    <div class="form-group"><label>CODE</label><input type="text" id="CODE" readonly style="background:#f1f5f9;"></div>
+                    <div class="form-group"><label>ID_PERSONAL <span class="required">*</span></label><input type="text" id="ID_PERSONAL" placeholder="ID Personal"></div>
+                    <div class="form-group"><label>APE_PATERNO <span class="required">*</span></label><input type="text" id="APE_PATERNO" placeholder="Apellido Paterno"></div>
+                    <div class="form-group"><label>APE_MATERNO</label><input type="text" id="APE_MATERNO" placeholder="Apellido Materno"></div>
+                    <div class="form-group"><label>NOMBRES <span class="required">*</span></label><input type="text" id="NOMBRES" placeholder="Nombres"></div>
+                    <div class="form-group"><label>DNI</label><input type="text" id="DNI" maxlength="8" placeholder="DNI"></div>
+                    <div class="section-title">👤 Personales</div>
+                    <div class="form-group"><label>FEC_NACIMIENTO</label><input type="date" id="FEC_NACIMIENTO"></div>
+                    <div class="form-group"><label>SEXO</label><select id="SEXO"><option value="">Seleccionar</option><option>MASCULINO</option><option>FEMENINO</option></select></div>
+                    <div class="form-group"><label>TELEFONO</label><input type="text" id="TELEFONO" placeholder="Teléfono"></div>
+                    <div class="form-group"><label>DIRECCION</label><input type="text" id="DIRECCION" placeholder="Dirección"></div>
+                    <div class="form-group"><label>EMAIL_PERSONAL</label><input type="email" id="EMAIL_PERSONAL" placeholder="correo@personal.com"></div>
+                    <div class="form-group"><label>EMAIL_INSTITUCIONAL</label><input type="email" id="EMAIL_INSTITUCIONAL" placeholder="correo@institucion.com"></div>
+                    <div class="section-title">🎓 Académica</div>
+                    <div class="form-group"><label>EDUCACION_SUPERIOR</label><select id="EDUCACION_SUPERIOR"><option value="">Seleccionar</option><option>TÉCNICO</option><option>UNIVERSITARIO</option><option>MAESTRÍA</option><option>DOCTORADO</option></select></div>
+                    <div class="form-group"><label>ESTADO_EDUCACION</label><select id="ESTADO_EDUCACION"><option value="">Seleccionar</option><option>COMPLETO</option><option>INCOMPLETO</option><option>EN CURSO</option></select></div>
+                    <div class="form-group"><label>PROFESION</label><input type="text" id="PROFESION" placeholder="Profesión"></div>
+                    <div class="form-group"><label>PROGRAMA</label><input type="text" id="PROGRAMA" placeholder="Programa"></div>
+                    <div class="section-title">💼 Laboral</div>
+                    <div class="form-group"><label>CARGO</label><input type="text" id="CARGO" placeholder="Cargo"></div>
+                    <div class="form-group"><label>LUGAR_TRABAJO</label><input type="text" id="LUGAR_TRABAJO" placeholder="Lugar"></div>
+                    <div class="form-group"><label>TIPO_CONTRATO</label><select id="TIPO_CONTRATO"><option value="">Seleccionar</option><option>PLANILLA</option><option>CAS</option><option>LOCACIÓN</option><option>PRÁCTICAS</option></select></div>
+                    <div class="form-group"><label>TIPO_LABORATORIO</label><input type="text" id="TIPO_LABORATORIO" placeholder="Tipo Lab."></div>
+                    <div class="section-title">👕 Uniforme</div>
+                    <div class="form-group"><label>SCRUBS_PANTALON</label><input type="text" id="SCRUBS_PANTALON" placeholder="Talla"></div>
+                    <div class="form-group"><label>SCRUBS_CHAQUETA</label><input type="text" id="SCRUBS_CHAQUETA" placeholder="Talla"></div>
+                    <div class="form-group"><label>POLO_CAMISERO</label><input type="text" id="POLO_CAMISERO" placeholder="Talla"></div>
+                    <div class="form-group"><label>CAMISA</label><input type="text" id="Camisa" placeholder="Talla"></div>
+                    <div class="form-group"><label>PANTALON</label><input type="text" id="PANTALON" placeholder="Talla"></div>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-primary" id="btnGuardarReg" onclick="guardarRegistro()"><i class="fas fa-save"></i> Guardar</button>
+                    <button type="button" class="btn btn-warning" onclick="limpiarFormulario()"><i class="fas fa-eraser"></i> Limpiar</button>
+                    <button type="button" class="btn btn-secondary" onclick="cargarEjemplo()"><i class="fas fa-code"></i> Ejemplo</button>
+                    <button type="button" class="btn btn-secondary" onclick="navegar('listado')"><i class="fas fa-arrow-left"></i> Volver</button>
+                </div>
+            </form>
+            <div id="loadingReg" class="loading"><div class="spinner"></div><p>Enviando...</p></div>
+        </div>
+    `;
+    cargarDatosEdicion();
+}
+
+function obtenerDatosFormulario() {
+    const campos = [
+        'ID_PERSONAL','APE_PATERNO','APE_MATERNO','NOMBRES','FEC_NACIMIENTO','SEXO','DNI',
+        'TELEFONO','DIRECCION','EMAIL_PERSONAL','EDUCACION_SUPERIOR','ESTADO_EDUCACION',
+        'PROFESION','PROGRAMA','CARGO','LUGAR_TRABAJO','TIPO_CONTRATO','EMAIL_INSTITUCIONAL',
+        'SCRUBS_PANTALON','SCRUBS_CHAQUETA','POLO_CAMISERO','Camisa','PANTALON','TIPO_LABORATORIO'
+    ];
+    let datos = {};
+    campos.forEach(c => {
+        const el = document.getElementById(c);
+        if (el) datos[c] = el.value || '';
+    });
+    if (modoEdicion && editCode) datos.CODE = editCode;
+    return datos;
+}
+
+function llenarFormulario(datos) {
+    for (let [key, val] of Object.entries(datos)) {
+        const el = document.getElementById(key);
+        if (el && key !== 'CODE') el.value = val || '';
+    }
+    if (datos.CODE) document.getElementById('CODE').value = datos.CODE;
+}
+
+function limpiarFormulario() {
+    const campos = [
+        'ID_PERSONAL','APE_PATERNO','APE_MATERNO','NOMBRES','FEC_NACIMIENTO','SEXO','DNI',
+        'TELEFONO','DIRECCION','EMAIL_PERSONAL','EDUCACION_SUPERIOR','ESTADO_EDUCACION',
+        'PROFESION','PROGRAMA','CARGO','LUGAR_TRABAJO','TIPO_CONTRATO','EMAIL_INSTITUCIONAL',
+        'SCRUBS_PANTALON','SCRUBS_CHAQUETA','POLO_CAMISERO','Camisa','PANTALON','TIPO_LABORATORIO'
+    ];
+    campos.forEach(c => { const el = document.getElementById(c); if (el) el.value = ''; });
+    document.getElementById('CODE').value = '';
+    mostrarToast('🧹 Formulario limpiado', 'info');
+}
+
+function cargarEjemplo() {
+    const ej = {
+        ID_PERSONAL: '2024001',
+        APE_PATERNO: 'GARCIA',
+        APE_MATERNO: 'PEREZ',
+        NOMBRES: 'JUAN CARLOS',
+        FEC_NACIMIENTO: '1990-05-15',
+        SEXO: 'MASCULINO',
+        DNI: '12345678',
+        TELEFONO: '987654321',
+        DIRECCION: 'Av. Principal 123',
+        EMAIL_PERSONAL: 'juan@personal.com',
+        EDUCACION_SUPERIOR: 'UNIVERSITARIO',
+        ESTADO_EDUCACION: 'COMPLETO',
+        PROFESION: 'INGENIERO',
+        PROGRAMA: 'SISTEMAS',
+        CARGO: 'TÉCNICO',
+        LUGAR_TRABAJO: 'LABORATORIO CENTRAL',
+        TIPO_CONTRATO: 'PLANILLA',
+        EMAIL_INSTITUCIONAL: 'juan@laboratorio.edu',
+        SCRUBS_PANTALON: 'M',
+        SCRUBS_CHAQUETA: 'M',
+        POLO_CAMISERO: 'L',
+        Camisa: 'L',
+        PANTALON: '32',
+        TIPO_LABORATORIO: 'MEDICINA'
+    };
+    for (let [key, val] of Object.entries(ej)) {
+        const el = document.getElementById(key);
+        if (el) el.value = val;
+    }
+    mostrarToast('📋 Ejemplo cargado', 'info');
+}
+
+function validarRequeridos() {
+    const req = ['ID_PERSONAL', 'APE_PATERNO', 'NOMBRES'];
+    for (let r of req) {
+        const el = document.getElementById(r);
+        if (!el || !el.value.trim()) {
+            mostrarToast(`El campo ${r} es obligatorio`, 'error');
+            if (el) el.focus();
+            return false;
+        }
+    }
+    return true;
+}
+
+async function guardarRegistro() {
+    if (!validarRequeridos()) return;
+    const loading = document.getElementById('loadingReg');
+    if (loading) loading.classList.add('active');
+    const datos = obtenerDatosFormulario();
+    const action = modoEdicion ? 'update' : 'create';
+    let url = API_URL + '?action=' + action;
+    if (modoEdicion && editCode) url += '&code=' + encodeURIComponent(editCode);
+    for (let [key, val] of Object.entries(datos)) {
+        if (val && val !== '') url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(val);
+    }
+    try {
+        const resp = await fetch(url);
+        const texto = await resp.text();
+        let resultado;
+        try { resultado = JSON.parse(texto); } catch(e) { resultado = { success: texto.includes('success') }; }
+        if (resultado.success) {
+            mostrarToast(modoEdicion ? '✅ Registro actualizado' : '✅ Nuevo registro guardado', 'success');
+            sessionStorage.removeItem('editData');
+            sessionStorage.removeItem('editMode');
+            setTimeout(async () => {
+                datosActuales = [];
+                datosFiltrados = null;
+                navegar('listado');
+            }, 1200);
+        } else {
+            mostrarToast('❌ ' + (resultado.message || 'Error al guardar'), 'error');
+        }
+    } catch(e) {
+        mostrarToast('❌ Error de conexión: ' + e.message, 'error');
+    } finally {
+        if (loading) loading.classList.remove('active');
+    }
+}
+
+function cargarDatosEdicion() {
+    const editDataStr = sessionStorage.getItem('editData');
+    const editModeFlag = sessionStorage.getItem('editMode');
+    if (editModeFlag === 'true' && editDataStr) {
+        try {
+            const editData = JSON.parse(editDataStr);
+            modoEdicion = true;
+            editCode = editData.CODE;
+            document.getElementById('formTitle').innerHTML = '<i class="fas fa-user-edit"></i> Editar Personal';
+            document.getElementById('formSubtitle').textContent = 'Modificando datos existentes en Google Sheets';
+            document.getElementById('breadcrumbReg').textContent = 'Editar Registro';
+            document.getElementById('btnGuardarReg').innerHTML = '<i class="fas fa-save"></i> Actualizar';
+            document.getElementById('CODE').value = editData.CODE || '';
+            llenarFormulario(editData);
+            mostrarToast('📝 Datos cargados para edición', 'success');
+        } catch(e) {
+            console.error('Error al cargar edición:', e);
+        }
+    }
+}
+
+// ============================================================
+//  INICIALIZAR
+// ============================================================
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.target.matches('textarea, select')) {
+        const btn = document.getElementById('btnGuardarReg');
+        if (btn) btn.click();
+    }
+});
+
+// Iniciar en listado
+navegar('listado');
+</script>
+</body>
+</html>
