@@ -76,21 +76,6 @@
         .badge-orange{background:#FFF7ED;color:#F97316}
         .badge-pink{background:#FDF2F8;color:#EC4899}
 
-        /* FILTROS */
-        .filtros-container{background:#fff;border-radius:16px;border:1px solid #E2E8F0;margin-bottom:16px;overflow:hidden;transition:all .3s}
-        .filtros-toggle{width:100%;padding:14px 20px;background:#F8FAFC;border:0;font-size:15px;font-weight:600;color:#1E293B;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:background .2s;font-family:inherit}
-        .filtros-toggle:hover{background:#F1F5F9}
-        .filtros-toggle i{transition:transform .3s}
-        .filtros-toggle.active i{transform:rotate(180deg)}
-        .filtros-body{max-height:0;overflow:hidden;transition:max-height .4s,padding .3s;padding:0 20px}
-        .filtros-body.open{max-height:800px;padding:20px 20px 24px}
-        .filtros-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
-        .filtros-grid .form-group{display:flex;flex-direction:column;gap:4px}
-        .filtros-grid .form-group label{font-size:12px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.5px}
-        .filtros-grid .form-group select,.filtros-grid .form-group input{padding:8px 12px;border:1px solid #E2E8F0;border-radius:10px;font-size:14px;background:#fff;transition:all .2s;width:100%}
-        .filtros-grid .form-group select:focus,.filtros-grid .form-group input:focus{outline:0;border-color:#3B82F6;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
-        .filtros-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;justify-content:flex-end;border-top:1px solid #E2E8F0;padding-top:16px}
-
         .contadores{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;padding:12px 16px;background:#fff;border-radius:12px;border:1px solid #E2E8F0}
         .contador-item{font-size:14px;color:#64748B}
         .contador-item strong{color:#1E293B;font-size:18px}
@@ -166,8 +151,6 @@
             .dashboard-grid{grid-template-columns:1fr}
             .action-bar{flex-direction:column;align-items:stretch}
             .search-box{max-width:none}
-            .filtros-grid{grid-template-columns:1fr}
-            .filtros-body.open{padding:16px}
             .contadores{flex-direction:column;gap:6px}
             .form-container{padding:16px}
             .form-grid{grid-template-columns:1fr}
@@ -327,79 +310,25 @@ async function cargarDatos(force=false) {
 }
 
 // ============================================================
-//  FILTROS OPTIMIZADOS
+//  FILTRO DE BÚSQUEDA (Nombres, Apellido Paterno, ID)
 // ============================================================
-function initFiltros() {
-    ['filtroPrograma','filtroContrato','filtroLaboratorio'].forEach(id => {
-        const sel = $(id);
-        if(!sel) return;
-        const campo = {filtroPrograma:'PROGRAMA',filtroContrato:'TIPO_CONTRATO',filtroLaboratorio:'TIPO_LABORATORIO'}[id];
-        const vals = new Set();
-        datos.forEach(item => { const v = item[campo]||''; if(v.trim()) vals.add(v.trim()); });
-        const sorted = [...vals].sort();
-        sel.innerHTML = `<option value="">Todos ${campo.toLowerCase().replace('_',' ')}</option>` + 
-            sorted.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('');
-    });
-}
+function buscarPersonal() {
+    const busqueda = $('buscarDash')?.value.toLowerCase().trim() || '';
 
-function aplicarFiltros() {
-    const programa = $('filtroPrograma')?.value.trim() || '';
-    const cargo = $('filtroCargo')?.value.toLowerCase().trim() || '';
-    const contrato = $('filtroContrato')?.value.trim() || '';
-    const laboratorio = $('filtroLaboratorio')?.value.trim() || '';
-    const busqueda = $('filtroBusqueda')?.value.toLowerCase().trim() || '';
-
-    const activo = programa || cargo || contrato || laboratorio || busqueda;
-
-    if(!activo) {
+    if(!busqueda) {
         datosFiltrados = null;
         renderTabla(datos);
         actualizarContadores(datos);
-        actualizarContadoresFiltros(programa,cargo,contrato,laboratorio);
         return;
     }
 
     datosFiltrados = datos.filter(item => {
-        if(programa && (item.PROGRAMA||'').trim() !== programa) return false;
-        if(cargo && !String(item.CARGO||'').toLowerCase().includes(cargo)) return false;
-        if(contrato && (item.TIPO_CONTRATO||'').trim() !== contrato) return false;
-        if(laboratorio && (item.TIPO_LABORATORIO||'').trim() !== laboratorio) return false;
-        if(busqueda) {
-            const texto = `${item.NOMBRES||''} ${item.APE_PATERNO||''} ${item.APE_MATERNO||''} ${item.ID_PERSONAL||''} ${item.DNI||''}`.toLowerCase();
-            if(!texto.includes(busqueda)) return false;
-        }
-        return true;
+        const texto = `${item.NOMBRES||''} ${item.APE_PATERNO||''} ${item.ID_PERSONAL||''}`.toLowerCase();
+        return texto.includes(busqueda);
     });
 
     renderTabla(datosFiltrados);
     actualizarContadores(datosFiltrados);
-    actualizarContadoresFiltros(programa,cargo,contrato,laboratorio);
-}
-
-function actualizarContadoresFiltros(p,c,co,l) {
-    ['contadorPrograma','contadorCargo','contadorContrato','contadorLaboratorio'].forEach(id => {
-        const el = $(id);
-        if(!el) return;
-        const labels = {contadorPrograma:'Programa',contadorCargo:'Cargo',contadorContrato:'Contrato',contadorLaboratorio:'Laboratorio'};
-        const vals = {contadorPrograma:p,contadorCargo:c,contadorContrato:co,contadorLaboratorio:l};
-        el.innerHTML = `${labels[id]}: <strong>${vals[id] || 'Todos'}</strong>`;
-    });
-}
-
-function limpiarFiltros() {
-    ['filtroPrograma','filtroContrato','filtroLaboratorio','filtroCargo','filtroBusqueda'].forEach(id => {
-        const el = $(id); if(el) el.value = '';
-    });
-    datosFiltrados = null;
-    aplicarFiltros();
-    toast('🧹 Filtros limpiados', 'info');
-}
-
-function toggleFiltros() {
-    const body = $('filtrosBody');
-    const toggle = $('filtrosToggle');
-    body?.classList.toggle('open');
-    toggle?.classList.toggle('active');
 }
 
 // ============================================================
@@ -440,21 +369,6 @@ function actualizarContadores(data) {
     ['totalPersonalListado','totalFiltrado'].forEach(id => {
         const el = $(id); if(el) el.textContent = mostrar.length;
     });
-}
-
-function filtrarTablaLocal() {
-    const busqueda = $('buscarDash')?.value.toLowerCase().trim() || '';
-    if(!busqueda) {
-        if(datosFiltrados !== null) { renderTabla(datosFiltrados); actualizarContadores(datosFiltrados); }
-        else { renderTabla(datos); actualizarContadores(datos); }
-        return;
-    }
-    const fuente = datosFiltrados || datos;
-    const filtrados = fuente.filter(item => 
-        `${item.ID_PERSONAL||''} ${item.APE_PATERNO||''} ${item.APE_MATERNO||''} ${item.NOMBRES||''}`.toLowerCase().includes(busqueda)
-    );
-    renderTabla(filtrados);
-    actualizarContadores(filtrados);
 }
 
 // ============================================================
@@ -570,46 +484,12 @@ function renderDashboard() {
                 <button class="btn btn-secondary" onclick="cambiarVista('listado')"><i class="fas fa-arrow-left"></i> Volver</button>
             </div>
         </div>
-        ${filtrosHTML()}
         <div id="loadingDash" class="loading"><div class="spinner"></div><p>Cargando...</p></div>
         <div class="dashboard-grid" id="dashboardGrid">
             ${dashCards()}
         </div>
     `;
-    initFiltros();
     cargarDatos().then(() => actualizarDashboard());
-}
-
-function filtrosHTML() {
-    return `
-        <div class="filtros-container">
-            <button class="filtros-toggle active" id="filtrosToggle" onclick="toggleFiltros()">
-                <span><i class="fas fa-filter"></i> 🔍 Filtros</span>
-                <i class="fas fa-chevron-down"></i>
-            </button>
-            <div class="filtros-body open" id="filtrosBody">
-                <div class="filtros-grid">
-                    <div class="form-group"><label>Programa</label><select id="filtroPrograma" onchange="aplicarFiltros()"><option value="">Todos</option></select></div>
-                    <div class="form-group"><label>Cargo</label><input type="text" id="filtroCargo" placeholder="Buscar cargo" oninput="aplicarFiltros()"></div>
-                    <div class="form-group"><label>Tipo Contrato</label><select id="filtroContrato" onchange="aplicarFiltros()"><option value="">Todos</option></select></div>
-                    <div class="form-group"><label>Tipo Laboratorio</label><select id="filtroLaboratorio" onchange="aplicarFiltros()"><option value="">Todos</option></select></div>
-                    <div class="form-group"><label>Buscar</label><input type="text" id="filtroBusqueda" placeholder="DNI o nombres" oninput="aplicarFiltros()"></div>
-                </div>
-                <div class="filtros-actions">
-                    <button class="btn btn-secondary" onclick="limpiarFiltros()"><i class="fas fa-eraser"></i> Limpiar</button>
-                    <button class="btn btn-success" onclick="copiarFiltrados()"><i class="fas fa-copy"></i> Copiar</button>
-                    <button class="btn btn-purple" onclick="exportarCSV()"><i class="fas fa-file-csv"></i> CSV</button>
-                </div>
-            </div>
-        </div>
-        <div class="contadores">
-            <span class="contador-item">📊 Total: <strong id="totalFiltrado">0</strong></span>
-            <span class="contador-item" id="contadorPrograma">Programa: <strong>Todos</strong></span>
-            <span class="contador-item" id="contadorCargo">Cargo: <strong>Todos</strong></span>
-            <span class="contador-item" id="contadorContrato">Contrato: <strong>Todos</strong></span>
-            <span class="contador-item" id="contadorLaboratorio">Laboratorio: <strong>Todos</strong></span>
-        </div>
-    `;
 }
 
 function dashCards() {
@@ -863,12 +743,14 @@ function renderListado() {
             <h1>Lista de Personal</h1>
             <div class="total-badge"><i class="fas fa-users"></i> Total <span id="totalPersonalListado">0</span></div>
         </div>
-        ${filtrosHTML()}
         <div class="action-bar">
-            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="buscarDash" placeholder="Buscar..." oninput="filtrarTablaLocal()"></div>
+            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="buscarDash" placeholder="Buscar por Nombres, Apellido Paterno o ID..." oninput="buscarPersonal()"></div>
             <button class="btn btn-primary" onclick="cambiarVista('registro')"><i class="fas fa-plus"></i> Nuevo</button>
             <button class="btn btn-outline" onclick="cambiarVista('dashboard')"><i class="fas fa-chart-pie"></i> Dashboard</button>
             <button class="btn btn-success" onclick="exportarCSV()"><i class="fas fa-file-csv"></i> CSV</button>
+        </div>
+        <div class="contadores">
+            <span class="contador-item">📊 Mostrando: <strong id="totalFiltrado">0</strong> registros</span>
         </div>
         <div id="loadingListado" class="loading"><div class="spinner"></div><p>Cargando...</p></div>
         <div class="table-container">
@@ -878,9 +760,8 @@ function renderListado() {
             </table>
         </div>
     `;
-    initFiltros();
     cargarDatos().then(() => {
-        if(datosFiltrados !== null) aplicarFiltros();
+        if(datosFiltrados !== null) buscarPersonal();
         else { renderTabla(datos); actualizarContadores(datos); }
     });
 }
