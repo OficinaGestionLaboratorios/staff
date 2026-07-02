@@ -94,7 +94,7 @@
         .search-box input:focus{outline:0;border-color:#3B82F6;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
         .search-box i{position:absolute;left:10px;top:9px;color:#94A3B8;font-size:14px}
 
-        /* TABLA */
+        /* TABLA PERSONAL */
         .table-container{background:#fff;border-radius:16px;border:1px solid #E2E8F0;overflow-x:auto}
         table{width:100%;border-collapse:collapse;min-width:500px}
         th{text-align:left;padding:12px 16px;background:#F8FAFC;font-weight:600;font-size:13px;color:#64748B;border-bottom:1px solid #E2E8F0}
@@ -110,12 +110,19 @@
         .btn-schedule:hover{color:#8B5CF6}
 
         /* TABLA HORARIOS - NUEVO ESTILO */
-        .horario-trabajador{font-size:16px;font-weight:700;color:#1E293B}
-        .horario-detalle{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;font-size:13px;color:#64748B;margin-top:2px}
-        .horario-detalle .item{display:flex;align-items:center;gap:4px}
-        .horario-detalle .item i{font-size:12px;color:#94A3B8;width:16px}
-        .horario-detalle .item .valor{font-weight:600;color:#1E293B}
-        .horario-detalle .separador{color:#E2E8F0}
+        .horario-fila{display:flex;flex-direction:column;gap:4px;padding:4px 0}
+        .horario-nombre{font-size:16px;font-weight:700;color:#1E293B}
+        .horario-dias{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-size:13px;color:#64748B}
+        .horario-dias .dia-item{display:inline-flex;align-items:center;gap:4px;background:#F8FAFC;padding:2px 10px;border-radius:6px;border:1px solid #E2E8F0}
+        .horario-dias .dia-item .dia-nombre{font-weight:600;color:#3B82F6}
+        .horario-dias .dia-item .hora{font-weight:500;color:#1E293B}
+        .horario-dias .dia-item .ref{color:#94A3B8;font-size:12px}
+        .horario-dias .separador{color:#E2E8F0;font-size:12px}
+
+        .badge-horas{display:inline-block;padding:4px 14px;border-radius:20px;font-size:14px;font-weight:700}
+        .badge-horas.excede{background:#FEF2F2;color:#EF4444}
+        .badge-horas.completo{background:#ECFDF5;color:#10B981}
+        .badge-horas.faltan{background:#FEFCE8;color:#CA8A04}
 
         /* FORMULARIO */
         .form-container{background:#fff;border-radius:20px;border:1px solid #E2E8F0;padding:28px}
@@ -155,18 +162,14 @@
         .text-center{text-align:center}
         .text-muted{color:#94A3B8}
 
-        /* Contenedor de pestañas */
         .tab-content{display:none}
         .tab-content.active{display:block}
 
-        /* Estilos de horarios */
         .alert-box{padding:12px 16px;border-radius:10px;margin-top:12px;font-size:14px;font-weight:500}
         .alert-success{background:#ECFDF5;color:#10B981;border:1px solid #A7F3D0}
         .alert-warning{background:#FEFCE8;color:#CA8A04;border:1px solid #FDE68A}
         .alert-danger{background:#FEF2F2;color:#EF4444;border:1px solid #FCA5A5}
         .alert-info{background:#EFF6FF;color:#3B82F6;border:1px solid #93C5FD}
-
-        .badge-yellow{background:#FEFCE8;color:#CA8A04}
 
         .schedule-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
         .schedule-form-grid .form-group{display:flex;flex-direction:column;gap:4px}
@@ -197,8 +200,9 @@
             .sub-nav{flex-wrap:wrap}
             .sub-nav .tab{font-size:12px;padding:6px 12px}
             .schedule-form-grid{grid-template-columns:1fr}
-            .horario-detalle{font-size:12px;gap:4px 10px}
-            .horario-trabajador{font-size:14px}
+            .horario-nombre{font-size:14px}
+            .horario-dias{font-size:12px;gap:4px 8px}
+            .horario-dias .dia-item{padding:1px 6px}
         }
     </style>
 </head>
@@ -240,7 +244,7 @@
 
 <script>
 // ============================================================
-//  CONFIGURACIÓN - CACHE OPTIMIZADA
+//  CONFIGURACIÓN
 // ============================================================
 const API_URL = 'https://script.google.com/macros/s/AKfycbw2U4jjLX4BoGeRQ9iiush5OSut8goZ3jCwNiiB4bRtW7zqtavEXnXcwOYTkpCoHXRd/exec';
 const STORAGE_KEY = 'staffHubData';
@@ -371,7 +375,7 @@ function buscarPersonal() {
 }
 
 // ============================================================
-//  RENDER TABLA
+//  RENDER TABLA PERSONAL
 // ============================================================
 function renderTabla(data) {
     const tbody = $('tbodyListado');
@@ -404,9 +408,6 @@ function renderTabla(data) {
     `).join('');
 }
 
-// ============================================================
-//  HORARIO - Selecciona trabajador y cambia a pestaña
-// ============================================================
 function verHorarioDesdeLista(data) {
     trabajadorSeleccionado = data;
     subVistaActual = 'horarios';
@@ -725,10 +726,10 @@ function renderContenidoHorarios() {
             <table>
                 <thead>
                     <tr>
-                        <th>Trabajador</th>
-                        <th>Horario</th>
-                        <th>Horas</th>
-                        <th>Acciones</th>
+                        <th style="min-width:180px;">Trabajador</th>
+                        <th>Horarios</th>
+                        <th style="min-width:100px;">Total Semanal</th>
+                        <th style="min-width:100px;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tbodyHorarios">
@@ -1133,71 +1134,91 @@ function renderHorariosTabla() {
 
     const mostrar = horariosFiltrados || horarios;
 
-    // Filtrar solo empleados que tienen horario (agrupar por CODE)
-    const trabajadoresConHorario = [];
-    const codigosVistos = new Set();
-    
+    // Agrupar por trabajador
+    const trabajadoresMap = new Map();
     mostrar.forEach(h => {
-        if(!codigosVistos.has(h.code)) {
-            codigosVistos.add(h.code);
-            const horariosTrabajador = mostrar.filter(h2 => h2.code === h.code);
-            trabajadoresConHorario.push({
+        if(!trabajadoresMap.has(h.code)) {
+            trabajadoresMap.set(h.code, {
                 code: h.code,
                 nombre: h.nombre,
                 idPersonal: h.idPersonal,
-                horarios: horariosTrabajador
+                horarios: []
             });
         }
+        trabajadoresMap.get(h.code).horarios.push(h);
     });
+
+    const trabajadoresConHorario = Array.from(trabajadoresMap.values());
 
     if(trabajadoresConHorario.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted" style="padding:24px;">No hay trabajadores con horario registrado</td></tr>`;
         return;
     }
 
-    tbody.innerHTML = trabajadoresConHorario.map((trabajador, index) => {
+    // Ordenar por nombre
+    trabajadoresConHorario.sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+    tbody.innerHTML = trabajadoresConHorario.map((trabajador) => {
         const horasTotales = calcularHorasSemanales(trabajador.horarios);
-        let horasClass = 'badge-blue';
-        if(horasTotales > 8) horasClass = 'badge-orange';
-        else if(horasTotales >= 7) horasClass = 'badge-green';
-        else if(horasTotales > 0) horasClass = 'badge-yellow';
         
-        // Construir detalle de horarios en una sola línea
-        let detalleHTML = '';
-        trabajador.horarios.forEach((h, idx) => {
-            if(idx > 0) detalleHTML += `<span class="separador"> | </span>`;
-            detalleHTML += `
-                <span class="item">
-                    <i class="fas fa-calendar-day"></i>
-                    <span class="valor">${esc(h.dia)}</span>
-                </span>
-                <span class="item">
-                    <i class="fas fa-clock"></i>
-                    <span class="valor">${h.entrada}</span>
-                </span>
-                <span class="item">
-                    <i class="fas fa-utensils"></i>
-                    <span class="valor">${h.refrigerioInicio && h.refrigerioFin ? `${h.refrigerioInicio}-${h.refrigerioFin}` : '-'}</span>
-                </span>
-                <span class="item">
-                    <i class="fas fa-clock"></i>
-                    <span class="valor">${h.salida}</span>
-                </span>
-            `;
-        });
+        // Determinar clase para badge de horas
+        let badgeClass = 'badge-horas';
+        let badgeText = `${horasTotales}h`;
+        if(horasTotales > HORAS_SEMANALES) {
+            badgeClass += ' excede';
+            badgeText += ' ⚠️ Excede';
+        } else if(horasTotales === HORAS_SEMANALES) {
+            badgeClass += ' completo';
+            badgeText += ' ✅';
+        } else if(horasTotales > 0) {
+            badgeClass += ' faltan';
+            badgeText += ` ⏳ Faltan ${(HORAS_SEMANALES - horasTotales).toFixed(1)}h`;
+        } else {
+            badgeClass += ' faltan';
+            badgeText = 'Sin horarios';
+        }
+        
+        // Construir días en una línea
+        const diasHTML = trabajador.horarios
+            .sort((a, b) => {
+                const orden = ['LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'];
+                return orden.indexOf(a.dia) - orden.indexOf(b.dia);
+            })
+            .map(h => {
+                const ref = h.refrigerioInicio && h.refrigerioFin ? 
+                    `${h.refrigerioInicio}-${h.refrigerioFin}` : '—';
+                return `
+                    <span class="dia-item">
+                        <span class="dia-nombre">${esc(h.dia)}</span>
+                        <span class="hora">${h.entrada}</span>
+                        <span class="ref">🍽️ ${ref}</span>
+                        <span class="hora">${h.salida}</span>
+                    </span>
+                `;
+            }).join(' ');
+        
+        // Contar días registrados
+        const diasRegistrados = trabajador.horarios.length;
+        const diasFaltantes = 6 - diasRegistrados;
+        const infoDias = diasFaltantes > 0 ? 
+            `(${diasRegistrados}/6 días)` : 
+            '(✅ completo)';
         
         return `
         <tr>
             <td>
-                <div class="horario-trabajador">${esc(trabajador.nombre)}</div>
-            </td>
-            <td>
-                <div class="horario-detalle">
-                    ${detalleHTML}
+                <div class="horario-fila">
+                    <div class="horario-nombre">${esc(trabajador.nombre)}</div>
+                    <div style="font-size:12px;color:#94A3B8;">${infoDias}</div>
                 </div>
             </td>
             <td>
-                <span class="badge ${horasClass}" style="font-size:14px;padding:4px 14px;">${horasTotales}h</span>
+                <div class="horario-dias">
+                    ${diasHTML}
+                </div>
+            </td>
+            <td>
+                <span class="${badgeClass}">${badgeText}</span>
             </td>
             <td>
                 <button class="action-btn btn-edit" onclick="abrirEditarHorarioPorTrabajador('${trabajador.code}')" title="Editar">✏️</button>
@@ -1356,56 +1377,46 @@ function abrirEditarHorarioPorTrabajador(code) {
         return;
     }
 
-    // Mostrar el primer horario para editar (o permitir editar cada uno)
-    const h = horariosTrabajador[0];
-    const diaActual = h.dia;
-    const entradaActual = h.entrada;
-    const salidaActual = h.salida;
-    const refInicioActual = h.refrigerioInicio || '';
-    const refFinActual = h.refrigerioFin || '';
-
-    const nuevoDia = prompt('Día (LUNES, MARTES, MIERCOLES, JUEVES, VIERNES, SABADO):', diaActual);
-    if(!nuevoDia) return;
-    const diaUpper = nuevoDia.toUpperCase().trim();
+    // Mostrar todos los días para editar
+    let mensaje = 'Editar horarios:\n\n';
+    const orden = ['LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'];
+    horariosTrabajador.sort((a, b) => orden.indexOf(a.dia) - orden.indexOf(b.dia));
+    
+    horariosTrabajador.forEach(h => {
+        const ref = h.refrigerioInicio && h.refrigerioFin ? `${h.refrigerioInicio}-${h.refrigerioFin}` : 'sin ref';
+        mensaje += `${h.dia}: ${h.entrada} | ${ref} | ${h.salida}\n`;
+    });
+    
+    mensaje += '\n\n¿Qué día desea editar? (Ingrese el nombre del día)';
+    const diaEditar = prompt(mensaje, horariosTrabajador[0].dia);
+    if(!diaEditar) return;
+    
+    const diaUpper = diaEditar.toUpperCase().trim();
     if(!['LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'].includes(diaUpper)) {
         toast('❌ Día no válido', 'error');
         return;
     }
+    
+    const horarioEditar = horariosTrabajador.find(h => h.dia === diaUpper);
+    if(!horarioEditar) {
+        toast(`❌ No hay horario para ${diaUpper}`, 'error');
+        return;
+    }
 
-    const nuevaEntrada = prompt('Hora de entrada (HH:MM):', entradaActual);
+    const nuevaEntrada = prompt('Nueva hora de entrada (HH:MM):', horarioEditar.entrada);
     if(!nuevaEntrada) return;
-    const nuevaSalida = prompt('Hora de salida (HH:MM):', salidaActual);
+    const nuevaSalida = prompt('Nueva hora de salida (HH:MM):', horarioEditar.salida);
     if(!nuevaSalida) return;
-    const nuevoRefInicio = prompt('Inicio refrigerio (HH:MM) o dejar vacío:', refInicioActual) || '';
-    const nuevoRefFin = prompt('Fin refrigerio (HH:MM) o dejar vacío:', refFinActual) || '';
+    const nuevoRefInicio = prompt('Nuevo inicio refrigerio (HH:MM) o dejar vacío:', horarioEditar.refrigerioInicio || '') || '';
+    const nuevoRefFin = prompt('Nuevo fin refrigerio (HH:MM) o dejar vacío:', horarioEditar.refrigerioFin || '') || '';
 
     const horaRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
     if(!horaRegex.test(nuevaEntrada) || !horaRegex.test(nuevaSalida)) {
         toast('❌ Formato de hora inválido (HH:MM)', 'error');
         return;
     }
-    if(nuevoRefInicio && !horaRegex.test(nuevoRefInicio)) {
-        toast('❌ Formato de refrigerio inválido', 'error');
-        return;
-    }
-    if(nuevoRefFin && !horaRegex.test(nuevoRefFin)) {
-        toast('❌ Formato de refrigerio inválido', 'error');
-        return;
-    }
 
-    const otrosHorarios = horarios.filter(h => h.code === code && h.dia !== diaActual);
-    const horasActuales = calcularHorasSemanales(otrosHorarios);
-    const nuevasHoras = calcularHoras(nuevaEntrada, nuevaSalida, nuevoRefInicio, nuevoRefFin);
-    const totalHoras = horasActuales + nuevasHoras;
-    
-    if(totalHoras > HORAS_SEMANALES) {
-        const exceso = totalHoras - HORAS_SEMANALES;
-        if(!confirm(`⚠️ Este horario excede las ${HORAS_SEMANALES}h semanales en ${exceso.toFixed(2)}h.\n¿Desea continuar?`)) {
-            return;
-        }
-    }
-
-    actualizarHorarioEnAPI(code, diaActual, diaUpper, nuevaEntrada, nuevoRefInicio, nuevoRefFin, nuevaSalida);
+    actualizarHorarioEnAPI(code, diaUpper, diaUpper, nuevaEntrada, nuevoRefInicio, nuevoRefFin, nuevaSalida);
 }
 
 async function actualizarHorarioEnAPI(code, diaAntiguo, dia, entrada, refInicio, refFin, salida) {
