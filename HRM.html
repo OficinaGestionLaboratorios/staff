@@ -83,9 +83,10 @@
         .badge-orange{background:#FFF7ED;color:#F97316}
         .badge-pink{background:#FDF2F8;color:#EC4899}
 
-        .contadores{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;padding:12px 16px;background:#fff;border-radius:12px;border:1px solid #E2E8F0}
+        .contadores{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:16px;padding:12px 20px;background:#fff;border-radius:12px;border:1px solid #E2E8F0;align-items:center}
         .contador-item{font-size:14px;color:#64748B}
         .contador-item strong{color:#1E293B;font-size:18px}
+        .contador-item .numero{font-size:22px;font-weight:700;color:#3B82F6}
 
         .action-bar{display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
         .search-box{position:relative;flex:1;min-width:200px;max-width:400px}
@@ -95,7 +96,7 @@
 
         /* TABLA */
         .table-container{background:#fff;border-radius:16px;border:1px solid #E2E8F0;overflow-x:auto}
-        table{width:100%;border-collapse:collapse;min-width:700px}
+        table{width:100%;border-collapse:collapse;min-width:500px}
         th{text-align:left;padding:12px 16px;background:#F8FAFC;font-weight:600;font-size:13px;color:#64748B;border-bottom:1px solid #E2E8F0}
         td{padding:10px 16px;border-bottom:1px solid #F1F5F9;font-size:14px}
         tr:last-child td{border-bottom:0}
@@ -107,6 +108,14 @@
         .btn-delete:hover{color:#EF4444}
         .btn-copy:hover{color:#8B5CF6}
         .btn-schedule:hover{color:#8B5CF6}
+
+        /* TABLA HORARIOS - NUEVO ESTILO */
+        .horario-trabajador{font-size:16px;font-weight:700;color:#1E293B}
+        .horario-detalle{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;font-size:13px;color:#64748B;margin-top:2px}
+        .horario-detalle .item{display:flex;align-items:center;gap:4px}
+        .horario-detalle .item i{font-size:12px;color:#94A3B8;width:16px}
+        .horario-detalle .item .valor{font-weight:600;color:#1E293B}
+        .horario-detalle .separador{color:#E2E8F0}
 
         /* FORMULARIO */
         .form-container{background:#fff;border-radius:20px;border:1px solid #E2E8F0;padding:28px}
@@ -150,7 +159,7 @@
         .tab-content{display:none}
         .tab-content.active{display:block}
 
-        /* Estilos de horarios (para la pestaña) */
+        /* Estilos de horarios */
         .alert-box{padding:12px 16px;border-radius:10px;margin-top:12px;font-size:14px;font-weight:500}
         .alert-success{background:#ECFDF5;color:#10B981;border:1px solid #A7F3D0}
         .alert-warning{background:#FEFCE8;color:#CA8A04;border:1px solid #FDE68A}
@@ -176,7 +185,7 @@
             .dashboard-grid{grid-template-columns:1fr}
             .action-bar{flex-direction:column;align-items:stretch}
             .search-box{max-width:none}
-            .contadores{flex-direction:column;gap:6px}
+            .contadores{flex-direction:column;gap:6px;align-items:flex-start}
             .form-container{padding:16px}
             .form-grid{grid-template-columns:1fr}
             .button-group{justify-content:center}
@@ -188,6 +197,8 @@
             .sub-nav{flex-wrap:wrap}
             .sub-nav .tab{font-size:12px;padding:6px 12px}
             .schedule-form-grid{grid-template-columns:1fr}
+            .horario-detalle{font-size:12px;gap:4px 10px}
+            .horario-trabajador{font-size:14px}
         }
     </style>
 </head>
@@ -234,7 +245,7 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbw2U4jjLX4BoGeRQ9iiush5OSut8goZ3jCwNiiB4bRtW7zqtavEXnXcwOYTkpCoHXRd/exec';
 const STORAGE_KEY = 'staffHubData';
 const STORAGE_TIMESTAMP_KEY = 'staffHubTimestamp';
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+const CACHE_DURATION = 5 * 60 * 1000;
 
 // ============================================================
 //  ESTADO GLOBAL
@@ -242,11 +253,11 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 let datos = [];
 let datosFiltrados = null;
 let vistaActual = 'listado';
-let subVistaActual = 'personal'; // 'personal' o 'horarios'
+let subVistaActual = 'personal';
 let editMode = false;
 let editCode = null;
 let currentDetail = null;
-let trabajadorSeleccionado = null; // Para preseleccionar en horarios
+let trabajadorSeleccionado = null;
 
 // ============================================================
 //  UTILIDADES
@@ -290,7 +301,7 @@ function formatearFecha(f) {
 }
 
 // ============================================================
-//  CARGA DE DATOS CON CACHE INTELIGENTE
+//  CARGA DE DATOS
 // ============================================================
 async function cargarDatos(force=false) {
     const loading = $('loadingListado') || $('loadingDash');
@@ -302,7 +313,6 @@ async function cargarDatos(force=false) {
         if(cached && ts && (Date.now() - parseInt(ts) < CACHE_DURATION)) {
             try {
                 datos = JSON.parse(cached);
-                toast('📦 Caché', 'info');
                 if(loading) loading.classList.remove('active');
                 return datos;
             } catch(e) {}
@@ -319,7 +329,6 @@ async function cargarDatos(force=false) {
             datos = result.data;
             localStorage.setItem(STORAGE_KEY, JSON.stringify(datos));
             localStorage.setItem(STORAGE_TIMESTAMP_KEY, String(Date.now()));
-            toast('✅ Datos cargados', 'success');
             if(loading) loading.classList.remove('active');
             return datos;
         } else {
@@ -331,7 +340,7 @@ async function cargarDatos(force=false) {
         console.error(e);
         const fallback = localStorage.getItem(STORAGE_KEY);
         if(fallback) {
-            try { datos = JSON.parse(fallback); toast('📦 Caché offline', 'info'); if(loading) loading.classList.remove('active'); return datos; } catch(e2){}
+            try { datos = JSON.parse(fallback); if(loading) loading.classList.remove('active'); return datos; } catch(e2){}
         }
         toast('❌ Error: ' + e.message, 'error');
         if(loading) loading.classList.remove('active');
@@ -340,7 +349,7 @@ async function cargarDatos(force=false) {
 }
 
 // ============================================================
-//  BUSCAR PERSONAL (solo por ID, Nombres y Apellidos)
+//  BUSCAR PERSONAL
 // ============================================================
 function buscarPersonal() {
     const busqueda = document.getElementById('buscarPersonal')?.value.toLowerCase().trim() || '';
@@ -374,7 +383,7 @@ function renderTabla(data) {
     if(!tbody) return;
     
     if(!mostrar || mostrar.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted" style="padding:24px;">Sin registros</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted" style="padding:24px;">Sin registros</td></tr>`;
         return;
     }
 
@@ -389,8 +398,6 @@ function renderTabla(data) {
                 <button class="action-btn btn-edit" onclick='editarRegistro(${JSON.stringify(item).replace(/'/g,"&#39;")})' title="Editar">✏️</button>
                 <button class="action-btn btn-delete" onclick='eliminarRegistro("${esc(item.CODE)}")' title="Eliminar">🗑️</button>
                 <button class="action-btn btn-copy" onclick='copiarDatos(${JSON.stringify(item).replace(/'/g,"&#39;")})' title="Copiar">📋</button>
-            </td>
-            <td>
                 <button class="action-btn btn-schedule" onclick='verHorarioDesdeLista(${JSON.stringify(item).replace(/'/g,"&#39;")})' title="Horario">🕐</button>
             </td>
         </tr>
@@ -398,16 +405,12 @@ function renderTabla(data) {
 }
 
 // ============================================================
-//  NUEVA FUNCIÓN: HORARIO - Selecciona trabajador y cambia a pestaña
+//  HORARIO - Selecciona trabajador y cambia a pestaña
 // ============================================================
 function verHorarioDesdeLista(data) {
-    // Guardar el trabajador seleccionado
     trabajadorSeleccionado = data;
-    
-    // Cambiar a la pestaña de horarios
     subVistaActual = 'horarios';
     cambiarSubVista('horarios');
-    
     toast(`🕐 Horario de ${data.NOMBRES} ${data.APE_PATERNO}`, 'info');
 }
 
@@ -419,7 +422,7 @@ function actualizarContadores(data) {
 }
 
 // ============================================================
-//  CRUD - ELIMINAR
+//  CRUD
 // ============================================================
 async function eliminarRegistro(code) {
     if(!confirm('⚠️ ¿Eliminar permanentemente?')) return;
@@ -442,9 +445,6 @@ async function eliminarRegistro(code) {
     }
 }
 
-// ============================================================
-//  CRUD - VER DETALLE
-// ============================================================
 function verDetalle(data) {
     currentDetail = data;
     const container = $('detalleContent');
@@ -462,9 +462,6 @@ function editarDesdeDetalle() {
     if(currentDetail) { editarRegistro(currentDetail); cerrarDetalle(); }
 }
 
-// ============================================================
-//  CRUD - EDITAR
-// ============================================================
 function editarRegistro(data) {
     sessionStorage.setItem('editData', JSON.stringify(data));
     sessionStorage.setItem('editMode', 'true');
@@ -472,9 +469,6 @@ function editarRegistro(data) {
     cambiarVista('registro');
 }
 
-// ============================================================
-//  COPIAR DATOS
-// ============================================================
 function copiarDatos(data) {
     const texto = `${data.NOMBRES||''} ${data.APE_PATERNO||''} ${data.APE_MATERNO||''} (Id: ${data.ID_PERSONAL||''})`;
     copiarTexto(texto);
@@ -488,9 +482,6 @@ function copiarFiltrados() {
     toast(`📋 ${data.length} registros`, 'success');
 }
 
-// ============================================================
-//  EXPORTAR CSV
-// ============================================================
 function exportarCSV() {
     const data = datosFiltrados || datos;
     if(!data?.length) { toast('⚠️ Sin datos', 'error'); return; }
@@ -619,7 +610,7 @@ function actualizarDashboard() {
 }
 
 // ============================================================
-//  SUB-NAVEGACIÓN (Pestañas)
+//  SUB-NAVEGACIÓN
 // ============================================================
 function renderSubNav() {
     return `
@@ -661,7 +652,7 @@ function renderContenidoPersonal() {
         <div id="loadingListado" class="loading"><div class="spinner"></div><p>Cargando...</p></div>
         <div class="table-container">
             <table>
-                <thead><tr><th>ID Personal</th><th>Apellido Paterno</th><th>Apellido Materno</th><th>Nombres</th><th>Acciones</th><th>Operaciones</th></tr></thead>
+                <thead><tr><th>ID Personal</th><th>Apellido Paterno</th><th>Apellido Materno</th><th>Nombres</th><th>Acciones</th></tr></thead>
                 <tbody id="tbodyListado"></tbody>
             </table>
         </div>
@@ -724,7 +715,8 @@ function renderContenidoHorarios() {
 
         <div class="contadores">
             <span class="contador-item">📊 Total Horarios: <strong id="totalHorarios">0</strong></span>
-            <span class="contador-item">⏱️ Horas Semanales: <strong id="totalHorasSemana">0</strong>h</span>
+            <span class="contador-item">👤 Con Horario: <strong id="totalConHorario">0</strong></span>
+            <span class="contador-item">⏱️ Promedio Semanal: <strong id="totalHorasSemana">0</strong>h</span>
             <span class="contador-item" id="estadoHorasSemana">✅ <strong>Completo</strong></span>
         </div>
 
@@ -734,17 +726,13 @@ function renderContenidoHorarios() {
                 <thead>
                     <tr>
                         <th>Trabajador</th>
-                        <th>ID Personal</th>
-                        <th>Día</th>
-                        <th>Entrada</th>
-                        <th>Refrigerio</th>
-                        <th>Salida</th>
+                        <th>Horario</th>
                         <th>Horas</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tbodyHorarios">
-                    <tr><td colspan="8" class="text-center text-muted" style="padding:24px;">Cargando horarios...</td></tr>
+                    <tr><td colspan="4" class="text-center text-muted" style="padding:24px;">Cargando horarios...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -776,17 +764,11 @@ function cambiarSubVista(subVista) {
         if(typeof horarios === 'undefined' || horarios.length === 0) {
             cargarHorarios();
         }
-        // Actualizar select y preseleccionar trabajador
         actualizarSelectTrabajadoresHorarios();
-        // Si hay un trabajador seleccionado, preseleccionarlo
         if(trabajadorSeleccionado) {
             const select = document.getElementById('selectTrabajadorHorarios');
             if(select) {
                 select.value = trabajadorSeleccionado.CODE;
-                // Disparar evento change para actualizar
-                const event = new Event('change');
-                select.dispatchEvent(event);
-                // Limpiar después de preseleccionar
                 setTimeout(() => {
                     trabajadorSeleccionado = null;
                 }, 500);
@@ -952,7 +934,7 @@ function cambiarVista(vista) {
 }
 
 // ============================================================
-//  RENDER LISTADO (con pestañas)
+//  RENDER LISTADO
 // ============================================================
 function renderListado() {
     subVistaActual = 'personal';
@@ -971,7 +953,7 @@ function renderListado() {
 }
 
 // ============================================================
-//  FUNCIONES DE HORARIOS (integradas)
+//  FUNCIONES DE HORARIOS
 // ============================================================
 const STORAGE_KEY_SCHEDULE = 'scheduleData';
 const HORAS_SEMANALES = 44;
@@ -1143,11 +1125,6 @@ function actualizarSelectTrabajadoresHorarios() {
                 ${esc(p.NOMBRES||'')} ${esc(p.APE_PATERNO||'')} (${esc(p.ID_PERSONAL||'')})
             </option>
         `).join('');
-    
-    // Si hay un trabajador seleccionado, preseleccionarlo
-    if(trabajadorSeleccionado) {
-        select.value = trabajadorSeleccionado.CODE;
-    }
 }
 
 function renderHorariosTabla() {
@@ -1156,30 +1133,75 @@ function renderHorariosTabla() {
 
     const mostrar = horariosFiltrados || horarios;
 
-    if(!mostrar || mostrar.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted" style="padding:24px;">No hay horarios registrados</td></tr>`;
+    // Filtrar solo empleados que tienen horario (agrupar por CODE)
+    const trabajadoresConHorario = [];
+    const codigosVistos = new Set();
+    
+    mostrar.forEach(h => {
+        if(!codigosVistos.has(h.code)) {
+            codigosVistos.add(h.code);
+            const horariosTrabajador = mostrar.filter(h2 => h2.code === h.code);
+            trabajadoresConHorario.push({
+                code: h.code,
+                nombre: h.nombre,
+                idPersonal: h.idPersonal,
+                horarios: horariosTrabajador
+            });
+        }
+    });
+
+    if(trabajadoresConHorario.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted" style="padding:24px;">No hay trabajadores con horario registrado</td></tr>`;
         return;
     }
 
-    tbody.innerHTML = mostrar.map((h, index) => {
-        const horas = calcularHoras(h.entrada, h.salida, h.refrigerioInicio, h.refrigerioFin);
+    tbody.innerHTML = trabajadoresConHorario.map((trabajador, index) => {
+        const horasTotales = calcularHorasSemanales(trabajador.horarios);
         let horasClass = 'badge-blue';
-        if(horas > 8) horasClass = 'badge-orange';
-        else if(horas >= 7) horasClass = 'badge-green';
-        else if(horas > 0) horasClass = 'badge-yellow';
+        if(horasTotales > 8) horasClass = 'badge-orange';
+        else if(horasTotales >= 7) horasClass = 'badge-green';
+        else if(horasTotales > 0) horasClass = 'badge-yellow';
+        
+        // Construir detalle de horarios en una sola línea
+        let detalleHTML = '';
+        trabajador.horarios.forEach((h, idx) => {
+            if(idx > 0) detalleHTML += `<span class="separador"> | </span>`;
+            detalleHTML += `
+                <span class="item">
+                    <i class="fas fa-calendar-day"></i>
+                    <span class="valor">${esc(h.dia)}</span>
+                </span>
+                <span class="item">
+                    <i class="fas fa-clock"></i>
+                    <span class="valor">${h.entrada}</span>
+                </span>
+                <span class="item">
+                    <i class="fas fa-utensils"></i>
+                    <span class="valor">${h.refrigerioInicio && h.refrigerioFin ? `${h.refrigerioInicio}-${h.refrigerioFin}` : '-'}</span>
+                </span>
+                <span class="item">
+                    <i class="fas fa-clock"></i>
+                    <span class="valor">${h.salida}</span>
+                </span>
+            `;
+        });
         
         return `
         <tr>
-            <td><strong>${esc(h.nombre)}</strong></td>
-            <td>${esc(h.idPersonal || '')}</td>
-            <td><span class="badge badge-purple">${esc(h.dia)}</span></td>
-            <td><strong>${h.entrada}</strong></td>
-            <td>${h.refrigerioInicio && h.refrigerioFin ? `${h.refrigerioInicio} - ${h.refrigerioFin}` : '-'}</td>
-            <td><strong>${h.salida}</strong></td>
-            <td><span class="badge ${horasClass}">${horas}h</span></td>
             <td>
-                <button class="action-btn btn-edit" onclick="abrirEditarHorario(${index})" title="Editar">✏️</button>
-                <button class="action-btn btn-delete" onclick="eliminarHorario(${index})" title="Eliminar">🗑️</button>
+                <div class="horario-trabajador">${esc(trabajador.nombre)}</div>
+            </td>
+            <td>
+                <div class="horario-detalle">
+                    ${detalleHTML}
+                </div>
+            </td>
+            <td>
+                <span class="badge ${horasClass}" style="font-size:14px;padding:4px 14px;">${horasTotales}h</span>
+            </td>
+            <td>
+                <button class="action-btn btn-edit" onclick="abrirEditarHorarioPorTrabajador('${trabajador.code}')" title="Editar">✏️</button>
+                <button class="action-btn btn-delete" onclick="eliminarTodosHorarios('${trabajador.code}')" title="Eliminar todos">🗑️</button>
             </td>
         </tr>
     `}).join('');
@@ -1190,23 +1212,25 @@ function renderHorariosTabla() {
 function actualizarContadoresHorarios() {
     const mostrar = horariosFiltrados || horarios;
     const total = $('totalHorarios');
+    const totalConHorario = $('totalConHorario');
     const totalHorasSemana = $('totalHorasSemana');
     const estadoHoras = $('estadoHorasSemana');
 
     if(total) total.textContent = mostrar.length;
     
-    if(mostrar.length > 0 && totalHorasSemana) {
-        const trabajadores = new Set();
+    // Contar trabajadores únicos con horario
+    const codigosUnicos = new Set();
+    mostrar.forEach(h => codigosUnicos.add(h.code));
+    if(totalConHorario) totalConHorario.textContent = codigosUnicos.size;
+    
+    if(codigosUnicos.size > 0 && totalHorasSemana) {
         let totalHoras = 0;
-        mostrar.forEach(h => {
-            if(!trabajadores.has(h.code)) {
-                trabajadores.add(h.code);
-                const horariosTrabajador = mostrar.filter(h2 => h2.code === h.code);
-                const horas = calcularHorasSemanales(horariosTrabajador);
-                totalHoras += horas;
-            }
+        codigosUnicos.forEach(code => {
+            const horariosTrabajador = mostrar.filter(h => h.code === code);
+            const horas = calcularHorasSemanales(horariosTrabajador);
+            totalHoras += horas;
         });
-        const promedio = trabajadores.size > 0 ? Math.round((totalHoras / trabajadores.size) * 100) / 100 : 0;
+        const promedio = Math.round((totalHoras / codigosUnicos.size) * 100) / 100;
         totalHorasSemana.textContent = promedio.toFixed(1);
         
         if(estadoHoras) {
@@ -1325,15 +1349,20 @@ async function guardarHorario() {
     }
 }
 
-function abrirEditarHorario(index) {
-    const data = horariosFiltrados ? horariosFiltrados[index] : horarios[index];
-    if(!data) return;
+function abrirEditarHorarioPorTrabajador(code) {
+    const horariosTrabajador = horarios.filter(h => h.code === code);
+    if(horariosTrabajador.length === 0) {
+        toast('❌ No hay horarios para este trabajador', 'error');
+        return;
+    }
 
-    const diaActual = data.dia;
-    const entradaActual = data.entrada;
-    const salidaActual = data.salida;
-    const refInicioActual = data.refrigerioInicio || '';
-    const refFinActual = data.refrigerioFin || '';
+    // Mostrar el primer horario para editar (o permitir editar cada uno)
+    const h = horariosTrabajador[0];
+    const diaActual = h.dia;
+    const entradaActual = h.entrada;
+    const salidaActual = h.salida;
+    const refInicioActual = h.refrigerioInicio || '';
+    const refFinActual = h.refrigerioFin || '';
 
     const nuevoDia = prompt('Día (LUNES, MARTES, MIERCOLES, JUEVES, VIERNES, SABADO):', diaActual);
     if(!nuevoDia) return;
@@ -1364,7 +1393,7 @@ function abrirEditarHorario(index) {
         return;
     }
 
-    const otrosHorarios = horarios.filter((h, idx) => idx !== index && h.code === data.code);
+    const otrosHorarios = horarios.filter(h => h.code === code && h.dia !== diaActual);
     const horasActuales = calcularHorasSemanales(otrosHorarios);
     const nuevasHoras = calcularHoras(nuevaEntrada, nuevaSalida, nuevoRefInicio, nuevoRefFin);
     const totalHoras = horasActuales + nuevasHoras;
@@ -1376,7 +1405,7 @@ function abrirEditarHorario(index) {
         }
     }
 
-    actualizarHorarioEnAPI(data.code, data.dia, diaUpper, nuevaEntrada, nuevoRefInicio, nuevoRefFin, nuevaSalida);
+    actualizarHorarioEnAPI(code, diaActual, diaUpper, nuevaEntrada, nuevoRefInicio, nuevoRefFin, nuevaSalida);
 }
 
 async function actualizarHorarioEnAPI(code, diaAntiguo, dia, entrada, refInicio, refFin, salida) {
@@ -1416,41 +1445,41 @@ async function actualizarHorarioEnAPI(code, diaAntiguo, dia, entrada, refInicio,
     }
 }
 
-async function eliminarHorario(index) {
-    const data = horariosFiltrados ? horariosFiltrados[index] : horarios[index];
-    if(!data) return;
-
-    if(!confirm(`⚠️ ¿Eliminar horario de ${data.nombre} (${data.dia})?`)) return;
-
-    try {
-        const params = new URLSearchParams();
-        params.append('action', 'delete_schedule');
-        params.append('CODE', data.code);
-        params.append('DIA', data.dia);
-
-        const resp = await fetch(API_URL + '?' + params.toString());
-        const texto = await resp.text();
-        let result;
-        try { result = JSON.parse(texto); } catch(e) { result = { success: texto.includes('success') }; }
-
-        if(result.success) {
-            const indexReal = horarios.findIndex(h => h.code === data.code && h.dia === data.dia);
-            if(indexReal !== -1) horarios.splice(indexReal, 1);
-            localStorage.setItem(STORAGE_KEY_SCHEDULE, JSON.stringify(horarios));
-
-            if(horariosFiltrados) {
-                const filtradoIndex = horariosFiltrados.findIndex(h => h.code === data.code && h.dia === data.dia);
-                if(filtradoIndex !== -1) horariosFiltrados.splice(filtradoIndex, 1);
-            }
-
-            renderHorariosTabla();
-            toast(`🗑️ Horario eliminado`, 'success');
-        } else {
-            toast('❌ ' + (result.message || 'Error al eliminar'), 'error');
-        }
-    } catch(e) {
-        toast('❌ Error: ' + e.message, 'error');
+async function eliminarTodosHorarios(code) {
+    const horariosTrabajador = horarios.filter(h => h.code === code);
+    if(horariosTrabajador.length === 0) {
+        toast('❌ No hay horarios para este trabajador', 'error');
+        return;
     }
+
+    if(!confirm(`⚠️ ¿Eliminar TODOS los horarios de ${horariosTrabajador[0].nombre} (${horariosTrabajador.length} registros)?`)) return;
+
+    let eliminados = 0;
+    for(const h of horariosTrabajador) {
+        try {
+            const params = new URLSearchParams();
+            params.append('action', 'delete_schedule');
+            params.append('CODE', h.code);
+            params.append('DIA', h.dia);
+
+            const resp = await fetch(API_URL + '?' + params.toString());
+            const texto = await resp.text();
+            let result;
+            try { result = JSON.parse(texto); } catch(e) { result = { success: texto.includes('success') }; }
+
+            if(result.success) {
+                const index = horarios.findIndex(h2 => h2.code === h.code && h2.dia === h.dia);
+                if(index !== -1) horarios.splice(index, 1);
+                eliminados++;
+            }
+        } catch(e) {
+            console.error('Error eliminando horario:', e);
+        }
+    }
+
+    localStorage.setItem(STORAGE_KEY_SCHEDULE, JSON.stringify(horarios));
+    renderHorariosTabla();
+    toast(`🗑️ ${eliminados} horarios eliminados de ${horariosTrabajador[0].nombre}`, 'success');
 }
 
 function exportarHorariosCSV() {
