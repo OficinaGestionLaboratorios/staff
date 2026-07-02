@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Personal - UPAO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* ===== CSS MINIMIZADO Y UNIFICADO ===== */
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Segoe UI',system-ui,sans-serif;background:#F8FAFC;color:#1E293B;line-height:1.5;min-height:100vh;display:flex;flex-direction:column}
+        
+        /* HEADER COMPACTO */
+        .app-header{background:#fff;border-bottom:1px solid #E2E8F0;padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;flex-shrink:0}
+        .logo{font-weight:700;font-size:15px;color:#1E293B;display:flex;align-items:center;gap:10px}
+        .logo img{height:32px}
+        .logo i{color:#3B82F6;font-size:20px}
+        .main-nav{display:flex;gap:28px;align-items:center}
+        .nav-link{text-decoration:none;color:#64748B;font-size:14px;font-weight:500;transition:color .2s;cursor:pointer;background:0;border:0;padding:4px 0;position:relative}
+        .nav-link:hover{color:#3B82F6}
+        .nav-link.active{color:#3B82F6}
+        .nav-link.active::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:#3B82F6;border-radius:2px}
+        .user-menu{width:36px;height:36px;background:#F1F5F9;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
+        .user-menu i{color:#64748B;font-size:20px}
+
+        /* SUB-NAV (pestañas internas) */
+        .sub-nav{display:flex;gap:4px;background:#F1F5F9;border-radius:12px;padding:4px;margin-bottom:20px;flex-wrap:wrap}
+        .sub-nav .tab{text-decoration:none;color:#64748B;font-size:14px;font-weight:500;padding:8px 20px;border-radius:8px;cursor:pointer;transition:all .2s;background:0;border:0;font-family:inherit}
+        .sub-nav .tab:hover{background:#E2E8F0;color:#1E293B}
+        .sub-nav .tab.active{background:#fff;color:#3B82F6;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+        .sub-nav .tab i{margin-right:6px}
+
+        /* MAIN CONTENT */
+        .main-content{flex:1;padding:24px 32px;max-width:1400px;margin:0 auto;width:100%}
+        .breadcrumbs{display:flex;align-items:center;gap:8px;margin-bottom:24px;font-size:13px;flex-wrap:wrap}
+        .breadcrumbs a{text-decoration:none;color:#64748B;cursor:pointer;transition:color .2s}
+        .breadcrumbs a:hover{color:#3B82F6}
+        .breadcrumbs span{color:#94A3B8}
+        .breadcrumbs .current{color:#1E293B;font-weight:500}
+        
+        .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px;flex-wrap:wrap;gap:15px}
+        .topbar h1{font-size:24px;font-weight:700}
+        .topbar-actions{display:flex;gap:12px;flex-wrap:wrap}
+
+        /* BOTONES */
+        .btn{padding:10px 20px;border-radius:10px;border:0;font-weight:500;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;text-decoration:none;transition:all .2s}
+        .btn-primary{background:#3B82F6;color:#fff}
+        .btn-primary:hover{background:#2563EB;transform:translateY(-1px)}
+        .btn-outline{background:0;color:#3B82F6;border:1px solid #3B82F6}
+        .btn-outline:hover{background:#EFF6FF;transform:translateY(-1px)}
+        .btn-success{background:#10B981;color:#fff}
+        .btn-success:hover{background:#059669;transform:translateY(-1px)}
+        .btn-purple{background:#8B5CF6;color:#fff}
+        .btn-purple:hover{background:#7C3AED;transform:translateY(-1px)}
+        .btn-secondary{background:#F1F5F9;color:#1E293B}
+        .btn-secondary:hover{background:#E2E8F0}
+        .btn-warning{background:#F59E0B;color:#fff}
+        .btn-warning:hover{background:#D97706}
+        .btn-danger{background:#EF4444;color:#fff}
+        .btn-danger:hover{background:#DC2626}
+
+        .total-badge{background:#EFF6FF;color:#3B82F6;padding:6px 16px;border-radius:20px;font-size:14px;font-weight:600;white-space:nowrap}
+        .total-badge span{font-size:18px}
+
+        /* DASHBOARD */
+        .dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-bottom:30px}
+        .dash-card{background:#fff;border-radius:16px;padding:20px;border:1px solid #E2E8F0;transition:transform .2s,box-shadow .2s}
+        .dash-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.05)}
+        .dash-card .card-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+        .dash-card .card-header i{font-size:20px;color:#3B82F6;width:36px;height:36px;background:#EFF6FF;border-radius:10px;display:flex;align-items:center;justify-content:center}
+        .dash-card .card-header h3{font-size:14px;font-weight:600;color:#64748B}
+        .dash-card .number{font-size:32px;font-weight:700;color:#1E293B}
+        .dash-card .sub-info{font-size:13px;color:#64748B;margin-top:6px}
+        .dash-card .list-items{margin-top:10px;max-height:300px;overflow-y:auto}
+        .dash-card .list-items .item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F1F5F9;font-size:14px}
+        .dash-card .list-items .item:last-child{border-bottom:0}
+        .dash-card .list-items .item .label{color:#1E293B;font-weight:500}
+        .dash-card .list-items .item .value{color:#64748B;font-size:13px}
+        .badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600}
+        .badge-blue{background:#EFF6FF;color:#3B82F6}
+        .badge-green{background:#ECFDF5;color:#10B981}
+        .badge-purple{background:#F5F3FF;color:#8B5CF6}
+        .badge-orange{background:#FFF7ED;color:#F97316}
+        .badge-pink{background:#FDF2F8;color:#EC4899}
+
+        .contadores{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;padding:12px 16px;background:#fff;border-radius:12px;border:1px solid #E2E8F0}
+        .contador-item{font-size:14px;color:#64748B}
+        .contador-item strong{color:#1E293B;font-size:18px}
+
+        .action-bar{display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+        .search-box{position:relative;flex:1;min-width:200px;max-width:400px}
+        .search-box input{width:100%;padding:8px 12px 8px 34px;border:1px solid #E2E8F0;border-radius:10px;font-size:14px;background:#fff;transition:all .2s}
+        .search-box input:focus{outline:0;border-color:#3B82F6;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+        .search-box i{position:absolute;left:10px;top:9px;color:#94A3B8;font-size:14px}
+
+        /* TABLA */
+        .table-container{background:#fff;border-radius:16px;border:1px solid #E2E8F0;overflow-x:auto}
+        table{width:100%;border-collapse:collapse;min-width:700px}
+        th{text-align:left;padding:12px 16px;background:#F8FAFC;font-weight:600;font-size:13px;color:#64748B;border-bottom:1px solid #E2E8F0}
+        td{padding:10px 16px;border-bottom:1px solid #F1F5F9;font-size:14px}
+        tr:last-child td{border-bottom:0}
+        tr:hover td{background:#FAFBFC}
+        .action-btn{width:32px;height:32px;border:0;background:0;border-radius:8px;cursor:pointer;font-size:16px;transition:background .2s}
+        .action-btn:hover{background:#F1F5F9}
+        .btn-view:hover{color:#10B981}
+        .btn-edit:hover{color:#3B82F6}
+        .btn-delete:hover{color:#EF4444}
+        .btn-copy:hover{color:#8B5CF6}
+        .btn-schedule:hover{color:#8B5CF6}
+
+        /* FORMULARIO */
+        .form-container{background:#fff;border-radius:20px;border:1px solid #E2E8F0;padding:28px}
+        .form-container h1{font-size:22px;font-weight:700;margin-bottom:4px}
+        .subtitle{color:#64748B;font-size:14px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid #E2E8F0}
+        .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-bottom:24px}
+        .form-group{display:flex;flex-direction:column;gap:4px}
+        .form-group label{font-size:13px;font-weight:600;color:#64748B}
+        .form-group label .required{color:#EF4444}
+        .form-group input,.form-group select{padding:9px 12px;border:1px solid #E2E8F0;border-radius:10px;font-size:14px;transition:all .2s;background:#fff;width:100%}
+        .form-group input:focus,.form-group select:focus{outline:0;border-color:#3B82F6;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+        .section-title{grid-column:1/-1;font-size:15px;font-weight:700;color:#1E293B;margin-top:6px;margin-bottom:2px;padding-left:10px;border-left:3px solid #3B82F6}
+        .button-group{display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap;padding-top:18px;border-top:1px solid #E2E8F0}
+        .detail-field{background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:8px 12px;font-size:14px;word-break:break-word}
+
+        /* MODAL */
+        .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center;padding:20px}
+        .modal.active{display:flex}
+        .modal-content{background:#fff;width:min(1000px,95%);max-height:90vh;overflow-y:auto;border-radius:20px;padding:28px}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid #E2E8F0;flex-wrap:wrap;gap:10px}
+        .modal-title{font-size:20px;font-weight:700}
+        .close-btn{width:36px;height:36px;border:0;border-radius:10px;background:#F1F5F9;cursor:pointer;font-size:18px}
+        .close-btn:hover{background:#E2E8F0}
+        .modal-actions{display:flex;justify-content:flex-end;gap:12px;padding-top:18px;border-top:1px solid #E2E8F0;margin-top:4px;flex-wrap:wrap}
+
+        .toast{position:fixed;bottom:24px;right:24px;background:#1E293B;color:#fff;padding:12px 20px;border-radius:12px;z-index:1100;opacity:0;transform:translateY(20px);transition:all .3s;max-width:380px;font-size:14px}
+        .toast.show{opacity:1;transform:translateY(0)}
+        .toast.success{background:#10B981}
+        .toast.error{background:#EF4444}
+        .toast.info{background:#3B82F6}
+
+        .loading{display:none;text-align:center;padding:20px}
+        .loading.active{display:block}
+        .spinner{width:40px;height:40px;border:3px solid #E2E8F0;border-top-color:#3B82F6;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .hidden{display:none!important}
+        .text-center{text-align:center}
+        .text-muted{color:#94A3B8}
+
+        /* Contenedor de pestañas */
+        .tab-content{display:none}
+        .tab-content.active{display:block}
+
+        /* Estilos de horarios (para la pestaña) */
+        .alert-box{padding:12px 16px;border-radius:10px;margin-top:12px;font-size:14px;font-weight:500}
+        .alert-success{background:#ECFDF5;color:#10B981;border:1px solid #A7F3D0}
+        .alert-warning{background:#FEFCE8;color:#CA8A04;border:1px solid #FDE68A}
+        .alert-danger{background:#FEF2F2;color:#EF4444;border:1px solid #FCA5A5}
+        .alert-info{background:#EFF6FF;color:#3B82F6;border:1px solid #93C5FD}
+
+        .badge-yellow{background:#FEFCE8;color:#CA8A04}
+
+        .schedule-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+        .schedule-form-grid .form-group{display:flex;flex-direction:column;gap:4px}
+        .schedule-form-grid .form-group label{font-size:12px;font-weight:600;color:#64748B}
+
+        @media (max-width:768px){
+            .app-header{padding:0 20px;height:auto;flex-wrap:wrap;padding:10px 20px;gap:6px}
+            .logo{font-size:13px}
+            .logo img{height:28px}
+            .logo span{display:none}
+            .main-nav{gap:12px;flex-wrap:wrap;order:3;width:100%;justify-content:center;padding-top:4px;border-top:1px solid #F1F5F9}
+            .nav-link{font-size:12px;padding:4px 6px}
+            .main-content{padding:14px 16px}
+            .topbar{flex-direction:column;align-items:stretch;gap:10px}
+            .topbar h1{font-size:20px}
+            .dashboard-grid{grid-template-columns:1fr}
+            .action-bar{flex-direction:column;align-items:stretch}
+            .search-box{max-width:none}
+            .contadores{flex-direction:column;gap:6px}
+            .form-container{padding:16px}
+            .form-grid{grid-template-columns:1fr}
+            .button-group{justify-content:center}
+            .modal-content{padding:16px}
+            .toast{left:16px;right:16px;bottom:16px;max-width:none;text-align:center}
+            table{min-width:360px;font-size:12px}
+            th,td{padding:6px 8px;font-size:12px}
+            .action-btn{width:24px;height:24px;font-size:12px}
+            .sub-nav{flex-wrap:wrap}
+            .sub-nav .tab{font-size:12px;padding:6px 12px}
+            .schedule-form-grid{grid-template-columns:1fr}
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+    <div class="logo"><img src="logo.png" alt=""><span>OFICINA DE GESTIÓN DE LABORATORIOS</span></div>
+    <nav class="main-nav">
+        <a href="index.html" class="nav-link" id="navInicio">Inicio</a>
+        <button class="nav-link active" id="navGestion" onclick="cambiarVista('listado')">Gestión Personal</button>
+        <a href="#" class="nav-link">Documentos</a>
+        <a href="#" class="nav-link">Noticias</a>
+        <a href="#" class="nav-link">Contacto</a>
+    </nav>
+    <div class="user-menu"><i class="fas fa-user-circle"></i></div>
+</header>
+
+<!-- CONTENIDO PRINCIPAL -->
+<main class="main-content" id="mainContent"></main>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<!-- MODAL DETALLE -->
+<div id="modalDetalle" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title"><i class="fas fa-id-card"></i> Detalle Completo</h2>
+            <button class="close-btn" onclick="cerrarDetalle()">✕</button>
+        </div>
+        <div id="detalleContent" class="form-grid"></div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="cerrarDetalle()">Cerrar</button>
+            <button class="btn btn-primary" onclick="editarDesdeDetalle()">✏️ Editar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ============================================================
+//  CONFIGURACIÓN - CACHE OPTIMIZADA
+// ============================================================
+const API_URL = 'https://script.google.com/macros/s/AKfycbw2U4jjLX4BoGeRQ9iiush5OSut8goZ3jCwNiiB4bRtW7zqtavEXnXcwOYTkpCoHXRd/exec';
+const STORAGE_KEY = 'staffHubData';
+const STORAGE_TIMESTAMP_KEY = 'staffHubTimestamp';
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+
+// ============================================================
+//  ESTADO GLOBAL
+// ============================================================
+let datos = [];
+let datosFiltrados = null;
+let vistaActual = 'listado';
+let subVistaActual = 'personal'; // 'personal' o 'horarios'
+let editMode = false;
+let editCode = null;
+let currentDetail = null;
+let trabajadorSeleccionado = null; // Para preseleccionar en horarios
+
+// ============================================================
+//  UTILIDADES
+// ============================================================
+const $ = id => document.getElementById(id);
+const esc = s => String(s||'').replace(/[&<>]/g,m=>m==='&'?'&amp;':m==='<'?'&lt;':'&gt;');
+
+function toast(msg, type='success') {
+    const t = $('toast');
+    t.textContent = msg;
+    t.className = `toast ${type} show`;
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function cerrarDetalle() {
+    $('modalDetalle').classList.remove('active');
+    currentDetail = null;
+}
+
+function copiarTexto(texto) {
+    if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(texto).then(() => toast('📋 Copiado', 'success'))
+            .catch(() => fallbackCopy(texto));
+    } else fallbackCopy(texto);
+}
+
+function fallbackCopy(texto) {
+    const ta = document.createElement('textarea');
+    ta.value = texto;
+    ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); toast('📋 Copiado', 'success'); } catch(e) { toast('❌ Error', 'error'); }
+    document.body.removeChild(ta);
+}
+
+function formatearFecha(f) {
+    if(!f) return '';
+    try { const d = new Date(f); if(isNaN(d)) return f; return d.toLocaleDateString('es-ES'); } catch(e){return f;}
+}
+
+// ============================================================
+//  CARGA DE DATOS CON CACHE INTELIGENTE
+// ============================================================
+async function cargarDatos(force=false) {
+    const loading = $('loadingListado') || $('loadingDash');
+    if(loading) loading.classList.add('active');
+
+    if(!force) {
+        const cached = localStorage.getItem(STORAGE_KEY);
+        const ts = localStorage.getItem(STORAGE_TIMESTAMP_KEY);
+        if(cached && ts && (Date.now() - parseInt(ts) < CACHE_DURATION)) {
+            try {
+                datos = JSON.parse(cached);
+                toast('📦 Caché', 'info');
+                if(loading) loading.classList.remove('active');
+                return datos;
+            } catch(e) {}
+        }
+    }
+
+    try {
+        const resp = await fetch(API_URL + '?action=list');
+        const texto = await resp.text();
+        let result;
+        try { result = JSON.parse(texto); } catch(e) { throw new Error('Respuesta no JSON'); }
+
+        if(result.success && result.data) {
+            datos = result.data;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(datos));
+            localStorage.setItem(STORAGE_TIMESTAMP_KEY, String(Date.now()));
+            toast('✅ Datos cargados', 'success');
+            if(loading) loading.classList.remove('active');
+            return datos;
+        } else {
+            toast('❌ ' + (result.message || 'Error'), 'error');
+            if(loading) loading.classList.remove('active');
+            return [];
+        }
+    } catch(e) {
+        console.error(e);
+        const fallback = localStorage.getItem(STORAGE_KEY);
+        if(fallback) {
+            try { datos = JSON.parse(fallback); toast('📦 Caché offline', 'info'); if(loading) loading.classList.remove('active'); return datos; } catch(e2){}
+        }
+        toast('❌ Error: ' + e.message, 'error');
+        if(loading) loading.classList.remove('active');
+        return [];
+    }
+}
+
+// ============================================================
+//  BUSCAR PERSONAL (solo por ID, Nombres y Apellidos)
+// ============================================================
+function buscarPersonal() {
+    const busqueda = document.getElementById('buscarPersonal')?.value.toLowerCase().trim() || '';
+
+    if(!busqueda) {
+        datosFiltrados = null;
+        renderTabla(datos);
+        actualizarContadores(datos);
+        return;
+    }
+
+    datosFiltrados = datos.filter(item => {
+        const texto = `${item.ID_PERSONAL||''} ${item.NOMBRES||''} ${item.APE_PATERNO||''} ${item.APE_MATERNO||''}`.toLowerCase();
+        return texto.includes(busqueda);
+    });
+
+    renderTabla(datosFiltrados);
+    actualizarContadores(datosFiltrados);
+}
+
+// ============================================================
+//  RENDER TABLA
+// ============================================================
+function renderTabla(data) {
+    const tbody = $('tbodyListado');
+    const total = $('totalPersonalListado');
+    const filtrado = $('totalFiltrado');
+    const mostrar = data || datos;
+    if(total) total.textContent = mostrar.length;
+    if(filtrado) filtrado.textContent = mostrar.length;
+    if(!tbody) return;
+    
+    if(!mostrar || mostrar.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted" style="padding:24px;">Sin registros</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = mostrar.map(item => `
+        <tr>
+            <td>${esc(item.ID_PERSONAL)}</td>
+            <td>${esc(item.APE_PATERNO)}</td>
+            <td>${esc(item.APE_MATERNO)}</td>
+            <td>${esc(item.NOMBRES)}</td>
+            <td>
+                <button class="action-btn btn-view" onclick='verDetalle(${JSON.stringify(item).replace(/'/g,"&#39;")})' title="Ver">👁️</button>
+                <button class="action-btn btn-edit" onclick='editarRegistro(${JSON.stringify(item).replace(/'/g,"&#39;")})' title="Editar">✏️</button>
+                <button class="action-btn btn-delete" onclick='eliminarRegistro("${esc(item.CODE)}")' title="Eliminar">🗑️</button>
+                <button class="action-btn btn-copy" onclick='copiarDatos(${JSON.stringify(item).replace(/'/g,"&#39;")})' title="Copiar">📋</button>
+            </td>
+            <td>
+                <button class="action-btn btn-schedule" onclick='verHorarioDesdeLista(${JSON.stringify(item).replace(/'/g,"&#39;")})' title="Horario">🕐</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// ============================================================
+//  NUEVA FUNCIÓN: HORARIO - Selecciona trabajador y cambia a pestaña
+// ============================================================
+function verHorarioDesdeLista(data) {
+    // Guardar el trabajador seleccionado
+    trabajadorSeleccionado = data;
+    
+    // Cambiar a la pestaña de horarios
+    subVistaActual = 'horarios';
+    cambiarSubVista('horarios');
+    
+    toast(`🕐 Horario de ${data.NOMBRES} ${data.APE_PATERNO}`, 'info');
+}
+
+function actualizarContadores(data) {
+    const mostrar = data || datos;
+    ['totalPersonalListado','totalFiltrado'].forEach(id => {
+        const el = $(id); if(el) el.textContent = mostrar.length;
+    });
+}
+
+// ============================================================
+//  CRUD - ELIMINAR
+// ============================================================
+async function eliminarRegistro(code) {
+    if(!confirm('⚠️ ¿Eliminar permanentemente?')) return;
+    toast('Eliminando...', 'info');
+    try {
+        const resp = await fetch(API_URL + '?action=delete&code=' + encodeURIComponent(code));
+        const texto = await resp.text();
+        let result;
+        try { result = JSON.parse(texto); } catch(e) { result = { success: texto.includes('success') }; }
+        if(result.success) {
+            toast('✅ Eliminado', 'success');
+            datos = [];
+            datosFiltrados = null;
+            cambiarVista('listado');
+        } else {
+            toast('❌ ' + (result.message || 'Error'), 'error');
+        }
+    } catch(e) {
+        toast('❌ ' + e.message, 'error');
+    }
+}
+
+// ============================================================
+//  CRUD - VER DETALLE
+// ============================================================
+function verDetalle(data) {
+    currentDetail = data;
+    const container = $('detalleContent');
+    const campos = ['CODE','ID_PERSONAL','APE_PATERNO','APE_MATERNO','NOMBRES','FEC_NACIMIENTO','SEXO','DNI','TELEFONO','DIRECCION','EMAIL_PERSONAL','EMAIL_INSTITUCIONAL','EDUCACION_SUPERIOR','ESTADO_EDUCACION','PROFESION','PROGRAMA','CARGO','LUGAR_TRABAJO','TIPO_CONTRATO','TIPO_LABORATORIO','SCRUBS_PANTALON','SCRUBS_CHAQUETA','POLO_CAMISERO','Camisa','PANTALON'];
+    container.innerHTML = campos.map(key => `
+        <div class="form-group">
+            <label>${key}</label>
+            <div class="detail-field">${esc(data[key]||'')}</div>
+        </div>
+    `).join('');
+    $('modalDetalle').classList.add('active');
+}
+
+function editarDesdeDetalle() {
+    if(currentDetail) { editarRegistro(currentDetail); cerrarDetalle(); }
+}
+
+// ============================================================
+//  CRUD - EDITAR
+// ============================================================
+function editarRegistro(data) {
+    sessionStorage.setItem('editData', JSON.stringify(data));
+    sessionStorage.setItem('editMode', 'true');
+    subVistaActual = 'personal';
+    cambiarVista('registro');
+}
+
+// ============================================================
+//  COPIAR DATOS
+// ============================================================
+function copiarDatos(data) {
+    const texto = `${data.NOMBRES||''} ${data.APE_PATERNO||''} ${data.APE_MATERNO||''} (Id: ${data.ID_PERSONAL||''})`;
+    copiarTexto(texto);
+}
+
+function copiarFiltrados() {
+    const data = datosFiltrados || datos;
+    if(!data?.length) { toast('❌ Sin datos', 'error'); return; }
+    const texto = data.map(item => `${item.NOMBRES||''} ${item.APE_PATERNO||''} ${item.APE_MATERNO||''} (Id: ${item.ID_PERSONAL||''})`).join('\n');
+    copiarTexto(texto);
+    toast(`📋 ${data.length} registros`, 'success');
+}
+
+// ============================================================
+//  EXPORTAR CSV
+// ============================================================
+function exportarCSV() {
+    const data = datosFiltrados || datos;
+    if(!data?.length) { toast('⚠️ Sin datos', 'error'); return; }
+    try {
+        const headers = Object.keys(data[0]);
+        let csv = '\uFEFF' + headers.join(',') + '\n';
+        csv += data.map(item => headers.map(h => {
+            let v = item[h]||'';
+            if(typeof v === 'string') { v = v.replace(/"/g,'""'); if(v.includes(',')||v.includes('"')||v.includes('\n')) v = `"${v}"`; }
+            return v;
+        }).join(',')).join('\n');
+        const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `personal_${new Date().toISOString().slice(0,10)}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+        toast(`📊 ${data.length} registros`, 'success');
+    } catch(e) {
+        toast('❌ ' + e.message, 'error');
+    }
+}
+
+// ============================================================
+//  DASHBOARD
+// ============================================================
+function renderDashboard() {
+    subVistaActual = 'personal';
+    $('mainContent').innerHTML = `
+        <div class="breadcrumbs">
+            <a href="index.html">Inicio</a> <i class="fas fa-chevron-right"></i>
+            <a onclick="cambiarVista('listado')">Gestión Personal</a> <i class="fas fa-chevron-right"></i>
+            <span class="current">Dashboard</span>
+        </div>
+        ${renderSubNav()}
+        <div class="topbar">
+            <h1>Dashboard de Personal</h1>
+            <div class="topbar-actions">
+                <button class="btn btn-secondary" onclick="cambiarVista('listado')"><i class="fas fa-arrow-left"></i> Volver</button>
+            </div>
+        </div>
+        <div id="loadingDash" class="loading"><div class="spinner"></div><p>Cargando...</p></div>
+        <div class="dashboard-grid" id="dashboardGrid">
+            ${dashCards()}
+        </div>
+    `;
+    cargarDatos().then(() => actualizarDashboard());
+}
+
+function dashCards() {
+    return `
+        <div class="dash-card"><div class="card-header"><i class="fas fa-birthday-cake"></i><h3>🎂 Cumpleaños del Mes</h3></div><div class="number" id="cumpleanosMes">0</div><div class="list-items" id="listaCumpleanos"></div></div>
+        <div class="dash-card"><div class="card-header"><i class="fas fa-venus-mars"></i><h3>Distribución por Género</h3></div><div class="list-items"><div class="item"><span class="label">👨 Hombres</span><span class="value" id="totalHombres">0</span></div><div class="item"><span class="label">👩 Mujeres</span><span class="value" id="totalMujeres">0</span></div><div class="item" style="border-top:1px solid #E2E8F0;padding-top:8px;margin-top:4px;"><span class="label">Total</span><span class="value" id="totalGenero">0</span></div></div></div>
+        <div class="dash-card"><div class="card-header"><i class="fas fa-graduation-cap"></i><h3>Nivel Educativo</h3></div><div class="list-items"><div class="item"><span class="label">🎓 Universitaria</span><span class="value" id="educacionUniversitaria">0</span></div><div class="item"><span class="label">📘 No Universitaria</span><span class="value" id="educacionNoUniversitaria">0</span></div><div class="item"><span class="label">❓ Sin Especificar</span><span class="value" id="educacionSinEspecificar">0</span></div></div></div>
+        <div class="dash-card"><div class="card-header"><i class="fas fa-user-tie"></i><h3>Cargos Técnicos</h3></div><div class="list-items"><div class="item"><span class="label">🔬 Técnico Lab 1</span><span class="value" id="tecnico1">0</span></div><div class="item"><span class="label">🧪 Técnico Lab 2</span><span class="value" id="tecnico2">0</span></div><div class="item"><span class="label">📋 Otros Cargos</span><span class="value" id="otrosCargos">0</span></div></div></div>
+        <div class="dash-card"><div class="card-header"><i class="fas fa-file-contract"></i><h3>Tipo de Contrato</h3></div><div class="list-items"><div class="item"><span class="label">📌 Permanente</span><span class="value" id="contratoPermanente">0</span></div><div class="item"><span class="label">⏳ Temporal</span><span class="value" id="contratoTemporal">0</span></div><div class="item"><span class="label">❓ Sin Especificar</span><span class="value" id="contratoSinEspecificar">0</span></div></div></div>
+        <div class="dash-card" style="background:linear-gradient(135deg,#EFF6FF,#fff);"><div class="card-header"><i class="fas fa-users"></i><h3>Resumen General</h3></div><div class="number" id="totalPersonalDash">0</div><div class="sub-info">Total de personal registrado</div><div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;"><span class="badge badge-blue" id="badgeHombres">Hombres: 0</span><span class="badge badge-pink" id="badgeMujeres">Mujeres: 0</span><span class="badge badge-green" id="badgeUniversitarios">Universitarios: 0</span></div></div>
+    `;
+}
+
+function actualizarDashboard() {
+    const data = datos || [];
+    if(!data.length) { document.querySelectorAll('.number').forEach(el => el.textContent='0'); return; }
+    
+    const mes = new Date().getMonth() + 1;
+    const cumples = data.filter(item => {
+        if(!item.FEC_NACIMIENTO) return false;
+        try { const d = new Date(item.FEC_NACIMIENTO); if(!isNaN(d)) return d.getMonth()+1 === mes; } catch(e){}
+        const f = String(item.FEC_NACIMIENTO);
+        return f.includes('/'+String(mes).padStart(2,'0')+'/') || f.includes('/'+mes+'/');
+    });
+    $('cumpleanosMes').textContent = cumples.length;
+    $('listaCumpleanos').innerHTML = cumples.length ? cumples.map(item => 
+        `<div class="item"><span class="label">${esc(item.NOMBRES||'')} ${esc(item.APE_PATERNO||'')}</span><span class="value">${formatearFecha(item.FEC_NACIMIENTO)}</span></div>`
+    ).join('') : '<div class="item"><span class="label" style="color:#94A3B8;">Sin cumpleaños</span></div>';
+
+    const gen = {h:0,m:0};
+    data.forEach(item => {
+        const s = String(item.SEXO||'').toUpperCase().trim();
+        if(s === 'M' || s === 'MASCULINO' || s === 'MASC') gen.h++;
+        else if(s === 'F' || s === 'FEMENINO' || s === 'FEM') gen.m++;
+    });
+    $('totalHombres').textContent = gen.h;
+    $('totalMujeres').textContent = gen.m;
+    $('totalGenero').textContent = gen.h + gen.m;
+    $('badgeHombres').textContent = `Hombres: ${gen.h}`;
+    $('badgeMujeres').textContent = `Mujeres: ${gen.m}`;
+
+    const edu = {u:0,n:0,s:0};
+    data.forEach(item => {
+        const e = String(item.EDUCACION_SUPERIOR||'').toUpperCase().trim();
+        if(e.includes('UNIVERSITARIA') || e.includes('MAESTRÍA') || e.includes('DOCTORADO')) edu.u++;
+        else if(e.includes('TECNICA') || e.includes('TÉCNICA') || e.includes('NO UNIVERSITARIA')) edu.n++;
+        else edu.s++;
+    });
+    $('educacionUniversitaria').textContent = edu.u;
+    $('educacionNoUniversitaria').textContent = edu.n;
+    $('educacionSinEspecificar').textContent = edu.s;
+    $('badgeUniversitarios').textContent = `Universitarios: ${edu.u}`;
+
+    const car = {t1:0,t2:0,o:0};
+    data.forEach(item => {
+        const c = String(item.CARGO||'').toUpperCase().trim();
+        if(c.includes('TÉCNICO DE LABORATORIO 1') || c.includes('TECNICO DE LABORATORIO 1')) car.t1++;
+        else if(c.includes('TÉCNICO DE LABORATORIO 2') || c.includes('TECNICO DE LABORATORIO 2')) car.t2++;
+        else if(c) car.o++;
+    });
+    $('tecnico1').textContent = car.t1;
+    $('tecnico2').textContent = car.t2;
+    $('otrosCargos').textContent = car.o;
+
+    const cont = {p:0,t:0,s:0};
+    data.forEach(item => {
+        const c = String(item.TIPO_CONTRATO||'').toUpperCase().trim();
+        if(c.includes('PERMANENTE') || c.includes('FIJO') || c.includes('PLANILLA')) cont.p++;
+        else if(c.includes('TEMPORAL') || c.includes('EVENTUAL') || c.includes('CAS') || c.includes('LOCACIÓN')) cont.t++;
+        else cont.s++;
+    });
+    $('contratoPermanente').textContent = cont.p;
+    $('contratoTemporal').textContent = cont.t;
+    $('contratoSinEspecificar').textContent = cont.s;
+
+    $('totalPersonalDash').textContent = data.length;
+}
+
+// ============================================================
+//  SUB-NAVEGACIÓN (Pestañas)
+// ============================================================
+function renderSubNav() {
+    return `
+        <div class="sub-nav">
+            <button class="tab ${subVistaActual === 'personal' ? 'active' : ''}" onclick="cambiarSubVista('personal')">
+                <i class="fas fa-users"></i> Personal
+            </button>
+            <button class="tab ${subVistaActual === 'horarios' ? 'active' : ''}" onclick="cambiarSubVista('horarios')">
+                <i class="fas fa-clock"></i> Horarios
+            </button>
+        </div>
+        <div id="tabPersonal" class="tab-content ${subVistaActual === 'personal' ? 'active' : ''}">
+            ${renderContenidoPersonal()}
+        </div>
+        <div id="tabHorarios" class="tab-content ${subVistaActual === 'horarios' ? 'active' : ''}">
+            ${renderContenidoHorarios()}
+        </div>
+    `;
+}
+
+function renderContenidoPersonal() {
+    return `
+        <div class="topbar">
+            <h1>Lista de Personal</h1>
+            <div class="total-badge"><i class="fas fa-users"></i> Total <span id="totalPersonalListado">0</span></div>
+        </div>
+        <div class="action-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="buscarPersonal" placeholder="Buscar por ID, Nombres o Apellidos..." oninput="buscarPersonal()">
+            </div>
+            <button class="btn btn-primary" onclick="cambiarVista('registro')"><i class="fas fa-plus"></i> Nuevo</button>
+            <button class="btn btn-outline" onclick="cambiarVista('dashboard')"><i class="fas fa-chart-pie"></i> Dashboard</button>
+            <button class="btn btn-success" onclick="exportarCSV()"><i class="fas fa-file-csv"></i> CSV</button>
+        </div>
+        <div class="contadores">
+            <span class="contador-item">📊 Mostrando: <strong id="totalFiltrado">0</strong> registros</span>
+        </div>
+        <div id="loadingListado" class="loading"><div class="spinner"></div><p>Cargando...</p></div>
+        <div class="table-container">
+            <table>
+                <thead><tr><th>ID Personal</th><th>Apellido Paterno</th><th>Apellido Materno</th><th>Nombres</th><th>Acciones</th><th>Operaciones</th></tr></thead>
+                <tbody id="tbodyListado"></tbody>
+            </table>
+        </div>
+    `;
+}
+
+function renderContenidoHorarios() {
+    return `
+        <div class="topbar">
+            <h1>Gestión de Horarios</h1>
+            <div class="topbar-actions">
+                <button class="btn btn-success" onclick="cargarHorarios()"><i class="fas fa-sync-alt"></i> Sincronizar</button>
+                <button class="btn btn-outline" onclick="exportarHorariosCSV()"><i class="fas fa-file-csv"></i> Exportar CSV</button>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <h3><i class="fas fa-calendar-plus"></i> Asignar Horario</h3>
+            <div class="schedule-form-grid">
+                <div class="form-group">
+                    <label>Trabajador <span class="required">*</span></label>
+                    <select id="selectTrabajadorHorarios">
+                        <option value="">Seleccionar...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Día <span class="required">*</span></label>
+                    <select id="selectDiaHorarios">
+                        <option value="LUNES">LUNES</option>
+                        <option value="MARTES">MARTES</option>
+                        <option value="MIERCOLES">MIÉRCOLES</option>
+                        <option value="JUEVES">JUEVES</option>
+                        <option value="VIERNES">VIERNES</option>
+                        <option value="SABADO">SÁBADO</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Hora Entrada <span class="required">*</span></label>
+                    <input type="time" id="horaEntradaHorarios" value="08:00">
+                </div>
+                <div class="form-group">
+                    <label>Inicio Refrigerio</label>
+                    <input type="time" id="horaRefrigerioInicioHorarios" value="12:00">
+                </div>
+                <div class="form-group">
+                    <label>Fin Refrigerio</label>
+                    <input type="time" id="horaRefrigerioFinHorarios" value="13:00">
+                </div>
+                <div class="form-group">
+                    <label>Hora Salida <span class="required">*</span></label>
+                    <input type="time" id="horaSalidaHorarios" value="17:00">
+                </div>
+            </div>
+            <div id="alertFormularioHorarios" class="alert-box alert-info" style="display:none;"></div>
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="limpiarFormularioHorarios()"><i class="fas fa-eraser"></i> Limpiar</button>
+                <button class="btn btn-primary" onclick="guardarHorario()"><i class="fas fa-save"></i> Guardar Horario</button>
+            </div>
+        </div>
+
+        <div class="contadores">
+            <span class="contador-item">📊 Total Horarios: <strong id="totalHorarios">0</strong></span>
+            <span class="contador-item">⏱️ Horas Semanales: <strong id="totalHorasSemana">0</strong>h</span>
+            <span class="contador-item" id="estadoHorasSemana">✅ <strong>Completo</strong></span>
+        </div>
+
+        <div id="loadingHorarios" class="loading"><div class="spinner"></div><p>Cargando horarios...</p></div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Trabajador</th>
+                        <th>ID Personal</th>
+                        <th>Día</th>
+                        <th>Entrada</th>
+                        <th>Refrigerio</th>
+                        <th>Salida</th>
+                        <th>Horas</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyHorarios">
+                    <tr><td colspan="8" class="text-center text-muted" style="padding:24px;">Cargando horarios...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+// ============================================================
+//  CAMBIAR SUB-VISTA
+// ============================================================
+function cambiarSubVista(subVista) {
+    subVistaActual = subVista;
+    
+    document.querySelectorAll('.sub-nav .tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelectorAll('.sub-nav .tab').forEach(tab => {
+        if((subVista === 'personal' && tab.textContent.includes('Personal')) ||
+           (subVista === 'horarios' && tab.textContent.includes('Horarios'))) {
+            tab.classList.add('active');
+        }
+    });
+    
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    const target = subVista === 'personal' ? 'tabPersonal' : 'tabHorarios';
+    const el = document.getElementById(target);
+    if(el) el.classList.add('active');
+    
+    if(subVista === 'horarios') {
+        if(typeof horarios === 'undefined' || horarios.length === 0) {
+            cargarHorarios();
+        }
+        // Actualizar select y preseleccionar trabajador
+        actualizarSelectTrabajadoresHorarios();
+        // Si hay un trabajador seleccionado, preseleccionarlo
+        if(trabajadorSeleccionado) {
+            const select = document.getElementById('selectTrabajadorHorarios');
+            if(select) {
+                select.value = trabajadorSeleccionado.CODE;
+                // Disparar evento change para actualizar
+                const event = new Event('change');
+                select.dispatchEvent(event);
+                // Limpiar después de preseleccionar
+                setTimeout(() => {
+                    trabajadorSeleccionado = null;
+                }, 500);
+            }
+        }
+    }
+}
+
+// ============================================================
+//  REGISTRO / EDICIÓN
+// ============================================================
+function renderRegistro() {
+    const isEdit = sessionStorage.getItem('editMode') === 'true';
+    const editData = isEdit ? JSON.parse(sessionStorage.getItem('editData')||'{}') : null;
+    
+    $('mainContent').innerHTML = `
+        <div class="breadcrumbs">
+            <a href="index.html">Inicio</a> <i class="fas fa-chevron-right"></i>
+            <a onclick="cambiarVista('listado')">Gestión Personal</a> <i class="fas fa-chevron-right"></i>
+            <span class="current">${isEdit ? 'Editar' : 'Nuevo'} Registro</span>
+        </div>
+        <div class="form-container">
+            <h1><i class="fas fa-${isEdit ? 'user-edit' : 'user-plus'}"></i> ${isEdit ? 'Editar' : 'Registro de'} Personal</h1>
+            <div class="subtitle">${isEdit ? 'Modificando datos existentes' : 'Ingreso de datos para Google Sheets'}</div>
+            <form onsubmit="return false;">
+                <div class="form-grid">
+                    <div class="section-title">📋 Identificación</div>
+                    <div class="form-group"><label>CODE</label><input type="text" id="CODE" readonly style="background:#f1f5f9;"></div>
+                    <div class="form-group"><label>ID_PERSONAL <span class="required">*</span></label><input type="text" id="ID_PERSONAL" placeholder="ID Personal"></div>
+                    <div class="form-group"><label>APE_PATERNO <span class="required">*</span></label><input type="text" id="APE_PATERNO" placeholder="Apellido Paterno"></div>
+                    <div class="form-group"><label>APE_MATERNO</label><input type="text" id="APE_MATERNO" placeholder="Apellido Materno"></div>
+                    <div class="form-group"><label>NOMBRES <span class="required">*</span></label><input type="text" id="NOMBRES" placeholder="Nombres"></div>
+                    <div class="form-group"><label>DNI</label><input type="text" id="DNI" maxlength="8" placeholder="DNI"></div>
+                    <div class="section-title">👤 Personales</div>
+                    <div class="form-group"><label>FEC_NACIMIENTO</label><input type="date" id="FEC_NACIMIENTO"></div>
+                    <div class="form-group"><label>SEXO</label><select id="SEXO"><option value="">Seleccionar</option><option>MASCULINO</option><option>FEMENINO</option></select></div>
+                    <div class="form-group"><label>TELEFONO</label><input type="text" id="TELEFONO" placeholder="Teléfono"></div>
+                    <div class="form-group"><label>DIRECCION</label><input type="text" id="DIRECCION" placeholder="Dirección"></div>
+                    <div class="form-group"><label>EMAIL_PERSONAL</label><input type="email" id="EMAIL_PERSONAL" placeholder="correo@personal.com"></div>
+                    <div class="form-group"><label>EMAIL_INSTITUCIONAL</label><input type="email" id="EMAIL_INSTITUCIONAL" placeholder="correo@institucion.com"></div>
+                    <div class="section-title">🎓 Académica</div>
+                    <div class="form-group"><label>EDUCACION_SUPERIOR</label><select id="EDUCACION_SUPERIOR"><option value="">Seleccionar</option><option>TÉCNICO</option><option>UNIVERSITARIO</option><option>MAESTRÍA</option><option>DOCTORADO</option></select></div>
+                    <div class="form-group"><label>ESTADO_EDUCACION</label><select id="ESTADO_EDUCACION"><option value="">Seleccionar</option><option>COMPLETO</option><option>INCOMPLETO</option><option>EN CURSO</option></select></div>
+                    <div class="form-group"><label>PROFESION</label><input type="text" id="PROFESION" placeholder="Profesión"></div>
+                    <div class="form-group"><label>PROGRAMA</label><input type="text" id="PROGRAMA" placeholder="Programa"></div>
+                    <div class="section-title">💼 Laboral</div>
+                    <div class="form-group"><label>CARGO</label><input type="text" id="CARGO" placeholder="Cargo"></div>
+                    <div class="form-group"><label>LUGAR_TRABAJO</label><input type="text" id="LUGAR_TRABAJO" placeholder="Lugar"></div>
+                    <div class="form-group"><label>TIPO_CONTRATO</label><select id="TIPO_CONTRATO"><option value="">Seleccionar</option><option>PLANILLA</option><option>CAS</option><option>LOCACIÓN</option><option>PRÁCTICAS</option></select></div>
+                    <div class="form-group"><label>TIPO_LABORATORIO</label><input type="text" id="TIPO_LABORATORIO" placeholder="Tipo Lab."></div>
+                    <div class="section-title">👕 Uniforme</div>
+                    <div class="form-group"><label>SCRUBS_PANTALON</label><input type="text" id="SCRUBS_PANTALON" placeholder="Talla"></div>
+                    <div class="form-group"><label>SCRUBS_CHAQUETA</label><input type="text" id="SCRUBS_CHAQUETA" placeholder="Talla"></div>
+                    <div class="form-group"><label>POLO_CAMISERO</label><input type="text" id="POLO_CAMISERO" placeholder="Talla"></div>
+                    <div class="form-group"><label>CAMISA</label><input type="text" id="Camisa" placeholder="Talla"></div>
+                    <div class="form-group"><label>PANTALON</label><input type="text" id="PANTALON" placeholder="Talla"></div>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-primary" onclick="guardarRegistro()"><i class="fas fa-save"></i> ${isEdit ? 'Actualizar' : 'Guardar'}</button>
+                    <button type="button" class="btn btn-warning" onclick="limpiarFormulario()"><i class="fas fa-eraser"></i> Limpiar</button>
+                    <button type="button" class="btn btn-secondary" onclick="cargarEjemplo()"><i class="fas fa-code"></i> Ejemplo</button>
+                    <button type="button" class="btn btn-secondary" onclick="cambiarVista('listado')"><i class="fas fa-arrow-left"></i> Volver</button>
+                </div>
+            </form>
+            <div id="loadingReg" class="loading"><div class="spinner"></div><p>Enviando...</p></div>
+        </div>
+    `;
+    
+    if(isEdit && editData) {
+        editMode = true;
+        editCode = editData.CODE;
+        $('CODE').value = editData.CODE || '';
+        Object.keys(editData).forEach(key => {
+            const el = $(key);
+            if(el && key !== 'CODE') el.value = editData[key] || '';
+        });
+        toast('📝 Editando', 'info');
+    }
+}
+
+function obtenerDatosForm() {
+    const campos = ['ID_PERSONAL','APE_PATERNO','APE_MATERNO','NOMBRES','FEC_NACIMIENTO','SEXO','DNI','TELEFONO','DIRECCION','EMAIL_PERSONAL','EDUCACION_SUPERIOR','ESTADO_EDUCACION','PROFESION','PROGRAMA','CARGO','LUGAR_TRABAJO','TIPO_CONTRATO','EMAIL_INSTITUCIONAL','SCRUBS_PANTALON','SCRUBS_CHAQUETA','POLO_CAMISERO','Camisa','PANTALON','TIPO_LABORATORIO'];
+    const data = {};
+    campos.forEach(c => { const el = $(c); if(el) data[c] = el.value || ''; });
+    if(editMode && editCode) data.CODE = editCode;
+    return data;
+}
+
+function validarRequeridos() {
+    const req = ['ID_PERSONAL','APE_PATERNO','NOMBRES'];
+    for(const r of req) {
+        const el = $(r);
+        if(!el || !el.value.trim()) {
+            toast(`❌ ${r} es obligatorio`, 'error');
+            if(el) el.focus();
+            return false;
+        }
+    }
+    return true;
+}
+
+async function guardarRegistro() {
+    if(!validarRequeridos()) return;
+    const loading = $('loadingReg');
+    if(loading) loading.classList.add('active');
+    const data = obtenerDatosForm();
+    const action = editMode ? 'update' : 'create';
+    let url = API_URL + '?action=' + action;
+    if(editMode && editCode) url += '&code=' + encodeURIComponent(editCode);
+    Object.entries(data).forEach(([k,v]) => { if(v) url += '&' + encodeURIComponent(k) + '=' + encodeURIComponent(v); });
+    try {
+        const resp = await fetch(url);
+        const texto = await resp.text();
+        let result;
+        try { result = JSON.parse(texto); } catch(e) { result = { success: texto.includes('success') }; }
+        if(result.success) {
+            toast(editMode ? '✅ Actualizado' : '✅ Guardado', 'success');
+            sessionStorage.removeItem('editData');
+            sessionStorage.removeItem('editMode');
+            setTimeout(async () => {
+                datos = [];
+                datosFiltrados = null;
+                cambiarVista('listado');
+            }, 1000);
+        } else {
+            toast('❌ ' + (result.message || 'Error'), 'error');
+        }
+    } catch(e) {
+        toast('❌ ' + e.message, 'error');
+    } finally {
+        if(loading) loading.classList.remove('active');
+    }
+}
+
+function limpiarFormulario() {
+    ['ID_PERSONAL','APE_PATERNO','APE_MATERNO','NOMBRES','FEC_NACIMIENTO','SEXO','DNI','TELEFONO','DIRECCION','EMAIL_PERSONAL','EDUCACION_SUPERIOR','ESTADO_EDUCACION','PROFESION','PROGRAMA','CARGO','LUGAR_TRABAJO','TIPO_CONTRATO','EMAIL_INSTITUCIONAL','SCRUBS_PANTALON','SCRUBS_CHAQUETA','POLO_CAMISERO','Camisa','PANTALON','TIPO_LABORATORIO'].forEach(id => {
+        const el = $(id); if(el) el.value = '';
+    });
+    $('CODE').value = '';
+    toast('🧹 Limpiado', 'info');
+}
+
+function cargarEjemplo() {
+    const ej = {ID_PERSONAL:'2024001',APE_PATERNO:'GARCIA',APE_MATERNO:'PEREZ',NOMBRES:'JUAN CARLOS',FEC_NACIMIENTO:'1990-05-15',SEXO:'MASCULINO',DNI:'12345678',TELEFONO:'987654321',DIRECCION:'Av. Principal 123',EMAIL_PERSONAL:'juan@personal.com',EDUCACION_SUPERIOR:'UNIVERSITARIO',ESTADO_EDUCACION:'COMPLETO',PROFESION:'INGENIERO',PROGRAMA:'SISTEMAS',CARGO:'TÉCNICO',LUGAR_TRABAJO:'LABORATORIO CENTRAL',TIPO_CONTRATO:'PLANILLA',EMAIL_INSTITUCIONAL:'juan@laboratorio.edu',SCRUBS_PANTALON:'M',SCRUBS_CHAQUETA:'M',POLO_CAMISERO:'L',Camisa:'L',PANTALON:'32',TIPO_LABORATORIO:'MEDICINA'};
+    Object.entries(ej).forEach(([k,v]) => { const el = $(k); if(el) el.value = v; });
+    toast('📋 Ejemplo cargado', 'info');
+}
+
+// ============================================================
+//  NAVEGACIÓN
+// ============================================================
+function cambiarVista(vista) {
+    vistaActual = vista;
+    const nav = $('navGestion');
+    if(vista === 'listado' || vista === 'dashboard' || vista === 'registro') {
+        nav.classList.add('active');
+    } else {
+        nav.classList.remove('active');
+    }
+    if(vista === 'listado') renderListado();
+    else if(vista === 'dashboard') renderDashboard();
+    else if(vista === 'registro') renderRegistro();
+}
+
+// ============================================================
+//  RENDER LISTADO (con pestañas)
+// ============================================================
+function renderListado() {
+    subVistaActual = 'personal';
+    $('mainContent').innerHTML = `
+        <div class="breadcrumbs">
+            <a href="index.html">Inicio</a> <i class="fas fa-chevron-right"></i>
+            <a onclick="cambiarVista('listado')">Gestión Personal</a> <i class="fas fa-chevron-right"></i>
+            <span class="current">Listado de Personal</span>
+        </div>
+        ${renderSubNav()}
+    `;
+    cargarDatos().then(() => {
+        renderTabla(datos);
+        actualizarContadores(datos);
+    });
+}
+
+// ============================================================
+//  FUNCIONES DE HORARIOS (integradas)
+// ============================================================
+const STORAGE_KEY_SCHEDULE = 'scheduleData';
+const HORAS_SEMANALES = 44;
+let horarios = [];
+let horariosFiltrados = null;
+
+function calcularHoras(entrada, salida, refInicio, refFin) {
+    if(!entrada || !salida) return 0;
+    
+    const [hEnt, mEnt] = entrada.split(':').map(Number);
+    const [hSal, mSal] = salida.split(':').map(Number);
+    
+    let minutos = (hSal * 60 + mSal) - (hEnt * 60 + mEnt);
+    
+    if(refInicio && refFin) {
+        const [hRI, mRI] = refInicio.split(':').map(Number);
+        const [hRF, mRF] = refFin.split(':').map(Number);
+        const refMinutos = (hRF * 60 + mRF) - (hRI * 60 + mRI);
+        if(refMinutos > 0) minutos -= refMinutos;
+    }
+    
+    if(minutos < 0) minutos += 1440;
+    
+    return Math.round((minutos / 60) * 100) / 100;
+}
+
+function calcularHorasSemanales(horariosTrabajador) {
+    let total = 0;
+    const dias = ['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO'];
+    
+    dias.forEach(dia => {
+        const horario = horariosTrabajador.find(h => h.dia === dia);
+        if(horario) {
+            const horas = calcularHoras(
+                horario.entrada,
+                horario.salida,
+                horario.refrigerioInicio,
+                horario.refrigerioFin
+            );
+            total += horas;
+        }
+    });
+    
+    return Math.round(total * 100) / 100;
+}
+
+function mostrarAlertaHoras(total, alertContainer) {
+    const alert = alertContainer || document.getElementById('alertFormularioHorarios');
+    if(!alert) return;
+    
+    if(total === 0) {
+        alert.style.display = 'none';
+        return;
+    }
+    
+    if(total > HORAS_SEMANALES) {
+        alert.style.display = 'block';
+        alert.className = 'alert-box alert-danger';
+        alert.innerHTML = `
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>⚠️ EXCEDE LAS ${HORAS_SEMANALES}h SEMANALES</strong><br>
+            Total: ${total}h | Exceso: ${(total - HORAS_SEMANALES).toFixed(2)}h
+        `;
+        const estado = document.getElementById('estadoHorasSemana');
+        if(estado) {
+            estado.className = 'contador-item';
+            estado.innerHTML = `⚠️ <strong style="color:#EF4444;">Excede ${HORAS_SEMANALES}h</strong>`;
+        }
+    } else if(total < HORAS_SEMANALES && total > 0) {
+        alert.style.display = 'block';
+        alert.className = 'alert-box alert-warning';
+        alert.innerHTML = `
+            <i class="fas fa-clock"></i>
+            <strong>⏳ FALTAN HORAS PARA COMPLETAR ${HORAS_SEMANALES}h</strong><br>
+            Total: ${total}h | Faltan: ${(HORAS_SEMANALES - total).toFixed(2)}h
+        `;
+        const estado = document.getElementById('estadoHorasSemana');
+        if(estado) {
+            estado.className = 'contador-item';
+            estado.innerHTML = `⏳ <strong style="color:#CA8A04;">Faltan ${(HORAS_SEMANALES - total).toFixed(2)}h</strong>`;
+        }
+    } else if(total === HORAS_SEMANALES) {
+        alert.style.display = 'block';
+        alert.className = 'alert-box alert-success';
+        alert.innerHTML = `
+            <i class="fas fa-check-circle"></i>
+            <strong>✅ HORAS COMPLETAS (${HORAS_SEMANALES}h)</strong>
+        `;
+        const estado = document.getElementById('estadoHorasSemana');
+        if(estado) {
+            estado.className = 'contador-item';
+            estado.innerHTML = `✅ <strong style="color:#10B981;">Completo (${HORAS_SEMANALES}h)</strong>`;
+        }
+    }
+}
+
+async function cargarHorarios() {
+    const loading = $('loadingHorarios');
+    if(loading) loading.classList.add('active');
+
+    try {
+        const cached = localStorage.getItem(STORAGE_KEY_SCHEDULE);
+        if(cached) {
+            try {
+                horarios = JSON.parse(cached);
+                renderHorariosTabla();
+                actualizarContadoresHorarios();
+                if(loading) loading.classList.remove('active');
+                return;
+            } catch(e) {}
+        }
+
+        const resp = await fetch(API_URL + '?action=list_schedules');
+        const texto = await resp.text();
+        let result;
+        try { result = JSON.parse(texto); } catch(e) { throw new Error('Respuesta no JSON'); }
+
+        if(result.success && result.data) {
+            horarios = result.data;
+            localStorage.setItem(STORAGE_KEY_SCHEDULE, JSON.stringify(horarios));
+            renderHorariosTabla();
+            actualizarContadoresHorarios();
+            toast(`✅ ${horarios.length} horarios cargados`, 'success');
+        } else {
+            if(cached) {
+                try {
+                    horarios = JSON.parse(cached);
+                    renderHorariosTabla();
+                    actualizarContadoresHorarios();
+                } catch(e) {
+                    horarios = [];
+                    renderHorariosTabla();
+                    actualizarContadoresHorarios();
+                }
+            } else {
+                horarios = [];
+                renderHorariosTabla();
+                actualizarContadoresHorarios();
+            }
+        }
+    } catch(e) {
+        console.error('Error cargando horarios:', e);
+        const cached = localStorage.getItem(STORAGE_KEY_SCHEDULE);
+        if(cached) {
+            try {
+                horarios = JSON.parse(cached);
+                renderHorariosTabla();
+                actualizarContadoresHorarios();
+            } catch(e2) {
+                toast('❌ Error: ' + e.message, 'error');
+            }
+        } else {
+            toast('❌ Error: ' + e.message, 'error');
+        }
+    } finally {
+        if(loading) loading.classList.remove('active');
+    }
+}
+
+function actualizarSelectTrabajadoresHorarios() {
+    const select = document.getElementById('selectTrabajadorHorarios');
+    if(!select) return;
+    
+    const trabajadores = datos.length > 0 ? datos : JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    
+    select.innerHTML = '<option value="">Seleccionar trabajador...</option>' +
+        trabajadores.map(p => `
+            <option value="${esc(p.CODE)}">
+                ${esc(p.NOMBRES||'')} ${esc(p.APE_PATERNO||'')} (${esc(p.ID_PERSONAL||'')})
+            </option>
+        `).join('');
+    
+    // Si hay un trabajador seleccionado, preseleccionarlo
+    if(trabajadorSeleccionado) {
+        select.value = trabajadorSeleccionado.CODE;
+    }
+}
+
+function renderHorariosTabla() {
+    const tbody = $('tbodyHorarios');
+    if(!tbody) return;
+
+    const mostrar = horariosFiltrados || horarios;
+
+    if(!mostrar || mostrar.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted" style="padding:24px;">No hay horarios registrados</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = mostrar.map((h, index) => {
+        const horas = calcularHoras(h.entrada, h.salida, h.refrigerioInicio, h.refrigerioFin);
+        let horasClass = 'badge-blue';
+        if(horas > 8) horasClass = 'badge-orange';
+        else if(horas >= 7) horasClass = 'badge-green';
+        else if(horas > 0) horasClass = 'badge-yellow';
+        
+        return `
+        <tr>
+            <td><strong>${esc(h.nombre)}</strong></td>
+            <td>${esc(h.idPersonal || '')}</td>
+            <td><span class="badge badge-purple">${esc(h.dia)}</span></td>
+            <td><strong>${h.entrada}</strong></td>
+            <td>${h.refrigerioInicio && h.refrigerioFin ? `${h.refrigerioInicio} - ${h.refrigerioFin}` : '-'}</td>
+            <td><strong>${h.salida}</strong></td>
+            <td><span class="badge ${horasClass}">${horas}h</span></td>
+            <td>
+                <button class="action-btn btn-edit" onclick="abrirEditarHorario(${index})" title="Editar">✏️</button>
+                <button class="action-btn btn-delete" onclick="eliminarHorario(${index})" title="Eliminar">🗑️</button>
+            </td>
+        </tr>
+    `}).join('');
+
+    actualizarContadoresHorarios();
+}
+
+function actualizarContadoresHorarios() {
+    const mostrar = horariosFiltrados || horarios;
+    const total = $('totalHorarios');
+    const totalHorasSemana = $('totalHorasSemana');
+    const estadoHoras = $('estadoHorasSemana');
+
+    if(total) total.textContent = mostrar.length;
+    
+    if(mostrar.length > 0 && totalHorasSemana) {
+        const trabajadores = new Set();
+        let totalHoras = 0;
+        mostrar.forEach(h => {
+            if(!trabajadores.has(h.code)) {
+                trabajadores.add(h.code);
+                const horariosTrabajador = mostrar.filter(h2 => h2.code === h.code);
+                const horas = calcularHorasSemanales(horariosTrabajador);
+                totalHoras += horas;
+            }
+        });
+        const promedio = trabajadores.size > 0 ? Math.round((totalHoras / trabajadores.size) * 100) / 100 : 0;
+        totalHorasSemana.textContent = promedio.toFixed(1);
+        
+        if(estadoHoras) {
+            if(promedio > HORAS_SEMANALES) {
+                estadoHoras.className = 'contador-item';
+                estadoHoras.innerHTML = `⚠️ <strong style="color:#EF4444;">Excede ${HORAS_SEMANALES}h</strong>`;
+            } else if(promedio < HORAS_SEMANALES && promedio > 0) {
+                estadoHoras.className = 'contador-item';
+                estadoHoras.innerHTML = `⏳ <strong style="color:#CA8A04;">Faltan ${(HORAS_SEMANALES - promedio).toFixed(2)}h</strong>`;
+            } else if(promedio === HORAS_SEMANALES) {
+                estadoHoras.className = 'contador-item';
+                estadoHoras.innerHTML = `✅ <strong style="color:#10B981;">Completo (${HORAS_SEMANALES}h)</strong>`;
+            } else {
+                estadoHoras.className = 'contador-item';
+                estadoHoras.innerHTML = `📋 <strong>Sin horarios</strong>`;
+            }
+        }
+    } else if(totalHorasSemana) {
+        totalHorasSemana.textContent = '0';
+        if(estadoHoras) {
+            estadoHoras.className = 'contador-item';
+            estadoHoras.innerHTML = `📋 <strong>Sin horarios</strong>`;
+        }
+    }
+}
+
+async function guardarHorario() {
+    const code = document.getElementById('selectTrabajadorHorarios')?.value;
+    const dia = document.getElementById('selectDiaHorarios')?.value;
+    const entrada = document.getElementById('horaEntradaHorarios')?.value;
+    const refInicio = document.getElementById('horaRefrigerioInicioHorarios')?.value || '';
+    const refFin = document.getElementById('horaRefrigerioFinHorarios')?.value || '';
+    const salida = document.getElementById('horaSalidaHorarios')?.value;
+
+    if(!code) {
+        toast('❌ Seleccione un trabajador', 'error');
+        return;
+    }
+
+    if(!entrada || !salida) {
+        toast('❌ Ingrese hora de entrada y salida', 'error');
+        return;
+    }
+
+    const trabajador = datos.find(p => p.CODE === code) || 
+                       JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]').find(p => p.CODE === code);
+    if(!trabajador) {
+        toast('❌ Trabajador no encontrado', 'error');
+        return;
+    }
+
+    const existe = horarios.some(h => h.code === code && h.dia === dia);
+    if(existe) {
+        toast(`⚠️ ${trabajador.NOMBRES} ya tiene horario para ${dia}`, 'error');
+        return;
+    }
+
+    const horariosTrabajador = horarios.filter(h => h.code === code);
+    const horasActuales = calcularHorasSemanales(horariosTrabajador);
+    const nuevasHoras = calcularHoras(entrada, salida, refInicio, refFin);
+    const totalHoras = horasActuales + nuevasHoras;
+    
+    if(totalHoras > HORAS_SEMANALES) {
+        const exceso = totalHoras - HORAS_SEMANALES;
+        if(!confirm(`⚠️ Este horario excede las ${HORAS_SEMANALES}h semanales en ${exceso.toFixed(2)}h.\n¿Desea continuar?`)) {
+            return;
+        }
+    }
+
+    try {
+        const params = new URLSearchParams();
+        params.append('action', 'create_schedule');
+        params.append('CODE', code);
+        params.append('ID_PERSONAL', trabajador.ID_PERSONAL || '');
+        params.append('NOMBRE', `${trabajador.NOMBRES||''} ${trabajador.APE_PATERNO||''}`);
+        params.append('DIA', dia);
+        params.append('HORA_ENTRADA', entrada);
+        params.append('REFRIGERIO_INICIO', refInicio);
+        params.append('REFRIGERIO_FIN', refFin);
+        params.append('HORA_SALIDA', salida);
+
+        const resp = await fetch(API_URL + '?' + params.toString());
+        const texto = await resp.text();
+        let result;
+        try { result = JSON.parse(texto); } catch(e) { result = { success: texto.includes('success') }; }
+
+        if(result.success) {
+            const nuevoHorario = {
+                code: code,
+                idPersonal: trabajador.ID_PERSONAL || '',
+                nombre: `${trabajador.NOMBRES||''} ${trabajador.APE_PATERNO||''}`,
+                dia: dia,
+                entrada: entrada,
+                refrigerioInicio: refInicio,
+                refrigerioFin: refFin,
+                salida: salida
+            };
+
+            horarios.push(nuevoHorario);
+            localStorage.setItem(STORAGE_KEY_SCHEDULE, JSON.stringify(horarios));
+            
+            renderHorariosTabla();
+            const horasMostrar = calcularHoras(entrada, salida, refInicio, refFin);
+            toast(`✅ Horario asignado a ${trabajador.NOMBRES} (${dia} ${horasMostrar}h)`, 'success');
+            
+            const nuevoTotal = horasActuales + nuevasHoras;
+            mostrarAlertaHoras(nuevoTotal);
+            
+            document.getElementById('selectTrabajadorHorarios').value = '';
+            trabajadorSeleccionado = null;
+        } else {
+            toast('❌ ' + (result.message || 'Error al guardar'), 'error');
+        }
+    } catch(e) {
+        toast('❌ Error: ' + e.message, 'error');
+    }
+}
+
+function abrirEditarHorario(index) {
+    const data = horariosFiltrados ? horariosFiltrados[index] : horarios[index];
+    if(!data) return;
+
+    const diaActual = data.dia;
+    const entradaActual = data.entrada;
+    const salidaActual = data.salida;
+    const refInicioActual = data.refrigerioInicio || '';
+    const refFinActual = data.refrigerioFin || '';
+
+    const nuevoDia = prompt('Día (LUNES, MARTES, MIERCOLES, JUEVES, VIERNES, SABADO):', diaActual);
+    if(!nuevoDia) return;
+    const diaUpper = nuevoDia.toUpperCase().trim();
+    if(!['LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'].includes(diaUpper)) {
+        toast('❌ Día no válido', 'error');
+        return;
+    }
+
+    const nuevaEntrada = prompt('Hora de entrada (HH:MM):', entradaActual);
+    if(!nuevaEntrada) return;
+    const nuevaSalida = prompt('Hora de salida (HH:MM):', salidaActual);
+    if(!nuevaSalida) return;
+    const nuevoRefInicio = prompt('Inicio refrigerio (HH:MM) o dejar vacío:', refInicioActual) || '';
+    const nuevoRefFin = prompt('Fin refrigerio (HH:MM) o dejar vacío:', refFinActual) || '';
+
+    const horaRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    if(!horaRegex.test(nuevaEntrada) || !horaRegex.test(nuevaSalida)) {
+        toast('❌ Formato de hora inválido (HH:MM)', 'error');
+        return;
+    }
+    if(nuevoRefInicio && !horaRegex.test(nuevoRefInicio)) {
+        toast('❌ Formato de refrigerio inválido', 'error');
+        return;
+    }
+    if(nuevoRefFin && !horaRegex.test(nuevoRefFin)) {
+        toast('❌ Formato de refrigerio inválido', 'error');
+        return;
+    }
+
+    const otrosHorarios = horarios.filter((h, idx) => idx !== index && h.code === data.code);
+    const horasActuales = calcularHorasSemanales(otrosHorarios);
+    const nuevasHoras = calcularHoras(nuevaEntrada, nuevaSalida, nuevoRefInicio, nuevoRefFin);
+    const totalHoras = horasActuales + nuevasHoras;
+    
+    if(totalHoras > HORAS_SEMANALES) {
+        const exceso = totalHoras - HORAS_SEMANALES;
+        if(!confirm(`⚠️ Este horario excede las ${HORAS_SEMANALES}h semanales en ${exceso.toFixed(2)}h.\n¿Desea continuar?`)) {
+            return;
+        }
+    }
+
+    actualizarHorarioEnAPI(data.code, data.dia, diaUpper, nuevaEntrada, nuevoRefInicio, nuevoRefFin, nuevaSalida);
+}
+
+async function actualizarHorarioEnAPI(code, diaAntiguo, dia, entrada, refInicio, refFin, salida) {
+    try {
+        const params = new URLSearchParams();
+        params.append('action', 'update_schedule');
+        params.append('CODE', code);
+        params.append('DIA_ANTIGUO', diaAntiguo);
+        params.append('DIA', dia);
+        params.append('HORA_ENTRADA', entrada);
+        params.append('REFRIGERIO_INICIO', refInicio || '');
+        params.append('REFRIGERIO_FIN', refFin || '');
+        params.append('HORA_SALIDA', salida);
+
+        const resp = await fetch(API_URL + '?' + params.toString());
+        const texto = await resp.text();
+        let result;
+        try { result = JSON.parse(texto); } catch(e) { result = { success: texto.includes('success') }; }
+
+        if(result.success) {
+            const horario = horarios.find(h => h.code === code && h.dia === diaAntiguo);
+            if(horario) {
+                horario.dia = dia;
+                horario.entrada = entrada;
+                horario.refrigerioInicio = refInicio || '';
+                horario.refrigerioFin = refFin || '';
+                horario.salida = salida;
+                localStorage.setItem(STORAGE_KEY_SCHEDULE, JSON.stringify(horarios));
+                renderHorariosTabla();
+                toast('✅ Horario actualizado', 'success');
+            }
+        } else {
+            toast('❌ ' + (result.message || 'Error al actualizar'), 'error');
+        }
+    } catch(e) {
+        toast('❌ Error: ' + e.message, 'error');
+    }
+}
+
+async function eliminarHorario(index) {
+    const data = horariosFiltrados ? horariosFiltrados[index] : horarios[index];
+    if(!data) return;
+
+    if(!confirm(`⚠️ ¿Eliminar horario de ${data.nombre} (${data.dia})?`)) return;
+
+    try {
+        const params = new URLSearchParams();
+        params.append('action', 'delete_schedule');
+        params.append('CODE', data.code);
+        params.append('DIA', data.dia);
+
+        const resp = await fetch(API_URL + '?' + params.toString());
+        const texto = await resp.text();
+        let result;
+        try { result = JSON.parse(texto); } catch(e) { result = { success: texto.includes('success') }; }
+
+        if(result.success) {
+            const indexReal = horarios.findIndex(h => h.code === data.code && h.dia === data.dia);
+            if(indexReal !== -1) horarios.splice(indexReal, 1);
+            localStorage.setItem(STORAGE_KEY_SCHEDULE, JSON.stringify(horarios));
+
+            if(horariosFiltrados) {
+                const filtradoIndex = horariosFiltrados.findIndex(h => h.code === data.code && h.dia === data.dia);
+                if(filtradoIndex !== -1) horariosFiltrados.splice(filtradoIndex, 1);
+            }
+
+            renderHorariosTabla();
+            toast(`🗑️ Horario eliminado`, 'success');
+        } else {
+            toast('❌ ' + (result.message || 'Error al eliminar'), 'error');
+        }
+    } catch(e) {
+        toast('❌ Error: ' + e.message, 'error');
+    }
+}
+
+function exportarHorariosCSV() {
+    const data = horariosFiltrados || horarios;
+    if(!data || data.length === 0) {
+        toast('⚠️ No hay horarios para exportar', 'error');
+        return;
+    }
+
+    try {
+        const headers = ['Trabajador', 'ID Personal', 'Día', 'Entrada', 'Refrigerio Inicio', 'Refrigerio Fin', 'Salida', 'Horas'];
+        let csv = '\uFEFF' + headers.join(',') + '\n';
+        
+        csv += data.map(h => {
+            const horas = calcularHoras(h.entrada, h.salida, h.refrigerioInicio, h.refrigerioFin);
+            return [
+                (h.nombre || '').replace(/,/g, ''),
+                (h.idPersonal || '').replace(/,/g, ''),
+                (h.dia || '').replace(/,/g, ''),
+                h.entrada || '',
+                h.refrigerioInicio || '',
+                h.refrigerioFin || '',
+                h.salida || '',
+                horas.toFixed(2)
+            ].join(',');
+        }).join('\n');
+
+        const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `horarios_${new Date().toISOString().slice(0,10)}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+        toast(`📊 ${data.length} horarios exportados`, 'success');
+    } catch(e) {
+        toast('❌ Error exportando: ' + e.message, 'error');
+    }
+}
+
+function limpiarFormularioHorarios() {
+    document.getElementById('selectTrabajadorHorarios').value = '';
+    document.getElementById('selectDiaHorarios').value = 'LUNES';
+    document.getElementById('horaEntradaHorarios').value = '08:00';
+    document.getElementById('horaRefrigerioInicioHorarios').value = '12:00';
+    document.getElementById('horaRefrigerioFinHorarios').value = '13:00';
+    document.getElementById('horaSalidaHorarios').value = '17:00';
+    document.getElementById('alertFormularioHorarios').style.display = 'none';
+    toast('🧹 Formulario limpiado', 'info');
+}
+
+// ============================================================
+//  INICIALIZACIÓN
+// ============================================================
+document.addEventListener('keydown', e => {
+    if(e.key === 'Enter' && !e.target.matches('textarea, select')) {
+        const btn = document.querySelector('.btn-primary[onclick*="guardarHorario"]');
+        if(btn) btn.click();
+    }
+});
+
+document.addEventListener('change', function(e) {
+    if(e.target.id && e.target.id.startsWith('hora') && e.target.id.includes('Horarios')) {
+        const entrada = document.getElementById('horaEntradaHorarios')?.value;
+        const salida = document.getElementById('horaSalidaHorarios')?.value;
+        const refInicio = document.getElementById('horaRefrigerioInicioHorarios')?.value;
+        const refFin = document.getElementById('horaRefrigerioFinHorarios')?.value;
+        if(entrada && salida) {
+            const horas = calcularHoras(entrada, salida, refInicio, refFin);
+            if(horas > 0) {
+                mostrarAlertaHoras(horas);
+            }
+        }
+    }
+});
+
+const observer = new MutationObserver(function() {
+    if(document.getElementById('selectTrabajadorHorarios')) {
+        actualizarSelectTrabajadoresHorarios();
+        observer.disconnect();
+    }
+});
+observer.observe(document.getElementById('mainContent'), {childList: true, subtree: true});
+
+cambiarVista('listado');
+</script>
+</body>
+</html>
