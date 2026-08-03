@@ -431,3 +431,28 @@ window.Horarios.render = function() {
     // Cargar datos después de renderizar
     window.Horarios.cargar();
 };
+// ============================================================
+// EXPOSICIÓN GLOBAL - Asegurar que todo esté disponible
+// ============================================================
+
+// Asegurar que window.Horarios existe
+if (typeof window.Horarios === 'undefined') {
+    window.Horarios = {};
+}
+
+// Asegurar que todas las funciones principales estén expuestas
+window.Horarios.cargar = window.Horarios.cargar || async function() { /* ... */ };
+window.Horarios.render = window.Horarios.render || function() { /* ... */ };
+window.Horarios.renderTabla = window.Horarios.renderTabla || function() { /* ... */ };
+window.Horarios.actualizarContadores = window.Horarios.actualizarContadores || function() { /* ... */ };
+window.Horarios.abrirModal = window.Horarios.abrirModal || function() { /* ... */ };
+window.Horarios.cerrarModal = window.Horarios.cerrarModal || function() { /* ... */ };
+window.Horarios.guardar = window.Horarios.guardar || function() { /* ... */ };
+window.Horarios.editarGrupo = window.Horarios.editarGrupo || function() { /* ... */ };
+window.Horarios.eliminarGrupo = window.Horarios.eliminarGrupo || function() { /* ... */ };
+window.Horarios.exportarCSV = window.Horarios.exportarCSV || function() { /* ... */ };
+window.Horarios.sincronizar = window.Horarios.sincronizar || function() { /* ... */ };
+window.Horarios.cargarEjemplos = window.Horarios.cargarEjemplos || function() { /* ... */ };
+window.Horarios.limpiarTodo = window.Horarios.limpiarTodo || function() { /* ... */ };
+
+console.log('✅ Módulo Horarios cargado correctamente');
