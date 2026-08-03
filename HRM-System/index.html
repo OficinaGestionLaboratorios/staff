@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ===== FAVICON - Ruta CORRECTA desde la raíz ===== -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    
+    <title>Gestión de Personal - UPAO</title>
+
+    <!-- ===== CSS ===== -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/personal.css">
+    <link rel="stylesheet" href="css/horarios.css">  <!-- ← NUEVA LÍNEA -->
+
+
+
+    <!-- ===== FONTS & ICONS ===== -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <!-- ===== HEADER ===== -->
+    <header class="app-header" id="appHeader">
+        <div class="logo">
+            <!-- ===== LOGO - Ruta CORRECTA desde la raíz ===== -->
+            <img src="logo.png" alt="Logo UPAO" style="height:32px; width:auto;">
+            <span>OFICINA DE GESTIÓN DE LABORATORIOS</span>
+        </div>
+        <nav class="main-nav" id="mainNav">
+            <a href="#" class="nav-link" data-view="inicio">Inicio</a>
+            <button class="nav-link active" data-view="listado" id="navGestion">Gestión Personal</button>
+            <a href="#" class="nav-link">Documentos</a>
+            <a href="#" class="nav-link">Noticias</a>
+            <a href="#" class="nav-link">Contacto</a>
+        </nav>
+        <div class="user-menu"><i class="fas fa-user-circle"></i></div>
+    </header>
+
+    <!-- ===== WRAPPER ===== -->
+    <div class="main-wrapper">
+        <aside class="sidebar-left" id="sidebarLeft">
+            <button class="menu-item active" data-view="listado"><i class="fas fa-users"></i> Personal</button>
+            <div class="menu-divider"></div>
+            <div class="menu-label">Gestión</div>
+            <button class="menu-item" data-view="horarios"><i class="fas fa-clock"></i> Horarios</button>
+            <button class="menu-item" onclick="window.toast?.('🔜 Módulo Vacaciones en desarrollo', 'info')"><i class="fas fa-umbrella-beach"></i> Vacaciones</button>
+            <button class="menu-item" onclick="window.toast?.('🔜 Módulo Sobretiempo en desarrollo', 'info')"><i class="fas fa-hourglass-half"></i> Sobretiempo</button>
+            <button class="menu-item" onclick="window.toast?.('🔜 Módulo Permisos en desarrollo', 'info')"><i class="fas fa-door-open"></i> Permisos</button>
+            <button class="menu-item" onclick="window.toast?.('🔜 Módulo Licencias en desarrollo', 'info')"><i class="fas fa-file-medical-alt"></i> Licencias</button>
+            <div class="menu-divider"></div>
+            <button class="menu-item" data-view="dashboard"><i class="fas fa-chart-pie"></i> Dashboard</button>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <!-- Renderizado por JavaScript -->
+        </main>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ===== MODALES GLOBALES ===== -->
+    <!-- Modal Detalle -->
+    <div id="modalDetalle" class="modal">
+        <div class="modal-content">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar"><i class="fas fa-user-circle no-photo"></i></div>
+                <div class="profile-name-section">
+                    <div class="full-name" id="profileFullName">Nombre del Empleado</div>
+                    <div class="id-badge"><i class="fas fa-id-card"></i> ID: <span id="profileId">---</span></div>
+                </div>
+                <div class="profile-actions">
+                    <button class="btn-icon btn-close-modal" onclick="window.cerrarDetalle?.()" title="Cerrar"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            <div class="profile-body">
+                <div class="info-grid" id="detalleContent"></div>
+                <div class="detail-section" id="detalleExtra">
+                    <div class="detail-section-title"><i class="fas fa-briefcase"></i> Información Laboral</div>
+                    <div class="detail-chips" id="detalleChips"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="window.cerrarDetalle?.()">Cerrar</button>
+                    <button class="btn btn-primary" onclick="window.editarDesdeDetalle?.()">✏️ Editar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ubicaciones -->
+    <div id="modalUbicaciones" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div><h2><i class="fas fa-building"></i> Seleccionar Ubicaciones</h2><p>Selecciona una o más ubicaciones para asignar al personal</p></div>
+                <button onclick="window.cerrarModalUbicaciones?.()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#94A3B8;padding:4px 8px;">&times;</button>
+            </div>
+            <div class="filtro-ubicaciones">
+                <div class="search-wrapper"><i class="fas fa-search"></i><input type="text" id="filtroUbicaciones" placeholder="Filtrar ubicaciones..." oninput="window.filtrarUbicaciones?.()"></div>
+                <div class="filtro-actions">
+                    <span id="contadorUbicaciones">0 ubicaciones disponibles</span>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn-select-all" onclick="window.seleccionarTodasUbicaciones?.()">Seleccionar todas</button>
+                        <button class="btn-deselect-all" onclick="window.deseleccionarTodasUbicaciones?.()">Deseleccionar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="lista-ubicaciones-container" id="listaUbicaciones"></div>
+            <div class="modal-footer">
+                <span id="seleccionadasCount" style="font-size:14px;font-weight:500;color:#1E293B;">0 seleccionadas</span>
+                <div style="display:flex;gap:10px;">
+                    <button onclick="window.cerrarModalUbicaciones?.()" class="btn btn-secondary" style="padding:8px 20px;">Cancelar</button>
+                    <button onclick="window.confirmarSeleccionUbicaciones?.()" class="btn btn-primary" style="padding:8px 24px;"><i class="fas fa-check"></i> Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+<!-- Core -->
+<script src="js/core/utils.js"></script>
+<script src="js/core/toast.js"></script>
+<script src="js/core/modal.js"></script>
+<script src="js/api.js"></script>
+
+<!-- Módulo Personal -->
+<script src="js/personal/personal.js"></script>
+<script src="js/personal/listado.js"></script>
+<script src="js/personal/modal.js"></script>
+
+<!-- ===== MÓDULO HORARIOS - NUEVO ===== -->
+<script src="js/horarios/horarios.js"></script>
+<script src="js/horarios/modalHorario.js"></script>
+
+<!-- Router y App -->
+<script src="js/router.js"></script>
+<script src="js/app.js"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!-- ============================================================
+     TEMPLATE - VISTA DE HORARIOS (CORREGIDO)
+     ============================================================ -->
+
+<div class="topbar">
+    <h1><i class="fas fa-clock" style="color:#3B82F6;"></i> Programación de Horarios</h1>
+    <div class="topbar-actions">
+        <button class="btn btn-primary" onclick="window.Horarios.abrirModal()">
+            <i class="fas fa-plus"></i> Nuevo Horario
+        </button>
+        <button class="btn btn-success" onclick="window.Horarios.exportarCSV()">
+            <i class="fas fa-file-csv"></i> Exportar
+        </button>
+        <button class="btn btn-secondary" onclick="window.Horarios.sincronizar()">
+            <i class="fas fa-sync-alt"></i> Sincronizar
+        </button>
+        <button class="btn btn-secondary" onclick="window.Horarios.cargarEjemplos()">
+            <i class="fas fa-code"></i> Ejemplos
+        </button>
+        <button class="btn btn-danger" onclick="window.Horarios.limpiarTodo()">
+            <i class="fas fa-trash"></i> Limpiar
+        </button>
+        <span class="sync-indicator horarios-sync-indicator" id="horariosSyncIndicator">
+            <i class="fas fa-check-circle"></i> Cargando...
+        </span>
+    </div>
+</div>
+
+<!-- ===== CONTADORES ===== -->
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:10px 16px;background:#fff;border-radius:12px;border:1px solid #E2E8F0;flex-wrap:wrap;">
+    <span style="font-size:13px;color:#64748B;font-weight:500;">
+        <i class="fas fa-users" style="color:#3B82F6;margin-right:6px;"></i>
+        Personas Programadas:
+    </span>
+    <span class="horarios-contador-personas" id="horariosContadorPersonas" style="font-size:16px;font-weight:700;color:#0F172A;">0</span>
+    <span style="font-size:12px;color:#94A3B8;margin-left:4px;">(colaboradores)</span>
+    <span style="margin-left:auto;font-size:12px;color:#94A3B8;">
+        Total registros: <strong id="horariosTotalRegistros" style="color:#0F172A;font-size:14px;">0</strong>
+    </span>
+</div>
+
+<!-- ===== TABLA ===== -->
+<div class="card">
+    <h2><i class="fas fa-list"></i> Lista de Horarios</h2>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th style="min-width:80px;">ID</th>
+                    <th style="min-width:120px;">Nombre</th>
+                    <th style="min-width:100px;">📅 Fecha Vigencia</th>
+                    <th style="min-width:200px;">Horarios</th>
+                    <th style="min-width:80px;">⏱️ Total Horas</th>
+                    <th style="min-width:100px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tbodyHorarios">
+                <tr><td colspan="6">
+                    <div class="empty-state">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Cargando horarios...</p>
+                    </div>
+                </td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
