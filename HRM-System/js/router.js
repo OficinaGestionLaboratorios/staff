@@ -29,8 +29,26 @@ window.Router = {
             // Buscar el item de horarios en el sidebar
             const horariosItem = document.querySelector('.sidebar-left .menu-item[data-view="horarios"]');
             if (horariosItem) horariosItem.classList.add('active');
-            // Cargar la vista de horarios
-            window.Horarios.render();
+            
+            // ✅ Verificar que window.Horarios existe
+            if (typeof window.Horarios !== 'undefined' && typeof window.Horarios.render === 'function') {
+                window.Horarios.render();
+            } else {
+                // Fallback: mostrar mensaje de error
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="topbar"><h1><i class="fas fa-clock" style="color:#3B82F6;"></i> Horarios</h1></div>
+                    <div class="card">
+                        <div class="empty-state" style="color:#EF4444;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Error: El módulo de Horarios no se cargó correctamente.</p>
+                            <p style="font-size:13px;color:#94A3B8;">Verifica que los archivos js/horarios/horarios.js y js/horarios/modalHorario.js existan.</p>
+                            <button class="btn btn-primary" onclick="location.reload()" style="margin-top:12px;">
+                                <i class="fas fa-sync-alt"></i> Recargar
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
         }
     },
 
