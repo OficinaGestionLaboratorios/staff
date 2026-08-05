@@ -1,0 +1,41 @@
+[
+  {
+    "idPersonal": "144750",
+    "nombre": "Bryan Américo Cerna Chávez",
+    "fechaVigencia": "06/04/2024",
+    "diasSemana": "LUNES",
+    "horaEntrada": "08:00",
+    "inicioRefrigerio": "13:00",
+    "terminoRefrigerio": "14:00",
+    "horaSalida": "16:58",
+    "totalHoras": "7:58",
+    "tipo": "ordinario",
+    "_rowIndex": 1
+  },
+  {
+    "idPersonal": "144750",
+    "nombre": "Bryan Américo Cerna Chávez",
+    "fechaVigencia": "06/04/2024",
+    "diasSemana": "MARTES",
+    "horaEntrada": "08:00",
+    "inicioRefrigerio": "13:00",
+    "terminoRefrigerio": "14:00",
+    "horaSalida": "16:58",
+    "totalHoras": "7:58",
+    "tipo": "ordinario",
+    "_rowIndex": 2
+  },
+  {
+    "idPersonal": "144750",
+    "nombre": "Bryan Américo Cerna Chávez",
+    "fechaVigencia": "06/04/2024",
+    "diasSemana": "MIÉRCOLES",
+    "horaEntrada": "08:00",
+    "inicioRefrigerio": "13:00",
+    "terminoRefrigerio": "14:00",
+    "horaSalida": "16:58",
+    "totalHoras": "7:58",
+    "tipo": "ordinario",
+    "_rowIndex": 3
+  }
+]
