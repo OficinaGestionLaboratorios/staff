@@ -1,0 +1,104 @@
+<!-- ============================================================
+     MÓDULO: HORARIOS
+     ============================================================ -->
+
+<div class="topbar">
+    <h1><i class="fas fa-clock" style="color:#3B82F6;"></i> Gestión de Horarios</h1>
+    <div class="topbar-actions">
+        <button class="btn btn-secondary" onclick="window.Router.cambiarVista('listado')">
+            <i class="fas fa-arrow-left"></i> Volver
+        </button>
+        <button class="btn btn-outline" onclick="window.horarios?.refrescar()">
+            <i class="fas fa-sync-alt"></i> Sincronizar
+        </button>
+    </div>
+</div>
+
+<!-- BUSCADOR DE PERSONAL -->
+<div class="search-section">
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="buscarPersonalHorarios" placeholder="Buscar por ID, nombres o apellidos..." autocomplete="off">
+        <div id="resultadosPersonalHorarios"></div>
+    </div>
+    <button class="btn btn-secondary btn-sm" onclick="window.horarios?.limpiarSeleccion()">
+        <i class="fas fa-times"></i> Limpiar
+    </button>
+    <div id="empleadoSeleccionadoHorarios" class="empleado-seleccionado hidden">
+        <span id="empleadoNombreHorarios">-</span>
+        <span class="badge" id="empleadoIdHorarios">-</span>
+        <button class="btn-remove" onclick="window.horarios?.limpiarSeleccion()">&times;</button>
+    </div>
+</div>
+
+<!-- TURNOS PREDEFINIDOS -->
+<div class="turnos-section">
+    <label><i class="fas fa-robot"></i> Turnos:</label>
+    <button class="btn-turno" data-turno="admin1" onclick="window.horarios?.aplicarTurno('admin1')">Admin I</button>
+    <button class="btn-turno" data-turno="admin2" onclick="window.horarios?.aplicarTurno('admin2')">Admin II</button>
+    <button class="btn-turno" data-turno="manana" onclick="window.horarios?.aplicarTurno('manana')">Turno I (Mañana)</button>
+    <button class="btn-turno" data-turno="tarde" onclick="window.horarios?.aplicarTurno('tarde')">Turno II (Tarde)</button>
+    <button class="btn-turno" onclick="window.horarios?.limpiarHorarios()" style="border-color:#EF4444;color:#EF4444;">Limpiar</button>
+</div>
+
+<!-- FECHA DE VIGENCIA -->
+<div class="fecha-vigencia">
+    <label><i class="fas fa-calendar-alt"></i> Fecha de Vigencia:</label>
+    <input type="date" id="fechaVigenciaHorarios">
+    <span style="font-size:12px;color:#94A3B8;">(Formato: DD/MM/AAAA)</span>
+</div>
+
+<!-- TABLA DE HORARIOS -->
+<div class="horario-tabla-container">
+    <table class="horario-tabla" id="horarioTabla">
+        <thead>
+            <tr>
+                <th style="width:45px;">Día</th>
+                <th>Ingreso</th>
+                <th>Inicio Ref.</th>
+                <th>Fin Ref.</th>
+                <th>Salida</th>
+                <th style="width:70px;">Total</th>
+            </tr>
+        </thead>
+        <tbody id="horarioTablaBody">
+            <!-- Generado por JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+<!-- RESUMEN -->
+<div class="resumen-horas">
+    <span><span class="label">Total Horas Semanales:</span> <span class="total" id="totalHorasSemanales">0:00</span></span>
+    <span><span class="label">Días Activos:</span> <span id="diasActivos">0</span></span>
+</div>
+
+<!-- TIPO DE HORARIO (Ordinario / Temporal) -->
+<div class="tipo-horario">
+    <label>
+        <input type="checkbox" id="chkTemporalHorarios">
+        <span id="lblTipoHorario">Ordinario</span>
+    </label>
+    <span style="font-size:12px;color:#94A3B8;margin-left:8px;" id="infoHorasRequeridas">
+        (Horas requeridas: <strong>22:00</strong> o <strong>44:00</strong>)
+    </span>
+</div>
+
+<!-- BOTONES DE ACCIÓN -->
+<div class="button-group">
+    <button class="btn btn-secondary" onclick="window.horarios?.verHistorial()">
+        <i class="fas fa-history"></i> Historial
+    </button>
+    <button class="btn btn-secondary" onclick="window.horarios?.generarPDF()">
+        <i class="fas fa-file-pdf"></i> Generar PDF
+    </button>
+    <button class="btn btn-success" onclick="window.horarios?.guardarHorario()">
+        <i class="fas fa-save"></i> Guardar Horario
+    </button>
+</div>
+
+<!-- LOADING -->
+<div id="loadingHorarios" class="loading">
+    <div class="spinner"></div>
+    <p>Guardando...</p>
+</div>
