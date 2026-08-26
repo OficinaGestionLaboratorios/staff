@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ===== FAVICON - Ruta CORRECTA desde la raíz ===== -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    
+    <title>Gestión de Personal - UPAO</title>
+
+    <!-- ===== CSS ===== -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/personal.css">
+    <link rel="stylesheet" href="css/auth.css">
+   
+
+
+    <!-- ===== FONTS & ICONS ===== -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+    <!-- ===== PANTALLA DE ACCESO (login) ===== -->
+    <!-- Bloquea toda la app hasta iniciar sesión: ver js/core/auth.js.
+         El backend además exige el token de sesión en cada acción, así
+         que ocultar esto con DevTools no da acceso real a los datos. -->
+    <div id="loginOverlay" class="login-overlay active">
+        <form id="loginForm" class="login-card">
+            <img src="logo.png" alt="Logo UPAO" class="login-logo">
+            <h1>Gestión de Personal</h1>
+            <p class="login-subtitle">Oficina de Gestión de Laboratorios</p>
+
+            <label for="loginUsuario">Usuario</label>
+            <div class="login-input-wrap">
+                <i class="fas fa-user"></i>
+                <input type="text" id="loginUsuario" autocomplete="username" placeholder="usuario" required>
+            </div>
+
+            <label for="loginPassword">Contraseña</label>
+            <div class="login-input-wrap">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="loginPassword" autocomplete="current-password" placeholder="••••••••" required>
+            </div>
+
+            <div id="loginError" class="login-error"></div>
+
+            <button type="submit" id="loginBtn" class="btn btn-primary login-submit"><i class="fas fa-sign-in-alt"></i> Ingresar</button>
+        </form>
+    </div>
+
+    <!-- ===== APP (oculta hasta iniciar sesión) ===== -->
+    <div id="appRoot" style="display:none;">
+
+    <!-- ===== HEADER ===== -->
+    <header class="app-header" id="appHeader">
+        <div class="logo">
+            <!-- ===== LOGO - Ruta CORRECTA desde la raíz ===== -->
+            <img src="logo.png" alt="Logo UPAO" style="height:32px; width:auto;">
+            <span>OFICINA DE GESTIÓN DE LABORATORIOS</span>
+        </div>
+        <nav class="main-nav" id="mainNav">
+            <a href="#" class="nav-link" data-view="inicio">Inicio</a>
+            <button class="nav-link active" data-view="listado" id="navGestion">Gestión Personal</button>
+            <a href="#" class="nav-link">Documentos</a>
+            <a href="#" class="nav-link">Noticias</a>
+            <a href="#" class="nav-link">Contacto</a>
+        </nav>
+        <div class="user-menu-wrap" id="userMenuWrap">
+            <button class="user-menu" id="userMenuBtn" type="button"><i class="fas fa-user-circle"></i></button>
+            <div class="user-menu-dropdown" id="userMenuDropdown">
+                <div class="user-menu-info">
+                    <strong id="userMenuNombre">—</strong>
+                    <span id="userMenuRol" class="badge-mini">—</span>
+                </div>
+                <div class="user-menu-divider"></div>
+                <button type="button" onclick="window.abrirModalCambiarPassword?.()"><i class="fas fa-key"></i> Cambiar contraseña</button>
+                <button type="button" onclick="window.cerrarSesionApp?.()"><i class="fas fa-right-from-bracket"></i> Cerrar sesión</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== WRAPPER ===== -->
+    <div class="main-wrapper">
+        <aside class="sidebar-left" id="sidebarLeft">
+            <button class="menu-item active" data-view="listado"><i class="fas fa-users"></i> Personal</button>
+            <div class="menu-divider"></div>
+            <div class="menu-label">Gestión</div>
+
+            <div class="menu-group" id="menuGroupHorarios">
+                <div class="menu-item-row">
+                    <button class="menu-item" onclick="window.abrirModalHorarios()"><i class="fas fa-clock"></i> Horarios</button>
+                    <button class="menu-item-toggle" type="button" onclick="window.toggleMenuHorarios(event)" aria-label="Mostrar opciones de Horarios" aria-expanded="false">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="submenu" id="submenuHorarios">
+                    <button class="menu-item submenu-item" onclick="window.exportarTodosHorarios()"><i class="fas fa-file-export"></i> Exportar Horarios</button>
+                </div>
+            </div>
+
+            <button class="menu-item" onclick="window.toast?.('🔜 Módulo Vacaciones en desarrollo', 'info')"><i class="fas fa-umbrella-beach"></i> Vacaciones</button>
+            <button class="menu-item" onclick="window.toast?.('🔜 Módulo Sobretiempo en desarrollo', 'info')"><i class="fas fa-hourglass-half"></i> Sobretiempo</button>
+            <button class="menu-item" onclick="window.toast?.('🔜 Módulo Permisos en desarrollo', 'info')"><i class="fas fa-door-open"></i> Permisos</button>
+            <button class="menu-item" onclick="window.toast?.('🔜 Módulo Licencias en desarrollo', 'info')"><i class="fas fa-file-medical-alt"></i> Licencias</button>
+            <div class="menu-divider"></div>
+            <button class="menu-item" onclick="window.abrirModalActividad()"><i class="fas fa-clock-rotate-left"></i> Actividad</button>
+            <button class="menu-item" data-view="dashboard"><i class="fas fa-chart-pie"></i> Dashboard</button>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <!-- Renderizado por JavaScript -->
+        </main>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ===== MODALES GLOBALES ===== -->
+    <!-- Modal Detalle -->
+    <div id="modalDetalle" class="modal">
+        <div class="modal-content">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar"><i class="fas fa-user-circle no-photo"></i></div>
+                <div class="profile-name-section">
+                    <div class="full-name" id="profileFullName">Nombre del Empleado</div>
+                    <div class="id-badge"><i class="fas fa-id-card"></i> ID: <span id="profileId">---</span></div>
+                </div>
+                <div class="profile-actions">
+                    <button class="btn-icon btn-close-modal" onclick="window.cerrarDetalle?.()" title="Cerrar"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            <div class="profile-body">
+                <div class="info-grid" id="detalleContent"></div>
+                <div class="detail-section" id="detalleExtra">
+                    <div class="detail-section-title"><i class="fas fa-briefcase"></i> Información Laboral</div>
+                    <div class="detail-chips" id="detalleChips"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="window.cerrarDetalle?.()">Cerrar</button>
+                    <button class="btn btn-primary" onclick="window.editarDesdeDetalle?.()">✏️ Editar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ubicaciones -->
+    <div id="modalUbicaciones" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div><h2><i class="fas fa-building"></i> Seleccionar Ubicaciones</h2><p>Selecciona una o más ubicaciones para asignar al personal</p></div>
+                <button onclick="window.cerrarModalUbicaciones?.()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#94A3B8;padding:4px 8px;">&times;</button>
+            </div>
+            <div class="filtro-ubicaciones">
+                <div class="search-wrapper"><i class="fas fa-search"></i><input type="text" id="filtroUbicaciones" placeholder="Filtrar ubicaciones..." oninput="window.filtrarUbicaciones?.()"></div>
+                <div class="filtro-actions">
+                    <span id="contadorUbicaciones">0 ubicaciones disponibles</span>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn-select-all" onclick="window.seleccionarTodasUbicaciones?.()">Seleccionar todas</button>
+                        <button class="btn-deselect-all" onclick="window.deseleccionarTodasUbicaciones?.()">Deseleccionar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="lista-ubicaciones-container" id="listaUbicaciones"></div>
+            <div class="modal-footer">
+                <span id="seleccionadasCount" style="font-size:14px;font-weight:500;color:#1E293B;">0 seleccionadas</span>
+                <div style="display:flex;gap:10px;">
+                    <button onclick="window.cerrarModalUbicaciones?.()" class="btn btn-secondary" style="padding:8px 20px;">Cancelar</button>
+                    <button onclick="window.confirmarSeleccionUbicaciones?.()" class="btn btn-primary" style="padding:8px 24px;"><i class="fas fa-check"></i> Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Horarios -->
+    <div id="modalHorarios" class="modal">
+        <div class="modal-content modal-content-wide">
+            <div class="modal-header">
+                <div><h2><i class="fas fa-clock"></i> <span id="horarioModalTitulo">Registrar Horario</span></h2><p>Define la jornada laboral del empleado seleccionado</p></div>
+                <button onclick="window.cerrarModalHorarios?.()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#94A3B8;padding:4px 8px;">&times;</button>
+            </div>
+            <div class="modal-body" style="padding:20px 24px;">
+                <div class="form-group" style="margin-bottom:14px;">
+                    <label>Empleado</label>
+                    <input type="text" id="horarioEmpleado" readonly placeholder="Selecciona un empleado en Lista de Personal...">
+                </div>
+
+                <!-- ===== HORARIOS EXISTENTES DEL EMPLEADO ===== -->
+                <div id="horarioGruposExistentesWrap" style="display:none; margin-bottom:16px;">
+                    <div class="horario-grupos-header">
+                        <span><i class="fas fa-history"></i> Horarios registrados de este empleado</span>
+                        <div style="display:flex; gap:8px;">
+                            <button type="button" class="btn-chip" onclick="window.exportarHorariosEmpleadoActual()" title="Descargar todos los horarios de este empleado"><i class="fas fa-download"></i> Exportar</button>
+                            <button type="button" class="btn-chip btn-chip-blue" onclick="window.nuevoHorarioDesdeExistente()"><i class="fas fa-plus"></i> Nuevo horario</button>
+                            <button type="button" class="btn-chip" onclick="window.generarSolicitudHorario(window.personalSeleccionado.CODE)" title="Genera la Solicitud de cambio de horario en Excel"><i class="fas fa-file-excel"></i> Solicitud (Excel)</button>
+                        </div>
+                    </div>
+                    <div id="horarioGruposExistentes" class="horario-grupos-lista"></div>
+                </div>
+
+                <div class="form-row" style="margin-bottom:8px;">
+                    <div class="form-group">
+                        <label>Fecha de inicio de vigencia <span class="required">*</span></label>
+                        <input type="date" id="horarioFechaInicio">
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha de fin (opcional)</label>
+                        <input type="date" id="horarioFechaFin">
+                        <small style="color:#94A3B8;">Vacío = vigente hasta nuevo aviso</small>
+                    </div>
+                </div>
+
+                <!-- ===== TABLA HORARIO SEMANAL ===== -->
+                <div class="horario-semanal-header">
+                    <div class="horario-semanal-titulo">
+                        <i class="fas fa-calendar-week"></i>
+                        <h3>Horario Semanal <span class="required">*</span></h3>
+                        <span class="horario-semanal-contador" id="horarioDiasContador">(0 días seleccionados)</span>
+                    </div>
+                    <div class="horario-semanal-acciones">
+                        <button type="button" class="btn-chip" onclick="window.horarioMarcarTodos(true)"><i class="fas fa-check"></i> Todos</button>
+                        <button type="button" class="btn-chip" onclick="window.horarioMarcarTodos(false)"><i class="fas fa-times"></i> Ninguno</button>
+                        <button type="button" class="btn-chip btn-chip-blue" onclick="window.horarioCopiarATodos()"><i class="fas fa-copy"></i> Copiar a todos</button>
+                        <button type="button" class="btn-chip btn-chip-green" onclick="window.horarioAplicarEstandar()"><i class="fas fa-clock"></i> Estándar (L-V)</button>
+                    </div>
+                </div>
+
+                <div class="horario-semanal-tabla-wrap">
+                    <table class="horario-semanal-tabla">
+                        <thead>
+                            <tr>
+                                <th class="col-dia">Día</th>
+                                <th class="col-activo">Activo</th>
+                                <th>Ingreso</th>
+                                <th>Inicio Ref.</th>
+                                <th>Fin Ref.</th>
+                                <th>Salida</th>
+                                <th class="col-total">Total</th>
+                                <th class="col-obs">Observación</th>
+                            </tr>
+                        </thead>
+                        <tbody id="horarioSemanalBody">
+                            <!-- Filas generadas por JS (ver horario-ui.js) -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="horario-resumen" id="horarioResumen">
+                    <div class="horario-resumen-item">
+                        <span>Total horas semanales</span>
+                        <strong id="horarioHorasSemana" class="text-accent">0:00</strong>
+                    </div>
+                    <div class="horario-resumen-item">
+                        <span>Días activos</span>
+                        <strong id="horarioDiasActivos">0</strong>
+                    </div>
+                    <div class="horario-resumen-item">
+                        <span>Promedio por día</span>
+                        <strong id="horarioPromedioDia">0:00</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span id="horarioMsgValidacion" style="font-size:12px;color:#EF4444;"></span>
+                <div style="display:flex;gap:10px;">
+                    <button id="horarioBtnEliminar" onclick="window.eliminarHorarioGrupoActual()" class="btn btn-danger" style="padding:8px 16px; display:none;"><i class="fas fa-trash"></i> Eliminar</button>
+                    <button onclick="window.cerrarModalHorarios?.()" class="btn btn-secondary" style="padding:8px 20px;">Cancelar</button>
+                    <button onclick="window.guardarHorario?.()" class="btn btn-primary" style="padding:8px 24px;"><i class="fas fa-check"></i> <span id="horarioBtnGuardarTexto">Guardar Horario</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Actividad (historial de auditoría: crear/actualizar/eliminar) -->
+    <div id="modalActividad" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div><h2><i class="fas fa-clock-rotate-left"></i> Actividad del Sistema</h2><p>Historial de altas, ediciones y eliminaciones de Personal y Horarios</p></div>
+                <button onclick="window.cerrarModalActividad?.()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#94A3B8;padding:4px 8px;">&times;</button>
+            </div>
+            <div class="modal-body" style="padding:20px 24px;">
+                <div class="actividad-filtros">
+                    <div class="search-wrapper" style="flex:1;">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="actividadFiltroBuscar" placeholder="Buscar en detalle, usuario o ID..." oninput="window.actividadFiltrar()">
+                    </div>
+                    <select id="actividadFiltroModulo" onchange="window.cargarActividad()">
+                        <option value="">Todos los módulos</option>
+                        <option value="Personal">Personal</option>
+                        <option value="Horarios">Horarios</option>
+                        <option value="Sistema">Sistema (accesos)</option>
+                    </select>
+                    <button type="button" class="btn btn-secondary" onclick="window.cargarActividad()" title="Actualizar"><i class="fas fa-sync-alt"></i></button>
+                    <span id="actividadContador" class="text-muted" style="font-size:13px; white-space:nowrap;"></span>
+                </div>
+                <div class="table-container" style="max-height:55vh; overflow-y:auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:150px;">Fecha</th>
+                                <th style="width:220px;">Acción / Módulo</th>
+                                <th style="width:120px;">Usuario</th>
+                                <th>Detalle</th>
+                            </tr>
+                        </thead>
+                        <tbody id="actividadTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="window.cerrarModalActividad?.()" class="btn btn-secondary" style="padding:8px 20px;">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cambiar Contraseña -->
+    <div id="modalCambiarPassword" class="modal">
+        <div class="modal-content" style="width:min(420px,95%);">
+            <div class="modal-header">
+                <div><h2><i class="fas fa-key"></i> Cambiar contraseña</h2><p>Se cerrará tu sesión actual al terminar</p></div>
+                <button onclick="window.cerrarModalCambiarPassword?.()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#94A3B8;padding:4px 8px;">&times;</button>
+            </div>
+            <form id="formCambiarPassword" class="modal-body" style="padding:20px 24px; display:flex; flex-direction:column; gap:14px;">
+                <div class="form-group">
+                    <label>Contraseña actual</label>
+                    <input type="password" id="passwordActual" autocomplete="current-password" required>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña nueva (mínimo 6 caracteres)</label>
+                    <input type="password" id="passwordNueva" autocomplete="new-password" minlength="6" required>
+                </div>
+                <div class="form-group">
+                    <label>Confirmar contraseña nueva</label>
+                    <input type="password" id="passwordNuevaConfirm" autocomplete="new-password" minlength="6" required>
+                </div>
+                <div id="cambiarPasswordError" class="login-error"></div>
+                <div class="modal-footer" style="border-top:none; padding-top:0;">
+                    <button type="button" onclick="window.cerrarModalCambiarPassword?.()" class="btn btn-secondary" style="padding:8px 20px;">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" style="padding:8px 24px;"><i class="fas fa-check"></i> Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    </div><!-- /#appRoot -->
+
+    <!-- ===== JAVASCRIPT ===== -->
+<!-- Core -->
+<script src="js/core/utils.js"></script>
+<script src="js/core/toast.js"></script>
+<script src="js/core/modal.js"></script>
+<script src="js/core/auth.js"></script>
+<script src="js/api.js"></script>
+<script src="js/horarios/solicitud-horario.js"></script>
+<script src="js/core/auditoria.js"></script>
+
+<!-- Módulo Personal -->
+<script src="js/personal/personal.js"></script>
+<script src="js/personal/listado.js"></script>
+<script src="js/personal/modal.js"></script>
+
+<!-- Módulo Horarios -->
+<script src="js/horarios/horario-model.js"></script>
+<script src="js/horarios/horario-validacion.js"></script>
+<script src="js/horarios/horario-api.js"></script>
+<script src="js/horarios/horario-ui.js"></script>
+<script src="js/horarios/horarios.js"></script>
+<script src="js/horarios/horario-export.js"></script>
+
+
+<!-- Router y App -->
+<script src="js/router.js"></script>
+<script src="js/app.js"></script>
+
+
+
+</body>
+</html>
