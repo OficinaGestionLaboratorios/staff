@@ -1,0 +1,463 @@
+/* ============================================================
+   PORTAL-PERSONAL.CSS — Página independiente de autoservicio
+   ============================================================ */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: #eef2f5;
+  min-height: 100vh;
+}
+
+.portal-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* Botón de cierre propio: se ve igual si el portal se abre
+   embebido (index.html) o directamente en el navegador. */
+.portal-close-btn {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 50;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(15,23,42,0.35);
+  color: #F8FAFC;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+.portal-close-btn:hover { background: rgba(15,23,42,0.6); }
+
+/* La vista de actualización de datos adopta una interfaz blanca,
+   independiente visualmente de la pantalla de acceso. */
+.portal-wrap:has(#vistaDatos:not([style*='display: none'])) {
+  background: #ffffff;
+  align-items: flex-start;
+  padding: 32px;
+}
+
+.portal-wrap:has(#vistaDatos:not([style*='display: none'])) .portal-card-wide {
+  width: min(1120px, 100%);
+  border: 1px solid #d9e0e6;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.08);
+  padding: 28px 32px 24px;
+}
+
+.portal-card {
+  width: min(420px, 100%);
+  background: #fff;
+  border-radius: 22px;
+  padding: 36px 32px 30px;
+  box-shadow: 0 30px 70px rgba(0,0,0,.35);
+  animation: portalFadeIn .35s ease;
+}
+
+.portal-card-wide { width: min(680px, 100%); }
+
+@keyframes portalFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.portal-logo { height: 44px; width: auto; margin: 0 auto 14px; display: block; }
+
+.portal-card h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1E293B;
+  text-align: center;
+  margin: 0;
+}
+
+.portal-subtitle {
+  font-size: 13px;
+  color: #94A3B8;
+  text-align: center;
+  margin: 2px 0 20px;
+}
+
+.portal-card label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748B;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+
+.portal-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.portal-input-wrap i {
+  position: absolute;
+  left: 14px;
+  color: #94A3B8;
+  font-size: 14px;
+}
+
+.portal-input-wrap input {
+  width: 100%;
+  padding: 11px 14px 11px 38px;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color .15s;
+}
+
+.portal-input-wrap input:focus { border-color: #1D4ED8; }
+
+.portal-hint { font-size: 12px; color: #94A3B8; margin: 6px 0 0; }
+
+.portal-error {
+  min-height: 18px;
+  font-size: 13px;
+  color: #DC2626;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.portal-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: filter .15s, background .15s;
+}
+
+.portal-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+.portal-btn-primary { background: #1D4ED8; color: #fff; }
+.portal-btn-primary:hover:not(:disabled) { filter: brightness(1.08); }
+
+.portal-btn-ghost { background: #F1F5F9; color: #334155; }
+.portal-btn-ghost:hover:not(:disabled) { background: #E2E8F0; }
+
+#formLogin .portal-btn { width: 100%; margin-top: 18px; }
+
+/* ===== VISTA DATOS ===== */
+
+.portal-header-datos {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.portal-header-datos h1 { text-align: left; }
+.portal-header-datos .portal-subtitle { text-align: left; margin: 2px 0 0; }
+
+.portal-badge {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.portal-badge.pendiente { background: #FEF3C7; color: #92400E; }
+.portal-badge.actualizado { background: #DCFCE7; color: #166534; }
+.portal-badge.modificado { background: #DBEAFE; color: #1E40AF; }
+
+.portal-nota {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  color: #64748B;
+  margin: 16px 0;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.portal-nota i { color: #1D4ED8; margin-top: 1px; }
+
+.portal-nota-warning {
+  background: #FFFBEB;
+  border-color: #FDE68A;
+  color: #92400E;
+}
+.portal-nota-warning i { color: #D97706; }
+
+.portal-campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-bottom: 8px;
+}
+
+.portal-campo label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748B;
+  margin-bottom: 5px;
+}
+
+.portal-campo input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 9px;
+  font-size: 13.5px;
+  border: 1.5px solid #E2E8F0;
+  outline: none;
+}
+
+.portal-campo.editable input {
+  border-color: #93C5FD;
+  background: #EFF6FF;
+}
+.portal-campo.editable input:focus { border-color: #1D4ED8; }
+
+.portal-campo.protegido input {
+  background: #F1F5F9;
+  color: #64748B;
+  border-color: #E2E8F0;
+}
+
+.portal-campo .tag-editable,
+.portal-campo .tag-protegido {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+}
+.tag-editable { background: #DBEAFE; color: #1E40AF; }
+.tag-protegido { background: #F1F5F9; color: #94A3B8; }
+
+.portal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+/* ===== VISTA CONFIRMACIÓN ===== */
+
+.portal-check { text-align: center; font-size: 46px; color: #16A34A; margin-bottom: 6px; }
+#vistaConfirmacion h1 { text-align: center; }
+
+.portal-confirmacion-meta {
+  display: flex;
+  justify-content: center;
+  gap: 26px;
+  margin: 18px 0 22px;
+}
+.portal-confirmacion-meta div { text-align: center; }
+.portal-confirmacion-meta span { display: block; font-size: 11px; color: #94A3B8; text-transform: uppercase; letter-spacing: .4px; }
+.portal-confirmacion-meta strong { font-size: 16px; color: #1E293B; }
+
+#vistaConfirmacion .portal-btn { width: 100%; margin-top: 8px; }
+
+/* ===== MODAL CONFIRMAR GUARDADO ===== */
+
+.portal-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,.55);
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  padding: 20px;
+}
+.portal-modal-overlay.active { display: flex; }
+
+.portal-modal {
+  width: min(380px, 100%);
+  background: #fff;
+  border-radius: 16px;
+  padding: 26px 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.3);
+}
+.portal-modal h2 { margin: 0 0 8px; font-size: 17px; color: #1E293B; }
+.portal-modal p { margin: 0 0 18px; font-size: 13.5px; color: #64748B; }
+.portal-modal-acciones { display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ===== TOAST ===== */
+
+.portal-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #1E293B;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s, transform .2s;
+  z-index: 4000;
+  max-width: min(90vw, 420px);
+  text-align: center;
+}
+.portal-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.portal-toast.error { background: #DC2626; }
+.portal-toast.success { background: #16A34A; }
+
+@media (max-width: 480px) {
+  .portal-card { padding: 28px 20px 24px; border-radius: 16px; }
+}
+\n\n/* ============================================================\n   INTERFAZ DE ACTUALIZACIÓN — ESTILO CORPORATIVO TIPO SAP\n   Solo presentación visual; no modifica la lógica del portal.\n   ============================================================ */\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-header-datos {\n  padding-bottom: 18px;\n  border-bottom: 1px solid #d9e0e6;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-header-datos h1 {\n  font-size: 22px;\n  font-weight: 600;\n  color: #263238;\n  letter-spacing: -.2px;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-header-datos .portal-subtitle {\n  color: #687780;\n  font-size: 13px;\n  margin-top: 5px;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-badge {\n  border-radius: 3px;\n  padding: 6px 12px;\n  border: 1px solid #d9e0e6;\n  background: #f5f7f8;\n  color: #52616b;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-nota {\n  border-radius: 3px;\n  background: #f7f9fa;\n  border: 1px solid #dfe5e8;\n  color: #52616b;\n  padding: 11px 14px;\n  margin: 14px 0;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-nota i {\n  color: #0070b1;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-nota-warning {\n  background: #fffaf0;\n  border-color: #ead9b0;\n  color: #6b5b35;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-nota-warning i {\n  color: #b17b00;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-campos {\n  grid-template-columns: repeat(3, minmax(220px, 1fr));\n  gap: 0;\n  border: 1px solid #d9e0e6;\n  background: #fff;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-campo {\n  padding: 14px 16px;\n  border-right: 1px solid #e3e8eb;\n  border-bottom: 1px solid #e3e8eb;\n  min-width: 0;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-campo:nth-child(3n) {\n  border-right: 0;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-campo label {\n  color: #52616b;\n  font-size: 12px;\n  font-weight: 600;\n  margin-bottom: 6px;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-campo input {\n  border: 1px solid #b8c4cc;\n  border-radius: 2px;\n  background: #fff;\n  color: #263238;\n  min-height: 38px;\n  padding: 9px 10px;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-campo.editable input {\n  background: #f4faff;\n  border-color: #78aeca;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-campo.editable input:focus {\n  border-color: #0070b1;\n  box-shadow: 0 0 0 1px #0070b1;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-campo.protegido input {\n  background: #f2f4f5;\n  color: #687780;\n  border-color: #d4dce1;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .tag-editable {\n  background: #e3f2fa;\n  color: #006a9f;\n  border-radius: 2px;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .tag-protegido {\n  background: #edf0f2;\n  color: #75838c;\n  border-radius: 2px;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-acciones {\n  padding-top: 18px;\n  border-top: 1px solid #d9e0e6;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-btn {\n  border-radius: 3px;\n  min-height: 38px;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-btn-primary {\n  background: #0070b1;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-btn-primary:hover:not(:disabled) {\n  background: #005f96;\n  filter: none;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-btn-ghost {\n  background: #fff;\n  color: #40545f;\n  border: 1px solid #b8c4cc;\n}\n\n.portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-btn-ghost:hover:not(:disabled) {\n  background: #f3f6f7;\n}\n\n@media (max-width: 850px) {\n  .portal-wrap:has(#vistaDatos:not([style*="display: none"])) {\n    padding: 16px;\n  }\n  .portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-card-wide {\n    padding: 22px 18px 20px;\n  }\n  .portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-campos {\n    grid-template-columns: repeat(2, minmax(200px, 1fr));\n  }\n  .portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-campo:nth-child(3n) {\n    border-right: 1px solid #e3e8eb;\n  }\n  .portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-campo:nth-child(2n) {\n    border-right: 0;\n  }\n}\n\n@media (max-width: 560px) {\n  .portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-campos {\n    grid-template-columns: 1fr;\n  }\n  .portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-campo,\n  .portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-campo:nth-child(2n),\n  .portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-campo:nth-child(3n) {\n    border-right: 0;\n  }\n  .portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-acciones {\n    flex-direction: column-reverse;\n  }\n  .portal-wrap:has(#vistaDatos:not([style*="display: none"])) .portal-acciones .portal-btn {\n    width: 100%;\n  }\n}\n
+/* ============================================================
+   AJUSTE VISUAL — FORMULARIO DE DATOS
+   Mantiene intacta la lógica y JavaScript.
+   Paleta consistente con la interfaz tipo SAP.
+   ============================================================ */
+.portal-campos {
+  background: #f8fafc;
+  border: 1px solid #d9e2ea;
+  border-radius: 6px;
+  padding: 18px;
+  gap: 12px 14px;
+}
+
+.portal-campo {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  padding: 10px;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.portal-campo:hover {
+  border-color: #cbd5e1;
+}
+
+.portal-campo label {
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.portal-campo input,
+.portal-campo select,
+.portal-campo textarea {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid #b8c4ce;
+  border-radius: 3px;
+  background: #ffffff;
+  color: #1e293b;
+  font-family: inherit;
+  font-size: 13.5px;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+
+.portal-campo input:focus,
+.portal-campo select:focus,
+.portal-campo textarea:focus {
+  border-color: #1d4ed8;
+  box-shadow: 0 0 0 2px rgba(29, 78, 216, .10);
+}
+
+/* Campos que el trabajador puede modificar */
+.portal-campo.editable {
+  background: #f8fbff;
+  border-color: #cbdff4;
+}
+
+.portal-campo.editable input,
+.portal-campo.editable select,
+.portal-campo.editable textarea {
+  background: #eef6ff;
+  border-color: #9fc5e8;
+}
+
+.portal-campo.editable input:hover,
+.portal-campo.editable select:hover,
+.portal-campo.editable textarea:hover {
+  background: #e9f3fd;
+}
+
+.portal-campo.editable input:focus,
+.portal-campo.editable select:focus,
+.portal-campo.editable textarea:focus {
+  background: #ffffff;
+  border-color: #1d4ed8;
+}
+
+/* Campos protegidos / administrados por RR. HH. */
+.portal-campo.protegido {
+  background: #f4f6f8;
+  border-color: #d7dee5;
+}
+
+.portal-campo.protegido input,
+.portal-campo.protegido select,
+.portal-campo.protegido textarea,
+.portal-campo input[readonly],
+.portal-campo input:disabled,
+.portal-campo select:disabled,
+.portal-campo textarea:disabled {
+  background: #edf0f2;
+  color: #64748b;
+  border-color: #cfd7df;
+  cursor: not-allowed;
+}
+
+.tag-editable {
+  background: #dceeff;
+  color: #1556a8;
+}
+
+.tag-protegido {
+  background: #e5e9ed;
+  color: #64748b;
+}
+
+.portal-nota {
+  border-radius: 5px;
+  background: #f5f8fb;
+}
+
+.portal-nota-warning {
+  background: #fff9e8;
+}
+
+.portal-acciones {
+  padding-top: 4px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.portal-btn {
+  border-radius: 4px;
+}
+
+.portal-btn-primary {
+  background: #1d4ed8;
+}
+
+.portal-btn-ghost {
+  background: #eef2f5;
+  border: 1px solid #cbd5e1;
+}
