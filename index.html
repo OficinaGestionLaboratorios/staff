@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ===== FAVICON - Ruta CORRECTA ===== -->
+    <link rel="icon" type="image/png" href="HRM-System/favicon.png">
+    
+    <title>Inicio - Sistema de Gestión de Calidad</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #F8FAFC;
+            color: #1E293B;
+            line-height: 1.5;
+        }
+
+        /* ===== HEADER ESTANDARIZADO ===== */
+        .app-header {
+            background: #FFFFFF;
+            border-bottom: 1px solid #E2E8F0;
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-weight: 700;
+            font-size: 15px;
+            color: #1E293B;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo img { height: 32px; }
+        .logo i { color: #3B82F6; font-size: 20px; }
+        .logo span { display: inline-block; }
+        .main-nav {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+        }
+        .nav-link {
+            text-decoration: none;
+            color: #64748B;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: inherit;
+            padding: 4px 0;
+        }
+        .nav-link:hover { color: #3B82F6; }
+        .nav-link.active { color: #3B82F6; }
+        .user-menu {
+            width: 36px;
+            height: 36px;
+            background: #F1F5F9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .user-menu i { color: #64748B; font-size: 20px; }
+
+        .hero { max-width: 1100px; margin: 0 auto; padding: 50px 30px 30px; }
+        .hero h1 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
+        .hero p { font-size: 15px; color: #64748B; max-width: 650px; }
+        .grid { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; padding: 20px 30px 60px; }
+        .card { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; padding: 24px; transition: all 0.2s; cursor: pointer; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+        .card i { font-size: 24px; color: #3B82F6; margin-bottom: 16px; }
+        .card h3 { font-size: 15px; font-weight: 600; color: #1E293B; }
+        .card-destacada { border-color: #93C5FD; background: #EFF6FF; }
+        .card-desc { font-size: 12.5px; color: #64748B; margin-top: 8px; line-height: 1.4; }
+        .app-footer { text-align: center; padding: 24px; border-top: 1px solid #E2E8F0; background: #FFFFFF; color: #94A3B8; font-size: 12px; }
+
+        @media (max-width: 768px) {
+            .app-header { padding: 0 20px; height: auto; flex-wrap: wrap; padding: 12px 20px; gap: 12px; }
+            .main-nav { gap: 18px; flex-wrap: wrap; }
+            .logo span { display: none; }
+            .hero { padding: 35px 20px 25px; }
+            .hero h1 { font-size: 24px; }
+            .grid { padding: 15px 20px 40px; }
+        }
+
+        /* ===== LIGHTBOX - POLÍTICA INSTITUCIONAL ===== */
+        .lightbox-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .lightbox-overlay.active { display: flex; }
+        .lightbox-box {
+            background: #FFFFFF;
+            border: 1px solid #93C5FD;
+            border-radius: 16px;
+            width: min(900px, 96vw);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+        }
+        .lightbox-header {
+            padding: 14px 20px;
+            border-bottom: 1px solid #93C5FD;
+            background: #EFF6FF;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .lightbox-header h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1E293B;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .lightbox-header h2 i { color: #3B82F6; }
+        .lightbox-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #64748B;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+        .lightbox-close:hover { color: #EF4444; }
+        .lightbox-body {
+            flex: 1;
+            min-height: 60vh;
+            background: #F8FAFC;
+        }
+        .lightbox-body iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 60vh;
+            border: none;
+            display: block;
+        }
+
+        /* ===== ENCARTE SECUENCIAL: OBJETIVOS DE CALIDAD DEL SGC - LABORATORIOS ===== */
+        .story-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #0B1220;
+            z-index: 2500;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .story-overlay.active { display: flex; }
+        .story-stage {
+            position: relative;
+            width: min(480px, 92vw);
+            height: min(760px, 88vh);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 30px 70px rgba(0,0,0,0.5);
+            background: #0F1F3D;
+        }
+        .story-progress {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            right: 14px;
+            z-index: 30;
+            display: flex;
+            gap: 6px;
+        }
+        .story-seg {
+            flex: 1;
+            height: 3px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.28);
+            overflow: hidden;
+        }
+        .story-seg i {
+            display: block;
+            height: 100%;
+            width: 0%;
+            background: #FFFFFF;
+            transition: width 0.25s ease;
+        }
+        .story-seg.filled i { width: 100%; }
+        .story-close {
+            position: absolute;
+            top: 30px;
+            right: 12px;
+            z-index: 30;
+            background: rgba(15,23,42,0.35);
+            border: none;
+            color: #F8FAFC;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .story-close:hover { background: rgba(15,23,42,0.6); }
+        .story-logo {
+            position: absolute;
+            top: 34px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 25;
+            background: rgba(248,250,252,0.94);
+            border-radius: 10px;
+            padding: 6px 16px;
+            display: flex;
+            align-items: center;
+        }
+        .story-logo img { height: 22px; display: block; }
+        .story-track { position: relative; width: 100%; height: 100%; }
+        .story-slide {
+            position: absolute;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 108px 32px 48px;
+            color: #F8FAFC;
+        }
+        .story-slide.active { display: flex; }
+        .story-slide-0 { background: linear-gradient(160deg, #0F1F3D 0%, #14335E 55%, #1D4ED8 130%); }
+        .story-slide-1 { background: linear-gradient(160deg, #0F1F3D 10%, #1D4ED8 140%); }
+        .story-slide-2 { background: linear-gradient(160deg, #0F1F3D 10%, #0E7490 140%); }
+        .story-slide-3 { background: linear-gradient(160deg, #0F1F3D 10%, #1D4ED8 140%); }
+        .story-slide-4 { background: linear-gradient(160deg, #0F1F3D 10%, #0E7490 140%); }
+        .story-slide-5 { background: linear-gradient(160deg, #0F1F3D 10%, #1D4ED8 140%); }
+        .story-slide-6 { background: linear-gradient(160deg, #0F1F3D 10%, #0E7490 140%); }
+        .story-kicker { font-size: 13px; font-weight: 600; color: #BFDBFE; letter-spacing: 0.2px; margin-bottom: 10px; }
+        .story-slide-0 .story-kicker { color: #93C5FD; }
+        .story-title-main { font-size: 26px; font-weight: 700; line-height: 1.25; margin-bottom: 14px; }
+        .story-slide-0 .story-title-main { font-size: 28px; }
+        .story-sub { font-size: 14.5px; color: #DBEAFE; line-height: 1.55; max-width: 340px; margin: 0 auto; }
+        .story-hint { margin-top: 26px; font-size: 13px; color: #93C5FD; display: flex; align-items: center; gap: 8px; }
+        .story-num-icon { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 18px; }
+        .story-num { font-size: 15px; font-weight: 700; color: rgba(248,250,252,0.55); border: 1px solid rgba(248,250,252,0.35); border-radius: 20px; padding: 4px 12px; }
+        .story-icon-badge { width: 46px; height: 46px; border-radius: 14px; background: rgba(255,255,255,0.14); display: flex; align-items: center; justify-content: center; font-size: 19px; }
+        .story-obj-title { font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 12px; }
+        .story-obj-text { font-size: 14.5px; color: #E2E8F0; line-height: 1.6; max-width: 380px; margin: 0 auto; }
+        .story-nav { position: absolute; top: 0; bottom: 0; width: 38%; z-index: 20; cursor: pointer; background: transparent; border: none; padding: 0; }
+        .story-nav-left { left: 0; }
+        .story-nav-right { right: 0; }
+        .story-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 25;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(15,23,42,0.4);
+            color: #F8FAFC;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s, background 0.2s;
+        }
+        .story-stage:hover .story-arrow { opacity: 1; }
+        .story-arrow:hover { background: rgba(15,23,42,0.7); }
+        .story-arrow:disabled { opacity: 0 !important; cursor: default; }
+        .story-arrow-left { left: 10px; }
+        .story-arrow-right { right: 10px; }
+        @media (max-width: 560px) {
+            .story-arrow { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="app-header">
+    <div class="logo">
+        <!-- ===== LOGO - Ruta CORRECTA ===== -->
+        <img src="HRM-System/logo.png" alt="Logo UPAO">
+        <span>OFICINA DE GESTIÓN DE LABORATORIOS</span>
+    </div>
+    <nav class="main-nav">
+        <a href="index.html" class="nav-link active">Inicio</a>
+        <!-- ===== ENLACE A LA APLICACIÓN SPA ===== -->
+        <a href="HRM-System/app.html" class="nav-link">Gestión Personal</a>
+        <a href="#" class="nav-link">Documentos</a>
+        <a href="#" class="nav-link">Noticias</a>
+        <a href="#" class="nav-link">Contacto</a>
+    </nav>
+    <div class="user-menu"><i class="fas fa-user-circle"></i></div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+    <h1>Sistema de Gestión de Calidad ISO 9001:2015</h1>
+    <p>Acceda de manera rápida a procedimientos, políticas, objetivos institucionales, formatos y documentación relacionada con la gestión de calidad.</p>
+</section>
+
+<!-- ===== GRID DE TARJETAS ===== -->
+<section class="grid">
+    <!-- ===== ACCESO DESTACADO: PORTAL DE AUTOACTUALIZACIÓN ===== -->
+    <a href="HRM-System/portal-personal.html" class="card card-destacada" style="text-decoration:none;">
+        <i class="fas fa-user-pen"></i>
+        <h3>Actualización de Datos del Personal</h3>
+        <p class="card-desc">Ingresa con tu ID y tu DNI para revisar y actualizar tu información personal.</p>
+    </a>
+    <div class="card" id="cardProcesos" onclick="abrirDocumentoDrive('11ZZ9oErJEK_SsanPIxPjH7p-i1dlXP3S', 'Mapa Institucional de Procesos')"><i class="fas fa-sitemap"></i><h3>Mapa Institucional de Procesos</h3></div>
+    <div class="card"><i class="fas fa-file-alt"></i><h3>Procedimientos Generales</h3></div>
+    <div class="card" id="cardPolitica" onclick="abrirSecuenciaPoliticaCalidad()"><i class="fas fa-shield-alt"></i><h3>Política de Calidad Institucional</h3></div>
+    <div class="card" id="cardObjetivos" onclick="abrirSecuenciaObjetivosInstitucional()"><i class="fas fa-bullseye"></i><h3>Objetivos de Calidad Institucional</h3></div>
+    <div class="card" id="cardObjetivoSGC" onclick="abrirSecuenciaObjetivosSGC()"><i class="fas fa-list-check"></i><h3>Objetivos del Sistema de Gestión de Laboratorios</h3></div>
+    <div class="card"><i class="fas fa-face-smile"></i><h3>Satisfacción de Usuarios</h3></div>
+    <div class="card"><i class="fas fa-folder-open"></i><h3>Formatos de Interés</h3></div>
+    <div class="card"><i class="fas fa-circle-info"></i><h3>Información de Trámites</h3></div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="app-footer">© 2026 Oficina de Gestión de Laboratorios</footer>
+
+<!-- ===== LIGHTBOX GENÉRICO: VISOR DE DOCUMENTOS DE GOOGLE DRIVE ===== -->
+<div class="lightbox-overlay" id="lightboxDrive" onclick="if(event.target===this) cerrarDocumentoDrive()">
+    <div class="lightbox-box">
+        <div class="lightbox-header">
+            <h2><i class="fas fa-file-lines"></i> <span id="lightboxTitulo"></span></h2>
+            <button type="button" class="lightbox-close" onclick="cerrarDocumentoDrive()" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="lightbox-body" id="lightboxBody">
+            <!-- El iframe se crea/actualiza recién al abrir, así no se llama a Drive de más -->
+        </div>
+    </div>
+</div>
+
+<!-- ===== ENCARTE SECUENCIAL: OBJETIVOS DE CALIDAD DEL SGC - GESTIÓN DE LABORATORIOS ===== -->
+<div class="story-overlay" id="storyObjetivosSGC">
+    <div class="story-stage" id="storyStageLab">
+        <div class="story-progress" id="storyProgressLab"></div>
+        <button type="button" class="story-close" id="storyCloseLab" aria-label="Cerrar secuencia">&times;</button>
+        <div class="story-logo"><img src="HRM-System/logo.png" alt="Logo UPAO"></div>
+
+        <div class="story-track" id="storyTrackLab">
+            <div class="story-slide story-slide-0" data-slide="0">
+                <div class="story-kicker">Sistema de Gestión de Calidad</div>
+                <div class="story-title-main">Objetivos de Calidad<br>del SGC — Gestión de Laboratorios</div>
+                <p class="story-sub">Seis compromisos que guían la mejora continua de los Laboratorios de Medicina Humana.</p>
+                <div class="story-hint"><i class="fas fa-hand-pointer"></i> Haz clic en el lado derecho para comenzar</div>
+            </div>
+
+            <div class="story-slide story-slide-1" data-slide="1">
+                <div class="story-num-icon">
+                    <span class="story-num">Objetivo 1 de 6</span>
+                    <span class="story-icon-badge"><i class="fas fa-flask"></i></span>
+                </div>
+                <div class="story-obj-title">Infraestructura y equipamiento</div>
+                <p class="story-obj-text">Asegurar una adecuada infraestructura, equipamiento y recursos de los laboratorios de Medicina Humana.</p>
+            </div>
+
+            <div class="story-slide story-slide-2" data-slide="2">
+                <div class="story-num-icon">
+                    <span class="story-num">Objetivo 2 de 6</span>
+                    <span class="story-icon-badge"><i class="fas fa-diagram-project"></i></span>
+                </div>
+                <div class="story-obj-title">Eficacia de los procesos</div>
+                <p class="story-obj-text">Mejorar la eficacia de los procesos dentro del alcance del SGC.</p>
+            </div>
+
+            <div class="story-slide story-slide-3" data-slide="3">
+                <div class="story-num-icon">
+                    <span class="story-num">Objetivo 3 de 6</span>
+                    <span class="story-icon-badge"><i class="fas fa-chalkboard-user"></i></span>
+                </div>
+                <div class="story-obj-title">Satisfacción docente</div>
+                <p class="story-obj-text">Mejorar la satisfacción de los docentes con el servicio de Laboratorios de Medicina Humana.</p>
+            </div>
+
+            <div class="story-slide story-slide-4" data-slide="4">
+                <div class="story-num-icon">
+                    <span class="story-num">Objetivo 4 de 6</span>
+                    <span class="story-icon-badge"><i class="fas fa-user-graduate"></i></span>
+                </div>
+                <div class="story-obj-title">Satisfacción del alumnado</div>
+                <p class="story-obj-text">Mejorar la satisfacción de los alumnos con el servicio de Laboratorios de Medicina Humana.</p>
+            </div>
+
+            <div class="story-slide story-slide-5" data-slide="5">
+                <div class="story-num-icon">
+                    <span class="story-num">Objetivo 5 de 6</span>
+                    <span class="story-icon-badge"><i class="fas fa-people-group"></i></span>
+                </div>
+                <div class="story-obj-title">Satisfacción del colaborador</div>
+                <p class="story-obj-text">Mejorar la satisfacción de los colaboradores que participan en el SGC.</p>
+            </div>
+
+            <div class="story-slide story-slide-6" data-slide="6">
+                <div class="story-num-icon">
+                    <span class="story-num">Objetivo 6 de 6</span>
+                    <span class="story-icon-badge"><i class="fas fa-graduation-cap"></i></span>
+                </div>
+                <div class="story-obj-title">Capacitación del personal</div>
+                <p class="story-obj-text">Garantizar la capacitación adecuada del personal involucrado en el alcance del Sistema.</p>
+            </div>
+        </div>
+
+        <button type="button" class="story-nav story-nav-left" id="storyPrevZoneLab" aria-label="Anterior"></button>
+        <button type="button" class="story-nav story-nav-right" id="storyNextZoneLab" aria-label="Siguiente"></button>
+        <button type="button" class="story-arrow story-arrow-left" id="storyArrowPrevLab" aria-label="Anterior"><i class="fas fa-chevron-left"></i></button>
+        <button type="button" class="story-arrow story-arrow-right" id="storyArrowNextLab" aria-label="Siguiente"><i class="fas fa-chevron-right"></i></button>
+    </div>
+</div>
+
+<!-- ===== ENCARTE SECUENCIAL: OBJETIVOS DE CALIDAD INSTITUCIONAL ===== -->
+<div class="story-overlay" id="storyObjetivosInstitucional">
+    <div class="story-stage" id="storyStageInst">
+        <div class="story-progress" id="storyProgressInst"></div>
+        <button type="button" class="story-close" id="storyCloseInst" aria-label="Cerrar secuencia">&times;</button>
+        <div class="story-logo"><img src="HRM-System/logo.png" alt="Logo UPAO"></div>
+
+        <div class="story-track" id="storyTrackInst">
+            <div class="story-slide story-slide-0" data-slide="0">
+                <div class="story-kicker">Sistema Institucional de Gestión de Calidad</div>
+                <div class="story-title-main">Objetivos de Calidad<br>Institucional</div>
+                <p class="story-sub">Cuatro compromisos que orientan la mejora continua y la excelencia de la institución.</p>
+                <div class="story-hint"><i class="fas fa-hand-pointer"></i> Haz clic en el lado derecho para comenzar</div>
+            </div>
+
+            <div class="story-slide story-slide-1" data-slide="1">
+                <div class="story-num-icon">
+                    <span class="story-num">OC1 · 1 de 4</span>
+                    <span class="story-icon-badge"><i class="fas fa-arrows-spin"></i></span>
+                </div>
+                <div class="story-obj-title">Mejora continua del SGC</div>
+                <p class="story-obj-text">Asegurar la integración y mejora continua de los procesos del Sistema Institucional de Gestión de Calidad, garantizando el cumplimiento de requisitos aplicables y la satisfacción de las partes interesadas relevantes.</p>
+            </div>
+
+            <div class="story-slide story-slide-2" data-slide="2">
+                <div class="story-num-icon">
+                    <span class="story-num">OC2 · 2 de 4</span>
+                    <span class="story-icon-badge"><i class="fas fa-user-graduate"></i></span>
+                </div>
+                <div class="story-obj-title">Excelencia académica</div>
+                <p class="story-obj-text">Fortalecer la formación de profesionales competentes mediante la acreditación y renovación de la acreditación de los programas de estudio y la institución, para garantizar la excelencia académica.</p>
+            </div>
+
+            <div class="story-slide story-slide-3" data-slide="3">
+                <div class="story-num-icon">
+                    <span class="story-num">OC3 · 3 de 4</span>
+                    <span class="story-icon-badge"><i class="fas fa-shield-halved"></i></span>
+                </div>
+                <div class="story-obj-title">Condiciones básicas de calidad</div>
+                <p class="story-obj-text">Asegurar la sostenibilidad de las condiciones básicas de la calidad según los requisitos establecidos por los órganos reguladores de la calidad de la educación superior.</p>
+            </div>
+
+            <div class="story-slide story-slide-4" data-slide="4">
+                <div class="story-num-icon">
+                    <span class="story-num">OC4 · 4 de 4</span>
+                    <span class="story-icon-badge"><i class="fas fa-lightbulb"></i></span>
+                </div>
+                <div class="story-obj-title">Investigación y desarrollo sostenible</div>
+                <p class="story-obj-text">Asegurar el fortalecimiento de procesos orientados a la generación del conocimiento, la protección de la propiedad intelectual y el aporte al desarrollo sostenible.</p>
+            </div>
+        </div>
+
+        <button type="button" class="story-nav story-nav-left" id="storyPrevZoneInst" aria-label="Anterior"></button>
+        <button type="button" class="story-nav story-nav-right" id="storyNextZoneInst" aria-label="Siguiente"></button>
+        <button type="button" class="story-arrow story-arrow-left" id="storyArrowPrevInst" aria-label="Anterior"><i class="fas fa-chevron-left"></i></button>
+        <button type="button" class="story-arrow story-arrow-right" id="storyArrowNextInst" aria-label="Siguiente"><i class="fas fa-chevron-right"></i></button>
+    </div>
+</div>
+
+<!-- ===== ENCARTE SECUENCIAL: POLÍTICA DE CALIDAD ===== -->
+<div class="story-overlay" id="storyPoliticaCalidad">
+    <div class="story-stage" id="storyStagePol">
+        <div class="story-progress" id="storyProgressPol"></div>
+        <button type="button" class="story-close" id="storyClosePol" aria-label="Cerrar secuencia">&times;</button>
+        <div class="story-logo"><img src="HRM-System/logo.png" alt="Logo UPAO"></div>
+
+        <div class="story-track" id="storyTrackPol">
+            <div class="story-slide story-slide-0" data-slide="0">
+                <div class="story-kicker">Sistema Institucional de Gestión de Calidad</div>
+                <div class="story-title-main">Política de Calidad</div>
+                <p class="story-sub">Compromiso institucional de la Universidad Privada Antenor Orrego.</p>
+                <div class="story-hint"><i class="fas fa-hand-pointer"></i> Haz clic en el lado derecho para comenzar</div>
+            </div>
+
+            <div class="story-slide story-slide-1" data-slide="1">
+                <div class="story-num-icon">
+                    <span class="story-icon-badge"><i class="fas fa-quote-left"></i></span>
+                </div>
+                <div class="story-obj-title">Nuestro compromiso</div>
+                <p class="story-obj-text">La Universidad Privada Antenor Orrego se compromete a garantizar la excelencia académica de sus profesionales, generar conocimiento, proteger la propiedad intelectual y aportar en el desarrollo sostenible, a través de la integración y la mejora continua de los procesos del Sistema Institucional de Gestión de Calidad, para cumplir los requisitos aplicables y satisfacer las necesidades y expectativas de sus partes interesadas relevantes.</p>
+            </div>
+        </div>
+
+        <button type="button" class="story-nav story-nav-left" id="storyPrevZonePol" aria-label="Anterior"></button>
+        <button type="button" class="story-nav story-nav-right" id="storyNextZonePol" aria-label="Siguiente"></button>
+        <button type="button" class="story-arrow story-arrow-left" id="storyArrowPrevPol" aria-label="Anterior"><i class="fas fa-chevron-left"></i></button>
+        <button type="button" class="story-arrow story-arrow-right" id="storyArrowNextPol" aria-label="Siguiente"><i class="fas fa-chevron-right"></i></button>
+    </div>
+</div>
+
+
+<script>
+    // ===== LIGHTBOX GENÉRICO: abre imágenes o PDFs alojados en Google Drive =====
+    // Reutilizado por todas las tarjetas que enlazan a un documento de Drive
+    // (Política de Calidad Institucional, Objetivos de Calidad, etc.)
+    function abrirDocumentoDrive(driveId, titulo) {
+        var overlay = document.getElementById('lightboxDrive');
+        var body = document.getElementById('lightboxBody');
+        document.getElementById('lightboxTitulo').textContent = titulo;
+
+        var url = 'https://drive.google.com/file/d/' + driveId + '/preview';
+        var iframe = body.querySelector('iframe');
+        if (!iframe) {
+            iframe = document.createElement('iframe');
+            iframe.allow = 'autoplay';
+            body.appendChild(iframe);
+        }
+        if (iframe.src !== url) iframe.src = url;
+
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function cerrarDocumentoDrive() {
+        document.getElementById('lightboxDrive').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') cerrarDocumentoDrive();
+    });
+
+    // ===== ENCARTE SECUENCIAL (tipo "historias"): fábrica reutilizable =====
+    // Clic/tap en el lado derecho o izquierdo del encarte (o las flechas, o las
+    // teclas ←/→) avanza o retrocede entre las pantallas de cada secuencia.
+    function crearSecuencia(ids) {
+        var overlay = document.getElementById(ids.overlay);
+        var progressBar = document.getElementById(ids.progress);
+        var slides = Array.prototype.slice.call(overlay.querySelectorAll('.story-slide'));
+        var total = slides.length;
+        var current = 0;
+
+        // Construye los segmentos de progreso (uno por pantalla)
+        slides.forEach(function () {
+            var seg = document.createElement('div');
+            seg.className = 'story-seg';
+            seg.innerHTML = '<i></i>';
+            progressBar.appendChild(seg);
+        });
+        var segs = Array.prototype.slice.call(progressBar.querySelectorAll('.story-seg'));
+        var arrowPrev = document.getElementById(ids.arrowPrev);
+        var arrowNext = document.getElementById(ids.arrowNext);
+
+        function render() {
+            slides.forEach(function (s, i) { s.classList.toggle('active', i === current); });
+            segs.forEach(function (seg, i) { seg.classList.toggle('filled', i <= current); });
+            arrowPrev.disabled = (current === 0);
+            arrowNext.disabled = (current === total - 1);
+        }
+
+        function next() { if (current < total - 1) { current++; render(); } }
+        function prev() { if (current > 0) { current--; render(); } }
+
+        function abrir() {
+            current = 0;
+            render();
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrar() {
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById(ids.close).addEventListener('click', cerrar);
+        document.getElementById(ids.nextZone).addEventListener('click', next);
+        document.getElementById(ids.prevZone).addEventListener('click', prev);
+        arrowNext.addEventListener('click', next);
+        arrowPrev.addEventListener('click', prev);
+
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) cerrar();
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (!overlay.classList.contains('active')) return;
+            if (e.key === 'ArrowRight') next();
+            else if (e.key === 'ArrowLeft') prev();
+            else if (e.key === 'Escape') cerrar();
+        });
+
+        // Deslizar (swipe) en pantallas táctiles
+        var touchStartX = null;
+        var stage = document.getElementById(ids.stage);
+        stage.addEventListener('touchstart', function (e) {
+            touchStartX = e.changedTouches[0].clientX;
+        }, { passive: true });
+        stage.addEventListener('touchend', function (e) {
+            if (touchStartX === null) return;
+            var dx = e.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(dx) > 40) { dx < 0 ? next() : prev(); }
+            touchStartX = null;
+        }, { passive: true });
+
+        return { abrir: abrir, cerrar: cerrar };
+    }
+
+    var secuenciaObjetivosSGC = crearSecuencia({
+        overlay: 'storyObjetivosSGC', stage: 'storyStageLab', progress: 'storyProgressLab',
+        close: 'storyCloseLab', prevZone: 'storyPrevZoneLab', nextZone: 'storyNextZoneLab',
+        arrowPrev: 'storyArrowPrevLab', arrowNext: 'storyArrowNextLab'
+    });
+    window.abrirSecuenciaObjetivosSGC = secuenciaObjetivosSGC.abrir;
+    window.cerrarSecuenciaObjetivosSGC = secuenciaObjetivosSGC.cerrar;
+
+    var secuenciaObjetivosInstitucional = crearSecuencia({
+        overlay: 'storyObjetivosInstitucional', stage: 'storyStageInst', progress: 'storyProgressInst',
+        close: 'storyCloseInst', prevZone: 'storyPrevZoneInst', nextZone: 'storyNextZoneInst',
+        arrowPrev: 'storyArrowPrevInst', arrowNext: 'storyArrowNextInst'
+    });
+    window.abrirSecuenciaObjetivosInstitucional = secuenciaObjetivosInstitucional.abrir;
+    window.cerrarSecuenciaObjetivosInstitucional = secuenciaObjetivosInstitucional.cerrar;
+
+    var secuenciaPoliticaCalidad = crearSecuencia({
+        overlay: 'storyPoliticaCalidad', stage: 'storyStagePol', progress: 'storyProgressPol',
+        close: 'storyClosePol', prevZone: 'storyPrevZonePol', nextZone: 'storyNextZonePol',
+        arrowPrev: 'storyArrowPrevPol', arrowNext: 'storyArrowNextPol'
+    });
+    window.abrirSecuenciaPoliticaCalidad = secuenciaPoliticaCalidad.abrir;
+    window.cerrarSecuenciaPoliticaCalidad = secuenciaPoliticaCalidad.cerrar;
+</script>
+
+</body>
+</html>
