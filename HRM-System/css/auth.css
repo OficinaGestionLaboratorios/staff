@@ -1,0 +1,261 @@
+/* ============================================================
+   AUTH.CSS — Login, menú de usuario, Actividad, Cambiar contraseña
+   ============================================================ */
+
+/* ===== PANTALLA DE LOGIN ===== */
+.login-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 55%, #1D4ED8 130%);
+}
+.login-overlay.active { display: flex; }
+
+.login-card {
+    width: min(380px, 100%);
+    background: #fff;
+    border-radius: 22px;
+    padding: 36px 32px 30px;
+    box-shadow: 0 30px 70px rgba(0,0,0,.35);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    animation: modalFadeIn .35s ease;
+}
+.login-logo {
+    height: 44px;
+    width: auto;
+    margin: 0 auto 14px;
+    display: block;
+}
+.login-card h1 {
+    font-size: 19px;
+    font-weight: 700;
+    color: #1E293B;
+    text-align: center;
+    margin: 0;
+}
+.login-subtitle {
+    font-size: 13px;
+    color: #94A3B8;
+    text-align: center;
+    margin: 2px 0 20px;
+}
+.login-card label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748B;
+    margin-top: 10px;
+    margin-bottom: 4px;
+}
+.login-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.login-input-wrap i {
+    position: absolute;
+    left: 13px;
+    color: #94A3B8;
+    font-size: 14px;
+}
+.login-input-wrap input {
+    width: 100%;
+    padding: 11px 12px 11px 38px;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    font-size: 14px;
+    background: #F8FAFC;
+    transition: all .2s;
+}
+.login-input-wrap input:focus {
+    outline: 0;
+    border-color: #3B82F6;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+}
+.login-error {
+    min-height: 18px;
+    color: #EF4444;
+    font-size: 12.5px;
+    font-weight: 500;
+    margin-top: 10px;
+}
+.login-submit {
+    width: 100%;
+    justify-content: center;
+    margin-top: 6px;
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 12px;
+}
+
+/* ===== MENÚ DE USUARIO (header) ===== */
+.user-menu-wrap {
+    position: relative;
+}
+.user-menu {
+    width: 36px;
+    height: 36px;
+    background: #F1F5F9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+}
+.user-menu i { color: #64748B; font-size: 20px; }
+.user-menu:hover { background: #E2E8F0; }
+
+.user-menu-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 230px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 18px 40px rgba(0,0,0,.18);
+    border: 1px solid #E2E8F0;
+    padding: 6px;
+    z-index: 500;
+}
+.user-menu-wrap.open .user-menu-dropdown { display: block; }
+
+.user-menu-info {
+    padding: 10px 12px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.user-menu-info strong {
+    font-size: 14px;
+    color: #1E293B;
+    word-break: break-word;
+}
+.user-menu-info .badge-mini {
+    align-self: flex-start;
+    text-transform: uppercase;
+}
+.user-menu-divider {
+    height: 1px;
+    background: #F1F5F9;
+    margin: 4px 0;
+}
+.user-menu-dropdown button {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    color: #334155;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background .15s;
+}
+.user-menu-dropdown button:hover { background: #F1F5F9; }
+.user-menu-dropdown button:last-child:hover { background: #FEF2F2; color: #EF4444; }
+
+/* ===== MODAL ACTIVIDAD ===== */
+.actividad-filtros {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+.actividad-filtros .search-wrapper {
+    position: relative;
+    min-width: 220px;
+}
+.actividad-filtros .search-wrapper i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94A3B8;
+}
+.actividad-filtros .search-wrapper input {
+    width: 100%;
+    padding: 9px 12px 9px 36px;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    font-size: 14px;
+    background: #F8FAFC;
+}
+.actividad-filtros .search-wrapper input:focus {
+    outline: 0;
+    border-color: #3B82F6;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(59,130,246,.1);
+}
+.actividad-filtros select {
+    padding: 9px 12px;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    font-size: 13.5px;
+    background: #fff;
+    color: #334155;
+}
+
+.badge-actividad {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+}
+.badge-actividad.accion-crear { background: #DCFCE7; color: #15803D; }
+.badge-actividad.accion-actualizar { background: #DBEAFE; color: #1D4ED8; }
+.badge-actividad.accion-eliminar { background: #FEF2F2; color: #EF4444; }
+.badge-actividad.accion-login { background: #F5F3FF; color: #7C3AED; }
+.badge-actividad.accion-fallo { background: #FFF7ED; color: #EA580C; }
+.badge-actividad.accion-otro { background: #F1F5F9; color: #64748B; }
+
+#modalActividad .modal-content,
+#modalCambiarPassword .modal-content { border-radius: 20px; }
+#modalActividad .modal-content { width: min(920px, 96%); }
+#modalActividad .modal-header,
+#modalCambiarPassword .modal-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid #E2E8F0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#modalActividad .modal-header h2,
+#modalCambiarPassword .modal-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+#modalActividad .modal-header h2 i,
+#modalCambiarPassword .modal-header h2 i { color: #3B82F6; }
+#modalActividad .modal-header p,
+#modalCambiarPassword .modal-header p {
+    font-size: 13px;
+    color: #64748B;
+    margin: 2px 0 0 0;
+}
+#modalActividad .modal-footer,
+#modalCambiarPassword .modal-footer {
+    padding: 14px 24px;
+    border-top: 1px solid #E2E8F0;
+}
