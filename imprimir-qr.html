@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registro de incidencias — Código QR</title>
+    <style>
+        @page { size: A4 portrait; margin: 18mm; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #E9EDF1; font-family: Calibri, Carlito, Arial, Helvetica, sans-serif; color: #000; }
+        .barra { position: sticky; top: 0; display: flex; gap: 10px; justify-content: center; padding: 10px; background: #354A5F; }
+        .barra button { font: inherit; font-size: 14px; padding: 8px 18px; border-radius: 8px; border: 0; cursor: pointer; background: #0A6ED1; color: #fff; }
+        .barra button.sec { background: #fff; color: #354A5F; }
+        .hoja { width: 210mm; min-height: 297mm; margin: 16px auto; padding: 24mm 20mm; background: #fff; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,.15); }
+        h1 { margin: 12mm 0 6mm; font-size: 30pt; color: #2F5CB6; font-weight: 700; }
+        h2 { margin: 0 0 16mm; font-size: 24pt; color: #4472C4; font-weight: 400; line-height: 1.35; }
+        .texto { max-width: 150mm; margin: 0 auto 20mm; font-size: 13pt; line-height: 1.5; }
+        .qr { display: block; width: 90mm; height: auto; margin: 0 auto 26mm; }
+        .gracias { font-size: 13pt; font-weight: 700; text-decoration: underline; }
+        @media print {
+            body { background: #fff; }
+            .barra { display: none; }
+            .hoja { margin: 0; padding: 12mm 0 0; width: auto; min-height: 0; box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="barra">
+        <button type="button" onclick="window.print()">Imprimir</button>
+        <button type="button" class="sec" onclick="window.close()">Cerrar</button>
+    </div>
+    <main class="hoja">
+        <h1>REGISTRO DE INCIDENCIAS</h1>
+        <h2>Laboratorios del Programa de Medicina Humana</h2>
+        <p class="texto">En caso de presentarse una incidencia con nuestro servicio de gestión de laboratorios, escanee el código QR para su registro.</p>
+        <img class="qr" id="qr" src="HRM-System/img/qr-satisfaccion.png" alt="Código QR de acceso al formulario">
+        <p class="gracias">Muchas gracias por ayudarnos a mejorar.</p>
+    </main>
+</body>
+</html>
