@@ -1,0 +1,44 @@
+/* Identificación visual uniforme de horas:
+   Ingreso / Salida              -> borde AZUL
+   Inicio / Fin de refrigerio    -> borde VERDE            */
+:root { --hc-azul: #0A6ED1; --hc-verde: #107E3E; }
+
+/* ---- Ingreso y salida (azul) ---- */
+input[type="time"][data-field="ingreso"],
+input[type="time"][data-field="salida"],
+input[type="time"][data-field="horaInicio"],
+input[type="time"][data-field="horaFin"],
+input[type="time"][data-banco-fecha-descanso-hora-inicio],
+input[type="time"][data-banco-fecha-descanso-hora-fin],
+.prop-dias input[type="time"].ing,
+.prop-dias input[type="time"].sal,
+.pp-dias input[type="time"].pp-ing,
+.pp-dias input[type="time"].pp-sal {
+    border: 2px solid var(--hc-azul) !important;
+    border-radius: 6px;
+}
+
+/* ---- Inicio y fin de refrigerio (verde) ---- */
+input[type="time"][data-field="inicioRef"],
+input[type="time"][data-field="finRef"],
+input[type="time"][data-field="refrigerioInicio"],
+input[type="time"][data-field="refrigerioFin"],
+input[type="time"][data-banco-fecha-descanso-refrigerio-inicio],
+input[type="time"][data-banco-fecha-descanso-refrigerio-fin],
+.prop-dias input[type="time"].ini,
+.prop-dias input[type="time"].fin,
+.pp-dias input[type="time"].pp-ini,
+.pp-dias input[type="time"].pp-fin {
+    border: 2px solid var(--hc-verde) !important;
+    border-radius: 6px;
+}
+
+input[type="time"]:focus { box-shadow: 0 0 0 2px rgba(0,0,0,.08); }
+
+/* ---- Encabezados de columna con el mismo color ---- */
+th.th-ing, .hc-lbl.th-ing { color: var(--hc-azul) !important; border-bottom: 3px solid var(--hc-azul) !important; }
+th.th-ref, .hc-lbl.th-ref { color: var(--hc-verde) !important; border-bottom: 3px solid var(--hc-verde) !important; }
+
+/* ---- Etiquetas sobre cada campo (descanso compensatorio) ---- */
+.hc-campo { display: flex; flex-direction: column; gap: 3px; margin: 0; }
+.hc-lbl { font-size: 11.5px; font-weight: 600; text-transform: none; letter-spacing: 0; padding-bottom: 2px; color: #475569; border-bottom: 3px solid #94A3B8; }

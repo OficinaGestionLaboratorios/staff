@@ -1,0 +1,498 @@
+/* ============================================================
+   PORTAL-PERSONAL.CSS — Portal del Personal (autoservicio)
+   Apariencia tipo SAP Fiori (Quartz Light), igual que los módulos
+   del sistema (ver css/sap-theme.css y css/header.css).
+   Solo presentación: no toca ninguna función ni el JavaScript.
+   Los estilos van por id de pantalla (#vistaLogin, #vistaMenu, ...),
+   sin depender del estado de visibilidad.
+   ============================================================ */
+
+:root {
+  --sap-shell: #0056A3;           /* barra superior (igual que header.css) */
+  --sap-shell-hover: #00478A;
+  --sap-brand: #0A6ED1;
+  --sap-brand-dark: #0854A0;
+  --sap-page: #E9EDF1;
+  --sap-surface: #FFFFFF;
+  --sap-surface-alt: #F5F6F7;
+  --sap-border: #D5DADD;
+  --sap-border-strong: #BFC8D1;
+  --sap-text: #32363A;
+  --sap-text-sub: #6A6D70;
+  --sap-selected: #EBF5FE;
+  --sap-hover: #F2F8FE;
+  --sap-positive: #107E3E;
+  --sap-negative: #BB0000;
+  --sap-critical: #E9730C;
+  --sap-radius: 4px;
+  --sap-radius-lg: 8px;
+  --sap-shadow: 0 0 0 1px rgba(85,107,129,.18), 0 2px 6px rgba(85,107,129,.18);
+  --sap-shadow-pop: 0 0 0 1px rgba(85,107,129,.25), 0 8px 24px rgba(34,53,72,.28);
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--sap-page); }
+
+body {
+  margin: 0;
+  font-family: '72','72full',Arial,Helvetica,sans-serif;
+  color: var(--sap-text);
+  background: var(--sap-page);
+  min-height: 100vh;
+}
+
+/* ===== BARRA SUPERIOR (Shell Bar) ===== */
+.portal-shell {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  height: 52px;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--sap-shell);
+  box-shadow: 0 2px 4px rgba(0,0,0,.25);
+}
+.portal-shell img { display: block; width: 93px; height: 34px; object-fit: contain; }
+.portal-shell-titulo {
+  color: #fff;
+  font: 600 14px/1 '72','72full',Arial,Helvetica,sans-serif;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+.portal-shell-sep { width: 1px; height: 22px; background: rgba(255,255,255,.35); }
+.portal-shell-modulo {
+  color: #DCE8F4;
+  font: 500 14px/1 '72','72full',Arial,Helvetica,sans-serif;
+  white-space: nowrap;
+}
+
+/* Botón de volver: vive dentro de la barra superior, a la derecha.
+   Se ve igual si el portal se abre embebido (index.html) o directo. */
+.portal-close-btn {
+  position: fixed;
+  top: 8px;
+  right: 32px;
+  z-index: 50;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: var(--sap-radius);
+  background: var(--sap-shell-hover);
+  color: #fff;
+  font: 600 13.5px/1 '72','72full',Arial,Helvetica,sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background .15s;
+}
+.portal-close-btn:hover { background: #003A72; }
+
+/* ===== ÁREA DE TRABAJO ===== */
+.portal-wrap {
+  min-height: calc(100vh - 52px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 28px 24px 40px;
+}
+
+/* ===== TARJETA (página / panel) ===== */
+.portal-card {
+  width: min(430px, 100%);
+  background: var(--sap-surface);
+  border: 1px solid var(--sap-border);
+  border-top: 3px solid var(--sap-brand);
+  border-radius: var(--sap-radius-lg);
+  box-shadow: var(--sap-shadow);
+  padding: 30px 32px 26px;
+  animation: portalFadeIn .25s ease;
+}
+.portal-card-wide { width: min(860px, 100%); padding: 26px 32px 24px; }
+#vistaDatos.portal-card-wide { width: min(1120px, 100%); }
+#vistaLogin { margin-top: 6vh; }
+#vistaConfirmacion { margin-top: 4vh; }
+
+@keyframes portalFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.portal-logo { height: 44px; width: auto; margin: 0 auto 14px; display: block; }
+
+.portal-card h1 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--sap-text);
+  text-align: center;
+  margin: 0;
+}
+.portal-subtitle {
+  font-size: 13px;
+  color: var(--sap-text-sub);
+  text-align: center;
+  margin: 3px 0 20px;
+}
+
+/* Cabecera de página (título + estado) */
+.portal-header-datos {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--sap-border);
+}
+.portal-header-datos h1 { text-align: left; font-size: 22px; letter-spacing: -.2px; }
+.portal-header-datos .portal-subtitle { text-align: left; margin: 4px 0 0; }
+
+/* ===== ACCESO (login) ===== */
+.portal-card label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sap-text-sub);
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+.portal-input-wrap { position: relative; display: flex; align-items: center; }
+.portal-input-wrap i { position: absolute; left: 13px; color: var(--sap-brand); font-size: 14px; }
+.portal-input-wrap input {
+  width: 100%;
+  min-height: 38px;
+  padding: 9px 12px 9px 38px;
+  border: 1px solid var(--sap-border-strong);
+  border-radius: var(--sap-radius);
+  background: var(--sap-surface);
+  color: var(--sap-text);
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.portal-input-wrap input:focus { border-color: var(--sap-brand); box-shadow: 0 0 0 2px rgba(10,110,209,.25); }
+
+.portal-hint { font-size: 12px; color: var(--sap-text-sub); margin: 6px 0 0; }
+.portal-error { min-height: 18px; font-size: 13px; color: var(--sap-negative); margin-top: 10px; text-align: center; }
+
+/* ===== BOTONES ===== */
+.portal-btn {
+  border: 1px solid transparent;
+  border-radius: var(--sap-radius);
+  min-height: 38px;
+  padding: 8px 18px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background .15s, border-color .15s;
+}
+.portal-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+.portal-btn-primary { background: var(--sap-brand); border-color: var(--sap-brand); color: #fff; }
+.portal-btn-primary:hover:not(:disabled) { background: var(--sap-brand-dark); border-color: var(--sap-brand-dark); }
+
+.portal-btn-ghost { background: var(--sap-surface); border-color: var(--sap-border-strong); color: var(--sap-brand); }
+.portal-btn-ghost:hover:not(:disabled) { background: var(--sap-hover); border-color: var(--sap-brand); }
+
+#formLogin .portal-btn { width: 100%; margin-top: 18px; }
+
+.portal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--sap-border);
+}
+
+/* ===== ETIQUETAS DE ESTADO ===== */
+.portal-badge {
+  flex-shrink: 0;
+  padding: 5px 12px;
+  border-radius: var(--sap-radius);
+  border: 1px solid var(--sap-border-strong);
+  background: var(--sap-surface-alt);
+  color: var(--sap-text-sub);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.portal-badge.pendiente { background: #FEF7F1; color: #A65000; border-color: #F2C9A0; }
+.portal-badge.actualizado { background: #F1FDF6; color: var(--sap-positive); border-color: #A5D9B8; }
+.portal-badge.modificado { background: var(--sap-selected); color: var(--sap-brand-dark); border-color: #A9D2F5; }
+
+/* ===== NOTAS / AVISOS (Message Strip) ===== */
+.portal-nota {
+  background: var(--sap-selected);
+  border: 1px solid #A9D2F5;
+  border-left: 4px solid var(--sap-brand);
+  border-radius: var(--sap-radius);
+  padding: 10px 14px;
+  font-size: 12.5px;
+  color: var(--sap-text);
+  margin: 14px 0;
+  line-height: 1.5;
+}
+.portal-nota i { color: var(--sap-brand); margin-right: 8px; }
+.portal-nota-warning { background: #FEF7F1; border-color: #F2C9A0; border-left-color: var(--sap-critical); }
+.portal-nota-warning i { color: var(--sap-critical); }
+
+/* ===== MENÚ DE MÓDULOS (mosaicos) ===== */
+.portal-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin: 18px 0 6px;
+}
+.portal-menu-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  text-align: left;
+  padding: 16px 18px 18px;
+  border: 1px solid var(--sap-border);
+  border-top: 3px solid var(--sap-brand);
+  border-radius: var(--sap-radius-lg);
+  background: var(--sap-surface);
+  box-shadow: var(--sap-shadow);
+  cursor: pointer;
+  font-family: inherit;
+  transition: box-shadow .15s, background .15s, border-color .15s;
+}
+.portal-menu-card:hover { background: var(--sap-hover); box-shadow: var(--sap-shadow-pop); }
+.portal-menu-card:focus-visible { outline: 2px solid var(--sap-brand); outline-offset: 2px; }
+.portal-menu-card i {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  font-size: 19px;
+  color: var(--sap-brand);
+  background: var(--sap-selected);
+  border-radius: var(--sap-radius);
+}
+.portal-menu-card strong { font-size: 15px; font-weight: 600; color: var(--sap-text); }
+.portal-menu-card span { font-size: 12.5px; color: var(--sap-text-sub); }
+
+/* ===== FORMULARIO: MIS DATOS ===== */
+.portal-campos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-bottom: 8px;
+  background: var(--sap-surface);
+  border-top: 1px solid var(--sap-border);
+  border-left: 1px solid var(--sap-border);
+}
+.portal-campo {
+  min-width: 0;
+  padding: 12px 14px 14px;
+  background: var(--sap-surface);
+  border-right: 1px solid var(--sap-border);
+  border-bottom: 1px solid var(--sap-border);
+}
+.portal-campo label {
+  display: block;
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sap-text-sub);
+}
+.portal-campo input,
+.portal-campo select,
+.portal-campo textarea {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid var(--sap-border-strong);
+  border-radius: var(--sap-radius);
+  background: var(--sap-surface);
+  color: var(--sap-text);
+  font-family: inherit;
+  font-size: 13.5px;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.portal-campo input:focus,
+.portal-campo select:focus,
+.portal-campo textarea:focus { border-color: var(--sap-brand); box-shadow: 0 0 0 2px rgba(10,110,209,.25); background: #fff; }
+
+/* Campos que la persona puede modificar */
+.portal-campo.editable { background: var(--sap-hover); box-shadow: inset 3px 0 0 var(--sap-brand); }
+.portal-campo.editable input,
+.portal-campo.editable select,
+.portal-campo.editable textarea { background: var(--sap-selected); border-color: #9CC8EE; }
+.portal-campo.editable input:hover { background: #E3F0FC; }
+
+/* Campos administrados por RR. HH. */
+.portal-campo.protegido { background: var(--sap-surface-alt); }
+.portal-campo.protegido input,
+.portal-campo.protegido select,
+.portal-campo.protegido textarea,
+.portal-campo input[readonly],
+.portal-campo input:disabled {
+  background: #EDEFF1;
+  color: var(--sap-text-sub);
+  border-color: var(--sap-border);
+  cursor: not-allowed;
+}
+
+.tag-editable, .tag-protegido {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+}
+.tag-editable { background: #D4E6F7; color: var(--sap-brand-dark); }
+.tag-protegido { background: #E3E8ED; color: var(--sap-text-sub); }
+
+/* ===== FORMULARIO DE PROPUESTA ===== */
+.pp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-bottom: 12px; }
+.pp-field label { display: block; font-size: 12.5px; font-weight: 600; color: var(--sap-text-sub); margin: 0 0 4px; }
+.pp-field input, .pp-field select, .pp-field textarea {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid var(--sap-border-strong);
+  border-radius: var(--sap-radius);
+  background: var(--sap-surface);
+  color: var(--sap-text);
+  font: inherit;
+  font-size: 14px;
+}
+.pp-field input:focus, .pp-field select:focus, .pp-field textarea:focus {
+  outline: none; border-color: var(--sap-brand); box-shadow: 0 0 0 2px rgba(10,110,209,.25);
+}
+.pp-req { color: var(--sap-negative); }
+
+.pp-dias { width: 100%; border-collapse: collapse; margin: 8px 0 4px; font-size: 13.5px; }
+.pp-dias th {
+  text-align: left; font-size: 13px; font-weight: 700; color: var(--sap-text);
+  background: #E3E8ED; padding: 8px 6px; border-bottom: 2px solid var(--sap-border-strong);
+}
+.pp-dias td { padding: 6px; border-bottom: 1px solid var(--sap-border); color: var(--sap-text); }
+.pp-dias tbody tr:nth-child(even) td { background: #FAFBFC; }
+.pp-dias tbody tr:hover td { background: var(--sap-hover); }
+.pp-dias input[type=time] {
+  width: 100%; padding: 6px 8px; border: 1px solid var(--sap-border-strong);
+  border-radius: var(--sap-radius); font: inherit; background: var(--sap-surface);
+}
+.pp-dias input[type=time]:focus { outline: none; border-color: var(--sap-brand); box-shadow: 0 0 0 2px rgba(10,110,209,.25); }
+.pp-dias input[type=time]:disabled { background: #EDEFF1; border-color: var(--sap-border); color: var(--sap-text-sub); }
+.pp-horas { font-weight: 700; color: var(--sap-brand-dark); white-space: nowrap; }
+.pp-total { margin: 6px 0 12px; font-size: 13.5px; color: var(--sap-text); }
+.pp-link { background: none; border: none; color: var(--sap-brand); cursor: pointer; font: inherit; font-size: 13px; padding: 0; }
+.pp-link:hover { color: var(--sap-brand-dark); text-decoration: underline; }
+
+/* ===== MIS PROPUESTAS ===== */
+.portal-lista-prop { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+.pp-item {
+  border: 1px solid var(--sap-border);
+  border-left: 4px solid var(--sap-brand);
+  border-radius: var(--sap-radius);
+  padding: 12px 14px;
+  background: var(--sap-surface);
+  display: flex; gap: 12px; align-items: flex-start; justify-content: space-between;
+}
+.pp-item:hover { background: var(--sap-hover); }
+.pp-item b { font-size: 13.5px; font-weight: 600; }
+.pp-item small { display: block; color: var(--sap-text-sub); margin-top: 3px; font-size: 12.5px; }
+.pp-item .pp-coment { color: var(--sap-negative); }
+
+.pp-estado {
+  font-size: 11.5px; font-weight: 700; padding: 3px 10px; white-space: nowrap;
+  border-radius: var(--sap-radius); border: 1px solid transparent;
+}
+.pp-estado.PENDIENTE { background: #FEF7F1; color: #A65000; border-color: #F2C9A0; }
+.pp-estado.APROBADA { background: #F1FDF6; color: var(--sap-positive); border-color: #A5D9B8; }
+.pp-estado.RECHAZADA { background: #FFEBEB; color: var(--sap-negative); border-color: #E69A9A; }
+.pp-estado.CANCELADA { background: var(--sap-surface-alt); color: var(--sap-text-sub); border-color: var(--sap-border-strong); }
+
+/* ===== CONFIRMACIÓN ===== */
+.portal-check { text-align: center; font-size: 46px; color: var(--sap-positive); margin-bottom: 6px; }
+#vistaConfirmacion h1 { text-align: center; }
+.portal-confirmacion-meta {
+  display: flex; justify-content: center; gap: 0; margin: 18px 0 22px;
+  border: 1px solid var(--sap-border); border-radius: var(--sap-radius); background: var(--sap-surface-alt);
+}
+.portal-confirmacion-meta div { flex: 1; padding: 10px 16px; text-align: center; }
+.portal-confirmacion-meta div + div { border-left: 1px solid var(--sap-border); }
+.portal-confirmacion-meta span { display: block; font-size: 11px; color: var(--sap-text-sub); text-transform: uppercase; letter-spacing: .4px; }
+.portal-confirmacion-meta strong { font-size: 16px; font-weight: 600; color: var(--sap-text); }
+#vistaConfirmacion .portal-btn { width: 100%; margin-top: 8px; }
+
+/* ===== VENTANA DE CONFIRMAR GUARDADO (Dialog) ===== */
+/* Sigue siendo de página completa, como en el sistema principal. */
+.portal-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(34,53,72,.6);
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  padding: 0;
+}
+.portal-modal-overlay.active { display: flex; }
+.portal-modal {
+  width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh;
+  background: var(--sap-surface);
+  border-radius: 0;
+  padding: 26px 24px;
+  box-sizing: border-box;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  overflow-y: auto;
+}
+.portal-modal > * { width: min(520px, 100%); }
+.portal-modal h2 {
+  margin: 0 0 8px; padding-bottom: 12px; font-size: 18px; font-weight: 600; color: var(--sap-text);
+  border-bottom: 1px solid var(--sap-border);
+}
+.portal-modal p { margin: 10px 0 20px; font-size: 13.5px; color: var(--sap-text-sub); }
+.portal-modal-acciones { display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ===== AVISO EMERGENTE (Toast) ===== */
+.portal-toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #354A5F; color: #fff;
+  padding: 12px 20px; border-radius: var(--sap-radius);
+  font-size: 13.5px; box-shadow: var(--sap-shadow-pop);
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s, transform .2s;
+  z-index: 4000; max-width: min(90vw, 420px); text-align: center;
+}
+.portal-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.portal-toast.error { background: var(--sap-negative); }
+.portal-toast.success { background: var(--sap-positive); }
+
+/* ===== PANTALLAS ANGOSTAS ===== */
+@media (max-width: 850px) {
+  .portal-campos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .portal-card-wide { padding: 22px 18px 20px; }
+}
+@media (max-width: 600px) {
+  .portal-shell { padding: 0 14px; }
+  .portal-shell-modulo, .portal-shell-sep { display: none; }
+  .portal-close-btn { right: 14px; }
+  .portal-wrap { padding: 16px 12px 28px; }
+  .portal-card { padding: 24px 18px 20px; }
+  .portal-campos { grid-template-columns: 1fr; }
+  .portal-acciones { flex-direction: column-reverse; }
+  .portal-acciones .portal-btn { width: 100%; }
+}
