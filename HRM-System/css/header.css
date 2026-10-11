@@ -1,0 +1,157 @@
+/* ============================================================
+   HEADER.CSS — Cabecera ÚNICA y compartida (index.html + app.html)
+   Ambas páginas cargan este mismo archivo, con medidas fijas, para
+   que al cambiar de pestaña (Inicio / Gestión Personal / ...) la
+   cabecera quede exactamente en la misma posición y solo parezca
+   cambiar el contenido de abajo.
+   Logo: versión en negativo (blanco) del Manual de Marca UPAO 2024.
+   Color de la barra: azul corporativo UPAO #0056A3 (C100 M66 Y0 K0), pág. 23 del manual.
+   ============================================================ */
+
+/* La barra de desplazamiento se muestra siempre: sin esto, una página con
+   scroll y otra sin él desplazan la cabecera unos píxeles al cambiar */
+html { overflow-y: scroll; background: #E9EDF1; }
+/* ...salvo en la pantalla de acceso (login), que no lleva cabecera */
+html:has(.login-overlay.active) { overflow-y: hidden; }
+
+header.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    column-gap: 24px;
+    height: 52px;
+    padding: 0 32px;
+    background: #0056A3;
+    border: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,.25);
+    flex-shrink: 0;
+}
+
+/* ---- Logo + nombre de la oficina ---- */
+header.app-header .logo {
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 52px;
+    margin: 0;
+    color: #fff;
+}
+header.app-header .logo img {
+    display: block;
+    width: 93px;            /* 34 px de alto × proporción del logo (520×190) */
+    height: 34px;
+    object-fit: contain;
+    background: none;
+    padding: 0;
+    border-radius: 0;
+}
+header.app-header .logo span {
+    display: block;
+    color: #fff;
+    font: 600 14px/1 '72', '72full', Arial, Helvetica, sans-serif;
+    letter-spacing: .02em;
+    white-space: nowrap;
+}
+
+/* ---- Navegación ---- */
+header.app-header .main-nav {
+    grid-column: 2;
+    justify-self: center;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+}
+/* Enlace <a> (index) y botón <button> (app) quedan idénticos */
+header.app-header .nav-link {
+    box-sizing: border-box;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    margin: 0;
+    padding: 0 14px;
+    font: 500 14px/1 '72', '72full', Arial, Helvetica, sans-serif;
+    color: #DCE8F4;
+    text-decoration: none;
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+}
+header.app-header .nav-link:hover { color: #fff; background: #00478A; }
+header.app-header .nav-link.active { color: #fff; background: #00478A; }
+header.app-header .nav-link.active::after {
+    content: '';
+    position: absolute;
+    left: 10px; right: 10px; bottom: 0;
+    height: 3px;
+    background: #fff;
+    border-radius: 0;
+}
+
+/* ---- Usuario ---- */
+header.app-header > .user-menu,
+header.app-header > .user-menu-wrap { grid-column: 3; justify-self: end; margin: 0; }
+header.app-header .user-menu {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin: 0;
+    padding: 0;
+    background: #00478A;
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 50%;
+    cursor: pointer;
+}
+header.app-header .user-menu i { color: #fff; font-size: 20px; }
+header.app-header .user-menu:hover { background: #003A72; }
+header.app-header .user-menu-dropdown { border-radius: 8px; border-color: #D5DADD; box-shadow: 0 0 0 1px rgba(85,107,129,.25), 0 8px 24px rgba(34,53,72,.28); }
+header.app-header .user-menu-dropdown button:hover { background: #EBF5FE; color: #0A6ED1; }
+header.app-header .user-menu-dropdown button i { color: #0A6ED1; }
+
+/* ---- Pantallas angostas (igual en las dos páginas) ---- */
+@media (max-width: 768px) {
+    header.app-header {
+        grid-template-columns: auto 1fr auto;
+        height: auto;
+        min-height: 52px;
+        padding: 6px 16px;
+        row-gap: 4px;
+    }
+    header.app-header .logo { height: 40px; }
+    header.app-header .logo span { display: none; }
+    header.app-header .main-nav {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        justify-self: stretch;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 2px;
+        padding-top: 4px;
+        border-top: 1px solid rgba(255,255,255,.15);
+    }
+    header.app-header .nav-link { height: 32px; padding: 0 10px; font-size: 12px; }
+    header.app-header > .user-menu,
+    header.app-header > .user-menu-wrap { grid-column: 3; grid-row: 1; }
+}
+
+/* ---- Cambio de página sin "salto": la cabecera permanece fija y solo
+   se desvanece el contenido de abajo (navegadores con View Transitions;
+   en los demás no tiene efecto y la cabecera igual coincide al píxel) ---- */
+@view-transition { navigation: auto; }
+header.app-header { view-transition-name: site-header; }
+::view-transition-group(site-header),
+::view-transition-old(site-header),
+::view-transition-new(site-header) { animation: none; }
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: .18s; }
