@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>Portal del Personal - UPAO</title>
+
+  <link rel="stylesheet" href="css/portal-personal.css">
+  <link rel="stylesheet" href="css/horas-colores.css?v=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+  <header class="portal-shell">
+    <img src="logo-blanco.png" alt="Logo UPAO">
+    <span class="portal-shell-titulo">OFICINA DE GESTIÓN DE LABORATORIOS</span>
+    <span class="portal-shell-sep"></span>
+    <span class="portal-shell-modulo">Portal del Personal</span>
+  </header>
+
+  <button type="button" id="btnCerrarPortal" class="portal-close-btn" aria-label="Volver"><i class="fas fa-arrow-left"></i> Volver</button>
+
+  <div class="portal-wrap">
+
+    <!-- ===== PANTALLA 1: ACCESO ===== -->
+    <section id="vistaLogin" class="portal-card">
+      <img src="logo.png" alt="Logo UPAO" class="portal-logo">
+      <h1>Portal del Personal</h1>
+      <p class="portal-subtitle">Oficina de Gestión de Laboratorios</p>
+
+      <form id="formLogin">
+        <label for="inputIdPersonal">Código de ID / Usuario</label>
+        <div class="portal-input-wrap">
+          <i class="fas fa-id-badge"></i>
+          <input type="text" id="inputIdPersonal" autocomplete="username" placeholder="Tu ID de personal" required>
+        </div>
+
+        <label for="inputDni">Clave de acceso</label>
+        <div class="portal-input-wrap">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="inputDni" autocomplete="current-password" placeholder="Tu DNI" required>
+        </div>
+        <p class="portal-hint">Tu clave inicial es tu número de DNI.</p>
+
+        <div id="loginError" class="portal-error"></div>
+
+        <button type="submit" id="btnLogin" class="portal-btn portal-btn-primary">
+          <i class="fas fa-sign-in-alt"></i> Ingresar
+        </button>
+      </form>
+    </section>
+
+
+    <!-- ===== PANTALLA MENÚ: MÓDULOS DEL PORTAL ===== -->
+    <section id="vistaMenu" class="portal-card portal-card-wide" style="display:none;">
+      <div class="portal-header-datos">
+        <div>
+          <h1>¿Qué deseas hacer?</h1>
+          <p class="portal-subtitle" id="saludoMenu">—</p>
+        </div>
+      </div>
+      <p class="portal-nota">
+        <i class="fas fa-circle-info"></i>
+        Horario, permisos, vacaciones y licencias se envían <strong>solo como propuesta</strong>:
+        tu jefe las evaluará y, si las aprueba, recién quedarán registradas.
+      </p>
+      <div class="portal-menu-grid">
+        <button type="button" class="portal-menu-card" data-accion="datos"><i class="fas fa-id-card"></i><strong>Mis datos personales</strong><span>Revisar y actualizar tu información</span></button>
+        <button type="button" class="portal-menu-card" data-accion="HORARIO"><i class="far fa-clock"></i><strong>Horario propuesto</strong><span>Plantea tu horario de trabajo</span></button>
+        <button type="button" class="portal-menu-card" data-accion="PERMISO"><i class="fas fa-door-open"></i><strong>Permiso</strong><span>Solicita una salida del centro de trabajo</span></button>
+        <button type="button" class="portal-menu-card" data-accion="VACACION"><i class="fas fa-umbrella-beach"></i><strong>Vacaciones</strong><span>Propón las fechas de tu descanso</span></button>
+        <button type="button" class="portal-menu-card" data-accion="LICENCIA"><i class="fas fa-file-medical-alt"></i><strong>Licencia</strong><span>Solicita una licencia</span></button>
+        <button type="button" class="portal-menu-card" data-accion="mis"><i class="fas fa-list-check"></i><strong>Mis propuestas</strong><span>Ver el estado de lo que enviaste</span></button>
+      </div>
+      <div class="portal-acciones">
+        <button type="button" id="btnCerrarSesionMenu" class="portal-btn portal-btn-ghost">
+          <i class="fas fa-right-from-bracket"></i> Cerrar sesión
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== PANTALLA: FORMULARIO DE PROPUESTA ===== -->
+    <section id="vistaPropuesta" class="portal-card portal-card-wide" style="display:none;">
+      <div class="portal-header-datos">
+        <div>
+          <h1 id="propuestaTitulo">Propuesta</h1>
+          <p class="portal-subtitle" id="propuestaSub">—</p>
+        </div>
+        <span class="portal-badge pendiente">Propuesta</span>
+      </div>
+      <p class="portal-nota portal-nota-warning">
+        <i class="fas fa-triangle-exclamation"></i>
+        Esto es solo una propuesta. No queda registrada oficialmente hasta que tu jefe la apruebe.
+      </p>
+      <div id="propuestaForm"></div>
+      <div id="propuestaError" class="portal-error"></div>
+      <div class="portal-acciones">
+        <button type="button" id="btnPropuestaVolver" class="portal-btn portal-btn-ghost"><i class="fas fa-arrow-left"></i> Volver al menú</button>
+        <button type="button" id="btnPropuestaEnviar" class="portal-btn portal-btn-primary"><i class="fas fa-paper-plane"></i> Enviar propuesta</button>
+      </div>
+    </section>
+
+    <!-- ===== PANTALLA: MIS PROPUESTAS ===== -->
+    <section id="vistaMisPropuestas" class="portal-card portal-card-wide" style="display:none;">
+      <div class="portal-header-datos">
+        <div>
+          <h1>Mis propuestas</h1>
+          <p class="portal-subtitle">Estado de lo que enviaste a tu jefe</p>
+        </div>
+      </div>
+      <div id="listaMisPropuestas" class="portal-lista-prop"></div>
+      <div class="portal-acciones">
+        <button type="button" id="btnMisPropuestasVolver" class="portal-btn portal-btn-ghost"><i class="fas fa-arrow-left"></i> Volver al menú</button>
+      </div>
+    </section>
+
+    <!-- ===== PANTALLA 2: MIS DATOS ===== -->
+    <section id="vistaDatos" class="portal-card portal-card-wide" style="display:none;">
+      <div class="portal-header-datos">
+        <div>
+          <h1>Mis Datos Personales</h1>
+          <p class="portal-subtitle" id="saludoUsuario">—</p>
+        </div>
+        <span id="badgeEstado" class="portal-badge">—</span>
+      </div>
+
+      <p class="portal-nota">
+        <i class="fas fa-circle-info"></i>
+        Revisa tu información. Solo puedes editar los campos resaltados en azul;
+        el resto lo administra Recursos Humanos.
+      </p>
+      <p class="portal-nota portal-nota-warning">
+        <i class="fas fa-triangle-exclamation"></i>
+        Tu DNI también es tu clave de acceso a este portal. Si lo cambias,
+        la próxima vez debes ingresar con el DNI nuevo.
+      </p>
+
+      <div id="camposContainer" class="portal-campos"></div>
+
+      <div class="portal-acciones">
+        <button type="button" id="btnDatosVolverMenu" class="portal-btn portal-btn-ghost">
+          <i class="fas fa-arrow-left"></i> Volver al menú
+        </button>
+        <button type="button" id="btnCerrarSesion" class="portal-btn portal-btn-ghost">
+          <i class="fas fa-right-from-bracket"></i> Cerrar sesión
+        </button>
+        <button type="button" id="btnGuardar" class="portal-btn portal-btn-primary">
+          <i class="fas fa-floppy-disk"></i> Guardar mis datos
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== PANTALLA 3: CONFIRMACIÓN ===== -->
+    <section id="vistaConfirmacion" class="portal-card" style="display:none;">
+      <div class="portal-check"><i class="fas fa-circle-check"></i></div>
+      <h1 id="confirmacionTitulo">Datos actualizados correctamente</h1>
+      <p class="portal-subtitle" id="confirmacionMensaje">Tu información ha sido actualizada correctamente.</p>
+      <div class="portal-confirmacion-meta">
+        <div><span>Fecha</span><strong id="confirmacionFecha">—</strong></div>
+        <div><span>Hora</span><strong id="confirmacionHora">—</strong></div>
+      </div>
+      <button type="button" id="btnVolverDatos" class="portal-btn portal-btn-ghost">
+        <i class="fas fa-arrow-left"></i> Volver a mis datos
+      </button>
+      <button type="button" id="btnConfirmVolverMenu" class="portal-btn portal-btn-ghost">
+        <i class="fas fa-table-cells-large"></i> Ir al menú
+      </button>
+      <button type="button" id="btnCerrarSesion2" class="portal-btn portal-btn-primary">
+        <i class="fas fa-right-from-bracket"></i> Cerrar sesión
+      </button>
+    </section>
+
+  </div>
+
+  <!-- ===== MODAL DE CONFIRMACIÓN ANTES DE GUARDAR ===== -->
+  <div id="modalConfirmarGuardado" class="portal-modal-overlay">
+    <div class="portal-modal">
+      <h2>¿Guardar cambios?</h2>
+      <p>¿Está seguro de que desea guardar los cambios realizados en sus datos personales?</p>
+      <div class="portal-modal-acciones">
+        <button type="button" id="btnCancelarGuardado" class="portal-btn portal-btn-ghost">Cancelar</button>
+        <button type="button" id="btnConfirmarGuardado" class="portal-btn portal-btn-primary">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="portal-toast"></div>
+
+  <script src="js/portal-personal.js"></script>
+  <script src="js/portal-propuestas.js"></script>
+  <script>
+    // El botón X se comporta según el contexto:
+    // - Si está embebido dentro del lightbox de index.html, le avisa al padre que cierre.
+    // - Si se abre directo en el navegador, regresa al portal principal.
+    document.getElementById('btnCerrarPortal').addEventListener('click', function () {
+      if (window.self !== window.top) {
+        window.parent.postMessage('cerrarPortalPersonal', '*');
+      } else {
+        window.location.href = '../index.html';
+      }
+    });
+  </script>
+</body>
+</html>
