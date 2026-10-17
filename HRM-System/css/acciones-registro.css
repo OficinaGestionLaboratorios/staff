@@ -1,0 +1,59 @@
+/* Acciones uniformes por registro (ver js/core/acciones-registro.js) */
+.acciones-registro { display: inline-flex; flex-wrap: nowrap; align-items: center; gap: 6px; flex-shrink: 0; }
+.acc-btn {
+    width: 34px; height: 34px; padding: 0; display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 6px; border: 1px solid #BFC8D1; background: #FFFFFF; color: #0A6ED1;
+    font-size: 14px; cursor: pointer; transition: background .15s, border-color .15s;
+}
+.acc-btn:hover { background: #F2F8FE; border-color: #0A6ED1; }
+.acc-btn:focus-visible { outline: 2px solid #0A6ED1; outline-offset: 2px; }
+.acc-btn.acc-exportar { background: #107E3E; border-color: #107E3E; color: #fff; }
+.acc-btn.acc-exportar:hover, .acc-btn.acc-exportar:focus-visible { background: #0B5F2E; border-color: #0B5F2E; }
+.acc-btn.acc-eliminar { color: #BB0000; border-color: #E69A9A; }
+.acc-btn.acc-eliminar:hover { background: #FFEBEB; border-color: #BB0000; }
+.acc-btn.acc-off { opacity: .55; }
+#accTooltip {
+    position: fixed; z-index: 5000; pointer-events: none; opacity: 0; transition: opacity .12s;
+    background: #32363A; color: #fff; font-size: 12px; line-height: 1.3; padding: 5px 9px; border-radius: 4px;
+    max-width: 260px; box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+#accTooltip.visible { opacity: 1; }
+.horario-grupo-item .acciones-registro { margin-left: auto; }
+@media (max-width: 600px) {
+    .acciones-registro { gap: 4px; }
+    .acc-btn { width: 32px; height: 32px; font-size: 13px; }
+}
+/* Observación general del horario */
+.horario-obs-general { margin-top: 12px; }
+.horario-obs-general textarea { width: 100%; box-sizing: border-box; }
+/* Correo: destinatarios con autocompletado */
+.ogc-dest { position: relative; }
+.ogc-dest textarea { width: 100%; box-sizing: border-box; resize: vertical; font-family: inherit; font-size: 14px; padding: 8px 10px; border: 1px solid #CBD5E1; border-radius: 6px; }
+.ogc-auto-list { position: absolute; left: 0; right: 0; top: 100%; z-index: 20; background: #fff; border: 1px solid #BFC8D1; border-radius: 6px; box-shadow: 0 6px 18px rgba(0,0,0,.18); max-height: 220px; overflow-y: auto; display: none; }
+.ogc-auto-list.visible { display: block; }
+.ogc-auto-item { padding: 7px 10px; cursor: pointer; font-size: 13px; border-bottom: 1px solid #F1F5F9; }
+.ogc-auto-item:last-child { border-bottom: none; }
+.ogc-auto-item.sel, .ogc-auto-item:hover { background: #EBF5FE; }
+.ogc-auto-item small { display: block; color: #6A6D70; font-size: 11px; }
+#ogcSugeridos { margin: 0 0 12px; font-size: 12px; color: #475569; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ogc-sug { display: inline-flex; align-items: center; border: 1px solid #BFD9F5; background: #F0F7FF; border-radius: 14px; overflow: hidden; font-size: 12px; }
+.ogc-sug button { border: none; background: none; cursor: pointer; padding: 3px 9px; color: #0A4D8C; font-size: 12px; }
+.ogc-sug button + button { border-left: 1px solid #BFD9F5; color: #556B82; font-weight: 600; }
+.ogc-sug button:hover { background: #DCEBFA; }
+.ogc-aviso-db { font-size: 12px; color: #B45309; margin: 0 0 10px; }
+/* Administrador de la base de correos */
+#modalBaseCorreos table { width: 100%; border-collapse: collapse; font-size: 13px; }
+#modalBaseCorreos th, #modalBaseCorreos td { padding: 6px 8px; border-bottom: 1px solid #E2E8F0; text-align: left; }
+#modalBaseCorreos th { background: #F5F6F7; position: sticky; top: 0; }
+.bc-tabla-wrap { max-height: 340px; overflow: auto; border: 1px solid #D5DADD; border-radius: 6px; }
+.bc-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 12px; }
+.bc-form input, .bc-form select { padding: 7px 8px; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 13px; width: 100%; box-sizing: border-box; }
+
+/* Vacaciones: botón «1. Registrar período vacacional» sin borde diferenciado, mismo azul de referencia */
+.vacacion-etapas #vacacionBtnEtapa1,
+.vacacion-etapas #vacacionBtnEtapa1.etapa-activa {
+    border: none; box-shadow: none; background: var(--sap-brand, #0A6ED1); color: #fff;
+}
+.vacacion-etapas #vacacionBtnEtapa1:hover { background: var(--sap-brand-dark, #0854A0); color: #fff; }
+.vacacion-etapas #vacacionBtnEtapa1:active { background: #06407A; color: #fff; }
+.vacacion-etapas #vacacionBtnEtapa1:focus-visible { outline: 2px solid #06407A; outline-offset: 2px; }
