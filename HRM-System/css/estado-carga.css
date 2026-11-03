@@ -1,0 +1,11 @@
+/* Aviso de consulta / sin registros (js/core/estado-carga.js) */
+.estado-carga {
+    display: flex; align-items: center; gap: 10px;
+    margin: 0 0 16px; padding: 12px 14px;
+    border-radius: 8px; border: 1px solid #E2E8F0;
+    background: #F8FAFC; color: #475569; font-size: 13px; line-height: 1.4;
+}
+.estado-carga i { font-size: 15px; flex: 0 0 auto; }
+.estado-carga--cargando { background: #EFF6FF; border-color: #BFDBFE; color: #1D4ED8; }
+.estado-carga--vacio    { background: #F8FAFC; border-color: #CBD5E1; color: #475569; }
+.estado-carga--error    { background: #FEF2F2; border-color: #FECACA; color: #BB0000; }
