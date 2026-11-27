@@ -295,7 +295,7 @@ window.PermisosExportDOCX = (function () {
     // Al ser flotante no agrega altura: las 2 copias siguen entrando en una
     // sola hoja A4. Si el sello no cargó, queda un párrafo vacío (como antes).
     const ANCHO_SELLO_COL = 2000;               // twips (~3.5 cm)
-    const SELLO_ANCHO_PX = 97;                  // ~2.3 cm (v147: +15 % sobre 76 px)
+    const SELLO_ANCHO_PX = 107;                  // ~2.3 cm (v147: +15 % sobre 76 px)
     function parrafoConSello() {
         const d = window.docx;
         const base64 = window.SELLO_OGL_BASE64;
